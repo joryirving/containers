@@ -1,35 +1,34 @@
 {
-    "extends": [
-      "config:base",
-      "docker:enableMajor",
-      ":disableRateLimiting",
-      ":dependencyDashboard",
-      ":semanticCommits",
-      ":automergeDigest"
-    ],
-    "platform": "github",
-    "username": "rosey-bot[bot]",
-    "repositories": ["LilDrunkenSmurf/containers"],
-    "onboarding": false,
-    "requireConfig": "optional",
-    "gitAuthor": "rosey-bot <98030736+rosey-bot[bot]@users.noreply.github.com>",
-    "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-    "suppressNotifications": ["prIgnoreNotification"],
-    "commitBodyTable": true,
-    "packageRules": [
-      {
-        "description": "Auto-merge Github Actions",
-        "matchDatasources": ["github-tags"],
-        "automerge": true,
-        "automergeType": "branch",
-        "ignoreTests": true,
-        "matchUpdateTypes": ["minor", "patch"],
-        "matchPackagePatterns": ["renovatebot/github-action"]
-      },
-      {
-        "matchDatasources": ["docker"],
-        "matchUpdateTypes": ["digest"],
-        "commitMessagePrefix": "📣 "
-      }
-    ]
-  }
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "docker:enableMajor",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit",
+    ":automergeDigest",
+    ":automergeBranch",
+    "github>LilDrunkenSmurf/containers//.github/renovate/autoMerge.json5",
+    "github>LilDrunkenSmurf/containers//.github/renovate/commitMessage.json5",
+    "github>LilDrunkenSmurf/containers//.github/renovate/labels.json5",
+    "github>LilDrunkenSmurf/containers//.github/renovate/semanticCommits.json5",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": ["prIgnoreNotification"],
+  "rebaseWhen": "conflicted",
+  "pre-commit": {
+    "enabled": true
+  },
+  "regexManagers": [
+    {
+      "fileMatch": ["(^|/)Dockerfile$"],
+      "matchStrings": [
+        "datasource=(?<datasource>.*?) depName=(?<depName>.*?) versioning=(?<versioning>.*?)\\sARG .*?_VERSION=(?<currentValue>v.*)\\s"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    }
+  ]
+}
