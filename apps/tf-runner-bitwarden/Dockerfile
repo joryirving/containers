@@ -1,7 +1,7 @@
 FROM ghcr.io/weaveworks/tf-runner:main-9ce782ce
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_CLI_VERSION=2023.1.0
+ARG BW_CLI_VERSION=2023.12.1
 
 USER root
 
