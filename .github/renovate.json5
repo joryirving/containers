@@ -1,34 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     "docker:enableMajor",
-    ":disableRateLimiting",
     ":dependencyDashboard",
-    ":semanticCommits",
-    ":enablePreCommit",
-    ":automergeDigest",
-    ":automergeBranch",
-    "github>LilDrunkenSmurf/containers//.github/renovate/autoMerge.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/commitMessage.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/labels.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/semanticCommits.json5",
-    "helpers:pinGitHubActionDigests"
+    ":disableRateLimiting",
+    ":semanticCommits"
   ],
-  "dependencyDashboard": true,
+  "onboarding": false,
+  "requireConfig": "optional",
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
-  "pre-commit": {
-    "enabled": true
-  },
-  "regexManagers": [
-    {
-      "fileMatch": ["(^|/)Dockerfile$"],
-      "matchStrings": [
-        "datasource=(?<datasource>.*?) depName=(?<depName>.*?) versioning=(?<versioning>.*?)\\sARG .*?_VERSION=(?<currentValue>v.*)\\s"
-      ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
-    }
-  ]
+  "suppressNotifications": ["prEditedNotification", "prIgnoreNotification"]
 }
