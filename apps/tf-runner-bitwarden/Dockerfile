@@ -1,5 +1,5 @@
 FROM hashicorp/terraform:1.5.4 as tf
-FROM ghcr.io/weaveworks/tf-runner:main-9ce782ce
+FROM ghcr.io/weaveworks/tf-runner:v0.15.1
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG BW_CLI_VERSION=2023.12.1
