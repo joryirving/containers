@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:1.5.4 as tf
+FROM hashicorp/terraform:1.6.6 as tf
 FROM ghcr.io/weaveworks/tf-runner:v0.15.1
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
