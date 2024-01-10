@@ -3,9 +3,9 @@ name: Build & publish container images
 
 on:
   workflow_dispatch: {}
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   find-changed-images:

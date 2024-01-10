@@ -1,0 +1,14 @@
+---
+app: bitwarden-cli
+# not in use yet
+url: https://api.github.com/repos/bitwarden/clients/releases
+rules:
+  - cli
+  # - sort published_at
+  # - 'sort_by(.published_at) | reverse | .[].name | select( index("CLI") )' | sed 's:.*CLI v::' | head -n 1)
+version_regex:
+  - v*
+channels:
+  - name: stable
+    platforms: ["linux/amd64"]
+    stable: true

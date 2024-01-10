@@ -1,13 +1,18 @@
-FROM hashicorp/terraform:1.6.6 as tf
-FROM ghcr.io/weaveworks/tf-runner:v0.15.1
+ARG VERSION=v0.15.1
+ARG TARGETPLATFORM
 
-# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_CLI_VERSION=2023.12.1
+# renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
+FROM hashicorp/terraform:1.6.6 as terraform
 
+# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
+FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
 USER root
 
-RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_CLI_VERSION}
+# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
+ARG BW_VERSION=2024.1.0
 
-COPY --from=tf /bin/terraform /usr/local/bin/terraform
+RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_VERSION}
+
+COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
 USER 65532:65532
