@@ -12,15 +12,15 @@
 
     jobs:
       simple-checks:
-        uses: LilDrunkenSmurf/containers/.github/workflows/simple-checks.yaml@main
+        uses: lildrunkensmurf/containers/.github/workflows/simple-checks.yaml@main
 
       get-changed-images:
-        uses: LilDrunkenSmurf/containers/.github/workflows/get-changed-images.yaml@main
+        uses: lildrunkensmurf/containers/.github/workflows/get-changed-images.yaml@main
 
       build-images:
         needs: ["simple-checks", "get-changed-images"]
         if: ${{ needs.get-changed-images.outputs.addedOrModified == 'true' }}
-        uses: LilDrunkenSmurf/containers/.github/workflows/build-images.yaml@main
+        uses: lildrunkensmurf/containers/.github/workflows/build-images.yaml@main
         secrets: inherit
         with:
           appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
