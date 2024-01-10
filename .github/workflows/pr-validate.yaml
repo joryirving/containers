@@ -1,26 +1,26 @@
 ---
     name: "Pull Request: Validate"
-    
+
     on:
       pull_request:
         branches: ["main"]
         types: ["opened", "synchronize", "reopened"]
-    
+
     concurrency:
       group: ${{ github.head_ref }}-pr-validate
       cancel-in-progress: true
-    
+
     jobs:
       simple-checks:
-        uses: ${GITHUB_REPOSITORY_OWNER}/containers/.github/workflows/simple-checks.yaml@main
-    
+        uses: LilDrunkenSmurf/containers/.github/workflows/simple-checks.yaml@main
+
       get-changed-images:
-        uses: ${GITHUB_REPOSITORY_OWNER}/containers/.github/workflows/get-changed-images.yaml@main
-    
+        uses: LilDrunkenSmurf/containers/.github/workflows/get-changed-images.yaml@main
+
       build-images:
         needs: ["simple-checks", "get-changed-images"]
         if: ${{ needs.get-changed-images.outputs.addedOrModified == 'true' }}
-        uses: ${GITHUB_REPOSITORY_OWNER}/containers/.github/workflows/build-images.yaml@main
+        uses: LilDrunkenSmurf/containers/.github/workflows/build-images.yaml@main
         secrets: inherit
         with:
           appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
