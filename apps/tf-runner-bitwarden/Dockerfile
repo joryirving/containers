@@ -1,4 +1,4 @@
-ARG VERSION=v0.15.1
+ARG VERSION=0.15.1
 ARG TARGETPLATFORM
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker

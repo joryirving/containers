@@ -2,7 +2,6 @@ FROM debian:sid
 
 ARG TARGETPLATFORM
 ARG VERSION
-ARG CHANNEL
 
 WORKDIR /usr/local/bin
 
