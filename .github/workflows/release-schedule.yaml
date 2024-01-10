@@ -1,10 +1,10 @@
 ---
     name: Scheduled Release
-    
+
     concurrency:
       group: container-release
       cancel-in-progress: false
-    
+
     on:
       workflow_dispatch:
         inputs:
@@ -20,16 +20,16 @@
             required: true
       schedule:
         - cron: "0 * * * *"
-    
+
     jobs:
       simple-checks:
         name: Simple Checks
-        uses: ${GITHUB_REPOSITORY_OWNER}/containers/.github/workflows/simple-checks.yaml@main
-    
+        uses: LilDrunkenSmurf/containers/.github/workflows/simple-checks.yaml@main
+
       build-images:
         name: Build Images
         needs: simple-checks
-        uses: ${GITHUB_REPOSITORY_OWNER}/containers/.github/workflows/build-images.yaml@main
+        uses: LilDrunkenSmurf/containers/.github/workflows/build-images.yaml@main
         secrets: inherit
         permissions:
           contents: read
@@ -39,7 +39,7 @@
           force: ${{ inputs.force == true }}
           pushImages: true
           sendNotifications: true
-    
+
       render-readme:
         name: Render Readme
         needs: build-images
