@@ -13,7 +13,7 @@ ARG BW_VERSION=2024.1.0
 
 RUN apk add --no-cache npm
 
-RUN npm i -g node-pre-gyp \
+RUN npm i -g @mapbox/node-pre-gyp \
   && npm i -g @bitwarden/cli@${BW_VERSION}
 
 COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
