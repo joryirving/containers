@@ -13,10 +13,6 @@ ARG BW_VERSION=2024.1.0
 
 RUN apk add --no-cache npm
 
-RUN rm -rf ~/.node-gyp/ \
-  && rm -r node_modules/.bin/; \
-  && rm -r build/
-
 RUN npm i -g node-gyp \
   && npm i -g node-pre-gyp \
   && npm i -g @bitwarden/cli@${BW_VERSION}
