@@ -20,9 +20,6 @@
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
   "suppressNotifications": ["prIgnoreNotification"],
   "rebaseWhen": "conflicted",
-  "assignees": [
-    "LilDrunkenSmurf"
-  ],
   "pre-commit": {
     "enabled": true
   },
