@@ -1,5 +1,4 @@
-# Force using 3.10
-FROM ghcr.io/lildrunkensmurf/alpine:3.19.0
+FROM debian:stable
 
 ARG VERSION
 ARG TARGETPLATFORM
@@ -14,8 +13,12 @@ LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 WORKDIR /usr/local/bin
 
 RUN \
-  apk add --no-cache npm argon2-libs python3 \
-  && npm i -g @bitwarden/cli@${VERSION}
+  apk add --no-cache libsecret \
+  && cd /usr/local/bin \
+  && curl -LO "https://github.com/bitwarden/clients/releases/download/cli-v{$BW_VERSION}/bw-linux-{$BW_VERSION}.zip" \
+  && unzip *.zip && chmod +x ./bw \
+  && rm -rf *.zip
+
 
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
