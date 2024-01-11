@@ -67,6 +67,6 @@ RUN \
     && rm -rf /tmp/*
 
 VOLUME ["/config"]
-COPY ./apps/alpine/scripts /scripts
+COPY ./scripts /scripts
 COPY --from=builder /go/bin/envsubst /usr/local/bin/envsubst
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
