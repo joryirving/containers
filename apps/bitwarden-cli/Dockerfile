@@ -20,5 +20,5 @@ RUN \
   && unzip *.zip && chmod +x ./bw \
   && rm -rf *.zip
 
-COPY ./apps/bitwarden-cli/entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
