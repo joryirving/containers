@@ -1,6 +1,8 @@
 FROM ghcr.io/lildrunkensmurf/alpine:3.19.0
 
-ARG VERSION
+# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
+ARG BW_VERSION=2024.1.0
+
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
@@ -14,7 +16,7 @@ WORKDIR /usr/local/bin
 
 RUN \
   apk add --no-cache npm argon2-libs python3 \
-  && npm i -g @bitwarden/cli@${VERSION}
+  && npm i -g @bitwarden/cli@${BW_VERSION}
 
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]

@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controll
 USER root
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION
+ARG BW_VERSION=2024.1.0
 
 RUN \
   apk add --no-cache npm argon2-libs python3 \
