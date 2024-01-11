@@ -1,5 +1,13 @@
 ARG VERSION=0.15.1
+
 ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETOS
+
+LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
+LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
+LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
 FROM hashicorp/terraform:1.6.6 as terraform

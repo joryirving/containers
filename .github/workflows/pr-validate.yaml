@@ -1,28 +1,28 @@
 ---
-    name: "Pull Request: Validate"
+name: "Pull Request: Validate"
 
-    on:
-      pull_request:
-        branches: ["main"]
-        types: ["opened", "synchronize", "reopened"]
+on:
+  pull_request:
+    branches: ["main"]
+    types: ["opened", "synchronize", "reopened"]
 
-    concurrency:
-      group: ${{ github.head_ref }}-pr-validate
-      cancel-in-progress: true
+concurrency:
+  group: ${{ github.head_ref }}-pr-validate
+  cancel-in-progress: true
 
-    jobs:
-      simple-checks:
-        uses: lildrunkensmurf/containers/.github/workflows/simple-checks.yaml@main
+jobs:
+  simple-checks:
+    uses: lildrunkensmurf/containers/.github/workflows/simple-checks.yaml@main
 
-      get-changed-images:
-        uses: lildrunkensmurf/containers/.github/workflows/get-changed-images.yaml@main
+  get-changed-images:
+    uses: lildrunkensmurf/containers/.github/workflows/get-changed-images.yaml@main
 
-      build-images:
-        needs: ["simple-checks", "get-changed-images"]
-        if: ${{ needs.get-changed-images.outputs.addedOrModified == 'true' }}
-        uses: lildrunkensmurf/containers/.github/workflows/build-images.yaml@main
-        secrets: inherit
-        with:
-          appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
-          pushImages: false
-          sendNotifications: false
+  build-images:
+    needs: ["simple-checks", "get-changed-images"]
+    if: ${{ needs.get-changed-images.outputs.addedOrModified == 'true' }}
+    uses: lildrunkensmurf/containers/.github/workflows/build-images.yaml@main
+    secrets: inherit
+    with:
+      appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
+      pushImages: false
+      sendNotifications: false

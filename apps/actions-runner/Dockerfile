@@ -1,6 +1,15 @@
 ARG VERSION
 FROM --platform=amd64 ghcr.io/actions/actions-runner:${VERSION}
 
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETOS
+
+LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
+LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
+LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL org.opencontainers.image.source="https://github.com/actions/runner"
+
 ENV HOMEBREW_NO_ANALYTICS=1 \
     HOMEBREW_NO_ENV_HINTS=1 \
     HOMEBREW_NO_INSTALL_CLEANUP=1 \
