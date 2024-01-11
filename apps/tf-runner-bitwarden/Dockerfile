@@ -1,5 +1,11 @@
 ARG VERSION=0.15.1
 
+# renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
+FROM hashicorp/terraform:1.6.6 as terraform
+
+# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
+FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
+
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
@@ -9,11 +15,6 @@ LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
 LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
 
-# renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
-FROM hashicorp/terraform:1.6.6 as terraform
-
-# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
-FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
 USER root
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
