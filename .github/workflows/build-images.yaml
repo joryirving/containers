@@ -256,7 +256,7 @@
           shell: bash
           run: echo "LOWERCASE_REPO_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
 
-          - name: Download Digests
+        - name: Download Digests
           uses: actions/download-artifact@v4
           with:
             pattern: ${{ matrix.image.name }}-*
