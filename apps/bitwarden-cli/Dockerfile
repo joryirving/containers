@@ -1,4 +1,5 @@
-FROM debian:sid
+# Force using 3.10
+FROM ghcr.io/lildrunkensmurf/alpine:3.19.0
 
 ARG VERSION
 ARG TARGETPLATFORM
