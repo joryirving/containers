@@ -20,10 +20,12 @@ USER root
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG BW_VERSION=2024.1.0
 
-RUN apk add --no-cache npm
-
-RUN npm i -g @mapbox/node-pre-gyp \
-  && npm i -g @bitwarden/cli@${BW_VERSION}
+RUN \
+  apk add --no-cache libsecret \
+  && cd /usr/local/bin \
+  && curl -LO "https://github.com/bitwarden/clients/releases/download/cli-v{$BW_VERSION}/bw-linux-{$BW_VERSION}.zip" \
+  && unzip *.zip && chmod +x ./bw \
+  && rm -rf *.zip
 
 COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
