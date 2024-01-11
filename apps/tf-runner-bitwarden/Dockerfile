@@ -1,4 +1,4 @@
-ARG VERSION=0.15.1
+ARG VERSION=0.16.0-rc.3
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
 FROM hashicorp/terraform:1.6.6 as terraform
