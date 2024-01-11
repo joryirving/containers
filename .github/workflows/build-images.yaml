@@ -153,11 +153,11 @@ jobs:
           username: "${{ github.actor }}"
           password: "${{ secrets.GITHUB_TOKEN }}"
 
-      # - name: Setup Goss
-      #   if: ${{ matrix.image.tests_enabled }}
-      #   uses: e1himself/goss-installation-action@v1
-      #   with:
-      #     version: latest
+      - name: Setup Goss
+        if: ${{ matrix.image.tests_enabled }}
+        uses: e1himself/goss-installation-action@v1
+        with:
+          version: latest
 
       - name: Prepare Build Outputs
         id: prepare-build-outputs
