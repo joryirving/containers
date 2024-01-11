@@ -14,10 +14,8 @@ LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 WORKDIR /usr/local/bin
 
 RUN \
-  apk add --no-cache libsecret \
-  && curl -LO "https://github.com/bitwarden/clients/releases/download/cli-v{$VERSION}/bw-linux-{$VERSION}.zip" \
-  && unzip *.zip && chmod +x ./bw \
-  && rm -rf *.zip
+  apk add --no-cache npm argon2-libs python3 \
+  && npm i -g @bitwarden/cli@${VERSION}
 
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
