@@ -1,9 +1,8 @@
+# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
+ARG VERSION=0.16.0-rc.3
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
 FROM hashicorp/terraform:1.6.6 as terraform
-
-# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
-ARG VERSION=0.16.0-rc.3
 
 FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
 
