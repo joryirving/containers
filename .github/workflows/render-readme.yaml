@@ -2,6 +2,7 @@
 name: "Render Readme"
 
 on:
+  workflow_dispatch: {}
   workflow_call:
     secrets:
       BOT_APP_ID:
