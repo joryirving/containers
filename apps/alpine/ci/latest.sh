@@ -4,4 +4,5 @@ version=$(curl -s "https://registry.hub.docker.com/v2/repositories/library/alpin
 version="${version#*v}"
 version="${version#*release-}"
 version="${version%_*}"
+version="3.17.3
 printf "%s" "${version}"
