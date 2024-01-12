@@ -19,7 +19,9 @@ _An opinionated collection of container images_
 
 </div>
 
-Welcome to our container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/LilDrunkenSmurf?tab=packages&repo_name=containers).
+Welcome to my container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/LilDrunkenSmurf?tab=packages&repo_name=containers).
+
+Please note that this repo is *heavily* copied (or plaguarized) from [onedr0p's container repo](https://github.com/onedr0p/containers)
 
 ## Mission statement
 
@@ -35,10 +37,10 @@ We do take a similar approach but instead of appending a `-ls69` or `-r420` pref
 
 | Container                                          | Immutable |
 |----------------------------------------------------|-----------|
-| `ghcr.io/LilDrunkenSmurf/sonarr:rolling`                   | ❌         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:3.0.8.1507`                | ❌         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:rolling@sha256:8053...`    | ✅         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:3.0.8.1507@sha256:8053...` | ✅         |
+| `ghcr.io/lildrunkensmurf/sonarr:rolling`                   | ❌         |
+| `ghcr.io/lildrunkensmurf/sonarr:3.0.8.1507`                | ❌         |
+| `ghcr.io/lildrunkensmurf/sonarr:rolling@sha256:8053...`    | ✅         |
+| `ghcr.io/lildrunkensmurf/sonarr:3.0.8.1507@sha256:8053...` | ✅         |
 
 _If pinning an image to the sha256 digest, tools like [Renovate](https://github.com/renovatebot/renovate) support updating the container on a digest or application version change._
 
@@ -100,7 +102,7 @@ Container | Channel | Image | Latest Tags
 7. Use Taskfile to build and test your image
 
     ```ruby
-    task APP=sonarr CHANNEL=main test
+    task APP=radarr CHANNEL=main test
     ```
 
 ### Automated tags
@@ -109,14 +111,14 @@ Here's an example of how tags are created in the GitHub workflows, be careful wi
 
 | Application | Channel   | Stable  | Base    | Generated Tag               |
 |-------------|-----------|---------|---------|-----------------------------|
-| `ubuntu`    | `focal`   | `true`  | `true`  | `ubuntu:focal-rolling`      |
-| `ubuntu`    | `focal`   | `true`  | `true`  | `ubuntu:focal-19880312`     |
-| `alpine`    | `3.16`    | `true`  | `true`  | `alpine:rolling`            |
-| `alpine`    | `3.16`    | `true`  | `true`  | `alpine:3.16.0`             |
-| `sonarr`    | `develop` | `false` | `false` | `sonarr-develop:3.0.8.1538` |
-| `sonarr`    | `develop` | `false` | `false` | `sonarr-develop:rolling`    |
-| `sonarr`    | `main`    | `true`  | `false` | `sonarr:3.0.8.1507`         |
-| `sonarr`    | `main`    | `true`  | `false` | `sonarr:rolling`            |
+| `ubuntu`    | `jammy`   | `true`  | `true`  | `ubuntu:rolling`            |
+| `ubuntu`    | `jammy`   | `true`  | `true`  | `ubuntu:jammy-20231211.1`   |
+| `alpine`    | `3.19`    | `true`  | `true`  | `alpine:rolling`            |
+| `alpine`    | `3.10`    | `true`  | `true`  | `alpine:3.19.0`             |
+| `radarr`    | `develop` | `false` | `false` | `radarr-develop:5.2.6.8376` |
+| `radarr`    | `develop` | `false` | `false` | `radarr-develop:rolling`    |
+| `radarr`    | `main`    | `true`  | `false` | `radarr:5.2.6.8376`         |
+| `radarr`    | `main`    | `true`  | `false` | `radarr:rolling`            |
 
 ## Deprecations
 
