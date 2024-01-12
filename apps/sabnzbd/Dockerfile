@@ -1,4 +1,4 @@
-FROM ghcr.io/onedr0p/par2cmdline-turbo:1.1.1 as par2cmdline-turbo
+FROM ghcr.io/lildrunkensmurf/par2cmdline-turbo:1.1.1 as par2cmdline-turbo
 FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:6a5d7469895fadcfdf9ed2bacce1def02bebd7f37d67e2b53830338b8fa56252
 
 ARG VERSION
