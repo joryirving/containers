@@ -46,4 +46,3 @@ COPY ./config.py /scripts/config.py
 COPY ./entrypoint.sh /entrypoint.sh
 
 CMD ["/entrypoint.sh"]
-
