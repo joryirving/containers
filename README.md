@@ -19,7 +19,9 @@ _An opinionated collection of container images_
 
 </div>
 
-Welcome to our container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/LilDrunkenSmurf?tab=packages&repo_name=containers).
+Welcome to my container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/LilDrunkenSmurf?tab=packages&repo_name=containers).
+
+Please note that this repo is *heavily* copied (or plaguarized) from [onedr0p's container repo](https://github.com/onedr0p/containers)
 
 ## Mission statement
 
@@ -35,10 +37,10 @@ We do take a similar approach but instead of appending a `-ls69` or `-r420` pref
 
 | Container                                          | Immutable |
 |----------------------------------------------------|-----------|
-| `ghcr.io/LilDrunkenSmurf/sonarr:rolling`                   | ❌         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:3.0.8.1507`                | ❌         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:rolling@sha256:8053...`    | ✅         |
-| `ghcr.io/LilDrunkenSmurf/sonarr:3.0.8.1507@sha256:8053...` | ✅         |
+| `ghcr.io/lildrunkensmurf/sonarr:rolling`                   | ❌         |
+| `ghcr.io/lildrunkensmurf/sonarr:3.0.8.1507`                | ❌         |
+| `ghcr.io/lildrunkensmurf/sonarr:rolling@sha256:8053...`    | ✅         |
+| `ghcr.io/lildrunkensmurf/sonarr:3.0.8.1507@sha256:8053...` | ✅         |
 
 _If pinning an image to the sha256 digest, tools like [Renovate](https://github.com/renovatebot/renovate) support updating the container on a digest or application version change._
 
@@ -68,9 +70,25 @@ Each Image will be built with a `rolling` tag, along with tags specific to it's 
 Container | Channel | Image | Latest Tags
 --- | --- | --- | ---
 [actions-runner](https://github.com/LilDrunkenSmurf/containers/pkgs/container/actions-runner) | stable | ghcr.io/LilDrunkenSmurf/actions-runner |![2](https://img.shields.io/badge/2-blue?style=flat-square) ![2.311](https://img.shields.io/badge/2.311-blue?style=flat-square) ![2.311.0](https://img.shields.io/badge/2.311.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[bazarr]() | stable | ghcr.io/LilDrunkenSmurf/bazarr |
+[bazarr](https://github.com/LilDrunkenSmurf/containers/pkgs/container/bazarr) | stable | ghcr.io/LilDrunkenSmurf/bazarr |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.4](https://img.shields.io/badge/1.4-blue?style=flat-square) ![1.4.0](https://img.shields.io/badge/1.4.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 [bitwarden-cli](https://github.com/LilDrunkenSmurf/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/LilDrunkenSmurf/bitwarden-cli |![2024.1.0](https://img.shields.io/badge/2024.1.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[tf-runner-bitwarden](https://github.com/LilDrunkenSmurf/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/LilDrunkenSmurf/tf-runner-bitwarden |![0.16.0-rc.3](https://img.shields.io/badge/0.16.0--rc.3-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[par2cmdline-turbo](https://github.com/LilDrunkenSmurf/containers/pkgs/container/par2cmdline-turbo) | stable | ghcr.io/LilDrunkenSmurf/par2cmdline-turbo |![1.1.1](https://img.shields.io/badge/1.1.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[plex](https://github.com/LilDrunkenSmurf/containers/pkgs/container/plex) | stable | ghcr.io/LilDrunkenSmurf/plex |![1.32.8.7639-fb6452ebf](https://img.shields.io/badge/1.32.8.7639--fb6452ebf-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[plex-beta](https://github.com/LilDrunkenSmurf/containers/pkgs/container/plex-beta) | beta | ghcr.io/LilDrunkenSmurf/plex-beta |![1.40.0.7775-456fbaf97](https://img.shields.io/badge/1.40.0.7775--456fbaf97-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[prowlarr](https://github.com/LilDrunkenSmurf/containers/pkgs/container/prowlarr) | master | ghcr.io/LilDrunkenSmurf/prowlarr |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.11](https://img.shields.io/badge/1.11-blue?style=flat-square) ![1.11.4](https://img.shields.io/badge/1.11.4-blue?style=flat-square) ![1.11.4.4173](https://img.shields.io/badge/1.11.4.4173-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[prowlarr-develop](https://github.com/LilDrunkenSmurf/containers/pkgs/container/prowlarr-develop) | develop | ghcr.io/LilDrunkenSmurf/prowlarr-develop |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.12](https://img.shields.io/badge/1.12-blue?style=flat-square) ![1.12.0](https://img.shields.io/badge/1.12.0-blue?style=flat-square) ![1.12.0.4188](https://img.shields.io/badge/1.12.0.4188-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[prowlarr-nightly](https://github.com/LilDrunkenSmurf/containers/pkgs/container/prowlarr-nightly) | nightly | ghcr.io/LilDrunkenSmurf/prowlarr-nightly |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.12](https://img.shields.io/badge/1.12-blue?style=flat-square) ![1.12.1](https://img.shields.io/badge/1.12.1-blue?style=flat-square) ![1.12.1.4200](https://img.shields.io/badge/1.12.1.4200-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[qbittorrent](https://github.com/LilDrunkenSmurf/containers/pkgs/container/qbittorrent) | stable | ghcr.io/LilDrunkenSmurf/qbittorrent |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.6](https://img.shields.io/badge/4.6-blue?style=flat-square) ![4.6.2](https://img.shields.io/badge/4.6.2-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[qbittorrent-beta](https://github.com/LilDrunkenSmurf/containers/pkgs/container/qbittorrent-beta) | beta | ghcr.io/LilDrunkenSmurf/qbittorrent-beta |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.6](https://img.shields.io/badge/4.6-blue?style=flat-square) ![4.6.2](https://img.shields.io/badge/4.6.2-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[radarr](https://github.com/LilDrunkenSmurf/containers/pkgs/container/radarr) | master | ghcr.io/LilDrunkenSmurf/radarr |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.2](https://img.shields.io/badge/5.2-blue?style=flat-square) ![5.2.6](https://img.shields.io/badge/5.2.6-blue?style=flat-square) ![5.2.6.8376](https://img.shields.io/badge/5.2.6.8376-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[radarr-develop](https://github.com/LilDrunkenSmurf/containers/pkgs/container/radarr-develop) | develop | ghcr.io/LilDrunkenSmurf/radarr-develop |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.2](https://img.shields.io/badge/5.2-blue?style=flat-square) ![5.2.6](https://img.shields.io/badge/5.2.6-blue?style=flat-square) ![5.2.6.8376](https://img.shields.io/badge/5.2.6.8376-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[radarr-nightly](https://github.com/LilDrunkenSmurf/containers/pkgs/container/radarr-nightly) | nightly | ghcr.io/LilDrunkenSmurf/radarr-nightly |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.3](https://img.shields.io/badge/5.3-blue?style=flat-square) ![5.3.1](https://img.shields.io/badge/5.3.1-blue?style=flat-square) ![5.3.1.8432](https://img.shields.io/badge/5.3.1.8432-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[readarr-develop](https://github.com/LilDrunkenSmurf/containers/pkgs/container/readarr-develop) | develop | ghcr.io/LilDrunkenSmurf/readarr-develop |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.3](https://img.shields.io/badge/0.3-blue?style=flat-square) ![0.3.14](https://img.shields.io/badge/0.3.14-blue?style=flat-square) ![0.3.14.2358](https://img.shields.io/badge/0.3.14.2358-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[readarr-nightly](https://github.com/LilDrunkenSmurf/containers/pkgs/container/readarr-nightly) | nightly | ghcr.io/LilDrunkenSmurf/readarr-nightly |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.3](https://img.shields.io/badge/0.3-blue?style=flat-square) ![0.3.15](https://img.shields.io/badge/0.3.15-blue?style=flat-square) ![0.3.15.2368](https://img.shields.io/badge/0.3.15.2368-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[sabnzbd](https://github.com/LilDrunkenSmurf/containers/pkgs/container/sabnzbd) | stable | ghcr.io/LilDrunkenSmurf/sabnzbd |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.2](https://img.shields.io/badge/4.2-blue?style=flat-square) ![4.2.1](https://img.shields.io/badge/4.2.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[tautulli](https://github.com/LilDrunkenSmurf/containers/pkgs/container/tautulli) | master | ghcr.io/LilDrunkenSmurf/tautulli |![2](https://img.shields.io/badge/2-blue?style=flat-square) ![2.13](https://img.shields.io/badge/2.13-blue?style=flat-square) ![2.13.4](https://img.shields.io/badge/2.13.4-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[tf-runner-bitwarden](https://github.com/LilDrunkenSmurf/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/LilDrunkenSmurf/tf-runner-bitwarden |![0.15.1](https://img.shields.io/badge/0.15.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[theme-park](https://github.com/LilDrunkenSmurf/containers/pkgs/container/theme-park) | stable | ghcr.io/LilDrunkenSmurf/theme-park |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.15](https://img.shields.io/badge/1.15-blue?style=flat-square) ![1.15.0](https://img.shields.io/badge/1.15.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 
 
 ## Contributing
@@ -84,7 +102,7 @@ Container | Channel | Image | Latest Tags
 7. Use Taskfile to build and test your image
 
     ```ruby
-    task APP=sonarr CHANNEL=main test
+    task APP=radarr CHANNEL=main test
     ```
 
 ### Automated tags
@@ -93,14 +111,14 @@ Here's an example of how tags are created in the GitHub workflows, be careful wi
 
 | Application | Channel   | Stable  | Base    | Generated Tag               |
 |-------------|-----------|---------|---------|-----------------------------|
-| `ubuntu`    | `focal`   | `true`  | `true`  | `ubuntu:focal-rolling`      |
-| `ubuntu`    | `focal`   | `true`  | `true`  | `ubuntu:focal-19880312`     |
-| `alpine`    | `3.16`    | `true`  | `true`  | `alpine:rolling`            |
-| `alpine`    | `3.16`    | `true`  | `true`  | `alpine:3.16.0`             |
-| `sonarr`    | `develop` | `false` | `false` | `sonarr-develop:3.0.8.1538` |
-| `sonarr`    | `develop` | `false` | `false` | `sonarr-develop:rolling`    |
-| `sonarr`    | `main`    | `true`  | `false` | `sonarr:3.0.8.1507`         |
-| `sonarr`    | `main`    | `true`  | `false` | `sonarr:rolling`            |
+| `ubuntu`    | `jammy`   | `true`  | `true`  | `ubuntu:rolling`            |
+| `ubuntu`    | `jammy`   | `true`  | `true`  | `ubuntu:jammy-20231211.1`   |
+| `alpine`    | `3.19`    | `true`  | `true`  | `alpine:rolling`            |
+| `alpine`    | `3.10`    | `true`  | `true`  | `alpine:3.19.0`             |
+| `radarr`    | `develop` | `false` | `false` | `radarr-develop:5.2.6.8376` |
+| `radarr`    | `develop` | `false` | `false` | `radarr-develop:rolling`    |
+| `radarr`    | `main`    | `true`  | `false` | `radarr:5.2.6.8376`         |
+| `radarr`    | `main`    | `true`  | `false` | `radarr:rolling`            |
 
 ## Deprecations
 

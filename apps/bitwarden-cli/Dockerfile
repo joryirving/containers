@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:3.17.3
+FROM ghcr.io/lildrunkensmurf/alpine:3.19.0
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG BW_VERSION=2024.1.0
