@@ -68,6 +68,7 @@ Each Image will be built with a `rolling` tag, along with tags specific to it's 
 Container | Channel | Image | Latest Tags
 --- | --- | --- | ---
 [actions-runner](https://github.com/LilDrunkenSmurf/containers/pkgs/container/actions-runner) | stable | ghcr.io/LilDrunkenSmurf/actions-runner |![2](https://img.shields.io/badge/2-blue?style=flat-square) ![2.311](https://img.shields.io/badge/2.311-blue?style=flat-square) ![2.311.0](https://img.shields.io/badge/2.311.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[bazarr]() | stable | ghcr.io/LilDrunkenSmurf/bazarr |
 [bitwarden-cli](https://github.com/LilDrunkenSmurf/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/LilDrunkenSmurf/bitwarden-cli |![2024.1.0](https://img.shields.io/badge/2024.1.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 [tf-runner-bitwarden](https://github.com/LilDrunkenSmurf/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/LilDrunkenSmurf/tf-runner-bitwarden |![0.16.0-rc.3](https://img.shields.io/badge/0.16.0--rc.3-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 
