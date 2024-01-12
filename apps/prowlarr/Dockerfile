@@ -43,4 +43,3 @@ USER kah
 COPY ./config.xml.tmpl /app/config.xml.tmpl
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
-
