@@ -1,4 +1,4 @@
-FROM ghcr.io/onedr0p/ubuntu:jammy-20231004@sha256:6e060e90482632408063d0fbb4b616c77914ef10eaa6b089a00de5815471006c
+FROM ghcr.io/lildrunkensmurf/ubuntu:jammy-20231211.1@sha256:3fe442c838cc00a3b778a548d187fc477f8d6979d254788bfeabda8ff086fb6b
 
 ARG VERSION
 ARG CHANNEL
