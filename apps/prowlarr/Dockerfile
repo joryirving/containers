@@ -1,4 +1,4 @@
-FROM ghcr.io/onedr0p/alpine:rolling@sha256:51632d23e56ae28a34f8e90df6fe8d02730b5462697ae52e8b01ad6484497819
+FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:6a5d7469895fadcfdf9ed2bacce1def02bebd7f37d67e2b53830338b8fa56252
 
 ARG VERSION
 ARG CHANNEL
@@ -40,7 +40,7 @@ RUN \
     && rm -rf /tmp/*
 
 USER kah
-COPY ./apps/prowlarr/config.xml.tmpl /app/config.xml.tmpl
-COPY ./apps/prowlarr/entrypoint.sh /entrypoint.sh
+COPY ./config.xml.tmpl /app/config.xml.tmpl
+COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
 
