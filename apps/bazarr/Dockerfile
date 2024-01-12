@@ -1,5 +1,4 @@
-# Force using 3.10
-FROM ghcr.io/onedr0p/alpine:3.17.3
+FROM ghcr.io/lildrunkensmurf/alpine:3.17.3
 
 ARG VERSION
 ARG CHANNEL
