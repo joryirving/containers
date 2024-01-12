@@ -71,6 +71,7 @@ Container | Channel | Image | Latest Tags
 [bazarr](https://github.com/LilDrunkenSmurf/containers/pkgs/container/bazarr) | stable | ghcr.io/LilDrunkenSmurf/bazarr |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.4](https://img.shields.io/badge/1.4-blue?style=flat-square) ![1.4.0](https://img.shields.io/badge/1.4.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 [bitwarden-cli](https://github.com/LilDrunkenSmurf/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/LilDrunkenSmurf/bitwarden-cli |![2024.1.0](https://img.shields.io/badge/2024.1.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 [tf-runner-bitwarden](https://github.com/LilDrunkenSmurf/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/LilDrunkenSmurf/tf-runner-bitwarden |![0.16.0-rc.3](https://img.shields.io/badge/0.16.0--rc.3-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+[theme-park](https://github.com/LilDrunkenSmurf/containers/pkgs/container/theme-park) | stable | ghcr.io/LilDrunkenSmurf/theme-park |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.15](https://img.shields.io/badge/1.15-blue?style=flat-square) ![1.15.0](https://img.shields.io/badge/1.15.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
 
 
 ## Contributing
