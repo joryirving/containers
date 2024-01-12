@@ -15,15 +15,15 @@ LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
 LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
 
-USER root
-
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG BW_VERSION=2024.1.0
 
-RUN \
-  apk add --no-cache npm argon2-libs python3 \
-  && npm i -g @bitwarden/cli@${BW_VERSION}
+USER root
 
-COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
+RUN apk add --no-cache npm && npm i -g @bitwarden/cli@${BW_CLI_VERSION}
+
+COPY --from=tf /bin/terraform /usr/local/bin/terraform
+
+RUN chmod +x /usr/local/bin/terraform
 
 USER 65532:65532
