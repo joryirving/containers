@@ -5,6 +5,9 @@
     "docker:enableMajor",
     ":label(renovate/{{depName}})",
     "security:openssf-scorecard",
+    "github>LilDrunkenSmurf/renovate-config",
+    "github>LilDrunkenSmurf/renovate-config:automerge-github-actions",
+    "github>LilDrunkenSmurf/renovate-config:automerge-docker-digest"
   ],
   "pre-commit": {
     "enabled": true
