@@ -3,23 +3,9 @@
   "extends": [
     "config:base",
     "docker:enableMajor",
-    ":disableRateLimiting",
-    ":dependencyDashboard",
-    ":semanticCommits",
-    ":enablePreCommit",
-    ":automergeDigest",
-    ":automergeBranch",
     ":label(renovate/{{depName}})",
     "security:openssf-scorecard",
-    "github>LilDrunkenSmurf/containers//.github/renovate/autoMerge.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/commitMessage.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/labels.json5",
-    "github>LilDrunkenSmurf/containers//.github/renovate/semanticCommits.json5",
   ],
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
   "pre-commit": {
     "enabled": true
   },
