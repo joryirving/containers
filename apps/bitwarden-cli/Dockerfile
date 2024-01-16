@@ -1,5 +1,8 @@
 FROM debian:stable
 
+# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
+ARG VERSION=2024.1.0
+
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
