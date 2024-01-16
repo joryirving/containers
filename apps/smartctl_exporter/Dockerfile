@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.source="https://github.com/prometheus-community/s
 RUN apk add --no-cache smartmontools git \
   && git clone --depth 1 git@github.com:prometheus-community/smartctl_exporter.git \
   && cd smartctl_exporter \
-  && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= TARGETARCH/' Makefile \
+  && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= ${TARGETARCH}/' Makefile \
   && make \
   && ls -lah \
   && cp .build/${TARGETOS}-${TARGETARCH}/smartctl_exporter /bin/smartctl_exporter \
