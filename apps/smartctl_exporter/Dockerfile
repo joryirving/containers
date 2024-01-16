@@ -11,18 +11,12 @@ LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
 LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/prometheus-community/smartctl_exporter"
 
-
-RUN apk add --no-cache smartmontools git openssh-client \
-  && git clone --depth 1 https://github.com/prometheus-community/smartctl_exporter.git \
-  && cd smartctl_exporter \
-  && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= ${TARGETARCH}/' Makefile \
-  && make \
-  && ls -lah \
-  && cp .build/${TARGETOS}-${TARGETARCH}/smartctl_exporter /bin/smartctl_exporter \
-  && cd .. \
-  && rm -rf smartctl_exporter
-
-# COPY .build/${TARGETOS}-${TARGETARCH}/smartctl_exporter /bin/smartctl_exporter
+RUN apk add smartmontools
+RUN wget "https://github.com/prometheus-community/smartctl_exporter/releases/download/v{$VERSION}/smartctl_exporter-{$VERSION}.{$TARGETOS}-{$TARGETARCH}.tar.gz" \
+  && tar xvzf smartctl_exporter-{$VERSION}.{$TARGETOS}-{$TARGETARCH}.tar.gz \
+  && ls -l smartctl_exporter-{$VERSION}.{$TARGETOS}-{$TARGETARCH}.tar.gz \
+  && mv smartctl_exporter-{$VERSION}.{$TARGETOS}-{$TARGETARCH}/smartctl_exporter /bin/smartctl_exporter \
+  && rm -rf smartctl_exporter-{$VERSION}.{$TARGETOS}-*
 
 EXPOSE      9633
 USER        nobody
