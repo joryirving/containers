@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.source="https://github.com/prometheus-community/s
 
 
 RUN apk add --no-cache smartmontools git openssh-client \
-  && git clone --depth 1 git@github.com:prometheus-community/smartctl_exporter.git \
+  && git clone --depth 1 https://github.com/prometheus-community/smartctl_exporter.git \
   && cd smartctl_exporter \
   && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= ${TARGETARCH}/' Makefile \
   && make \
