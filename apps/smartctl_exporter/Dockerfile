@@ -12,7 +12,7 @@ LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/prometheus-community/smartctl_exporter"
 
 
-RUN apk add --no-cache smartmontools git \
+RUN apk add --no-cache smartmontools git openssh-client \
   && git clone --depth 1 git@github.com:prometheus-community/smartctl_exporter.git \
   && cd smartctl_exporter \
   && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= ${TARGETARCH}/' Makefile \
