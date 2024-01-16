@@ -17,8 +17,10 @@ RUN apk add --no-cache smartmontools \
   && cd smartctl_exporter \
   && sed -i 's/^DOCKER_ARCHS ?= amd64$/DOCKER_ARCHS ?= TARGETARCH/' Makefile \
   && make \
-  && ls -lah
+  && ls -lah \
   # && cp .build/${TARGETOS}-${TARGETARCH}/smartctl_exporter /bin/smartctl_exporter
+  && cd .. \
+  && rm -rf smartctl_exporter
 
 # COPY .build/${TARGETOS}-${TARGETARCH}/smartctl_exporter /bin/smartctl_exporter
 
