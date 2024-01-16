@@ -16,7 +16,8 @@ RUN wget "https://github.com/prometheus-community/smartctl_exporter/releases/dow
   && tar xvzf smartctl_exporter-$VERSION.$TARGETOS-$TARGETARCH.tar.gz \
   && ls -l smartctl_exporter-$VERSION.$TARGETOS-$TARGETARCH.tar.gz \
   && mv smartctl_exporter-$VERSION.$TARGETOS-$TARGETARCH/smartctl_exporter /bin/smartctl_exporter \
-  && rm -rf smartctl_exporter-$VERSION.$TARGETOS-*
+  && chmod +x /bin/smartctl_exporter \
+  && rm -rf smartctl_exporter*
 
 EXPOSE      9633
 USER        nobody
