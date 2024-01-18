@@ -12,7 +12,7 @@ LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
 LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 
-WORKDIR /app
+WORKDIR /usr/local/bin
 
 RUN npm i -g @bitwarden/cli@${BW_VERSION}
 
