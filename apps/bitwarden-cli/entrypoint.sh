@@ -1,12 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
-bw config server ${BW_HOST}
+./node_modules/@bitwarden/cli/build/bw.js login --apikey
+export BW_SESSION="$(./node_modules/@bitwarden/cli/build/bw.js unlock --passwordenv BW_PASSWORD --raw)"
 
-bw login --apikey --raw
-export BW_SESSION=$(bw unlock --passwordenv BW_PASSWORD --raw)
-bw unlock --check
-
-echo 'Running `bw server` on port 8087'
-bw serve --hostname 0.0.0.0 #--disable-origin-protection
+echo "Running bitwarden webhook server on port 8087"
+./node_modules/@bitwarden/cli/build/bw.js serve --hostname 0.0.0.0 #--disable-origin-protection
