@@ -37,17 +37,8 @@ jobs:
         shell: bash
         run: echo "LOWERCASE_REPO_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
 
-      - name: Generate Token
-        uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
-
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: "${{ steps.app-token.outputs.token }}"
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -62,7 +53,7 @@ jobs:
       - name: Prepare Matrices
         id: prepare-matrices
         env:
-          TOKEN: ${{ steps.app-token.outputs.token }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           if [[ -z "${{ inputs.appsToBuild }}" ]]; then
@@ -131,22 +122,15 @@ jobs:
           echo "${{ matrix.image.name }}" | grep -E "[a-zA-Z0-9_\.\-]+" || "Image Name is invalid"
           echo "${{ matrix.image.version }}" | grep -E "[a-zA-Z0-9_\.\-]+" || "Image Version is invalid"
 
-      - name: Generate Token
-        uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
-
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: "${{ steps.app-token.outputs.token }}"
+          fetch-depth: 1
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to GitHub Container Registry
+      - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
