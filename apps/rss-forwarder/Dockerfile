@@ -20,9 +20,8 @@ WORKDIR /usr/src/rss-forwarder
 
 RUN wget https://github.com/morphy2k/rss-forwarder/archive/refs/tags/v${VERSION}.tar.gz \
     && tar -xvf v${VERSION}.tar.gz \
-    && cd rss-forwarder-${VERSION}
-
-RUN cargo install --path .
+    && cd rss-forwarder-${VERSION} \
+    && cargo install --path .
 
 FROM gcr.io/distroless/cc-debian11
 
