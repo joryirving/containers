@@ -1,0 +1,11 @@
+---
+app: rss-forwarder
+base: false
+semantic_versioning: false
+channels:
+  - name: stable
+    platforms: ["linux/amd64", "linux/arm64"] # ["linux/amd64", "linux/arm64"]
+    stable: true
+    tests:
+      enabled: false
+      type: cli
