@@ -38,4 +38,7 @@ RUN \
 
 USER runner
 
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+        # Install Homebrew for x86_64 architecture \
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; \
+    fi
