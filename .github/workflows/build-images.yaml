@@ -67,16 +67,15 @@ jobs:
             fi
           fi
           echo "matrices=${matrices}" >> $GITHUB_OUTPUT
+          echo "matrices=${matrices}" >> $GITHUB_ENV
           echo "${matrices}"
 
       - name: Set Runner
         id: set-runner
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          if [ "${{ steps.prepare-matrices.outputs.matrices.target_arch }}" == "arm64" ]; then
-              TARGET_RUNNER=arc-runner-set-containers-${{ steps.prepare-matrices.outputs.matrices.target_arch }}
+          if [ "${{ env.matrices.target_arch }}" == "arm64" ]; then
+              TARGET_RUNNER=arc-runner-set-containers-${{ env.matrices.target_arch }}
           else
               TARGET_RUNNER=ubuntu-latest
           fi
