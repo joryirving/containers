@@ -1,4 +1,4 @@
-FROM rust:1.75.0 as builder
+FROM rust:1.75.0-bookworm as builder
 
 ARG VERSION
 ARG CHANNEL
@@ -23,7 +23,7 @@ RUN wget https://github.com/morphy2k/rss-forwarder/archive/refs/tags/v${VERSION}
     && cd rss-forwarder-${VERSION} \
     && cargo install --path .
 
-FROM gcr.io/distroless/cc-debian11
+FROM gcr.io/distroless/cc-debian12
 
 COPY --from=builder /usr/local/cargo/bin/rss-forwarder /usr/local/bin/rss-forwarder
 
