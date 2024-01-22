@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrices: ${{ steps.prepare-matrices.outputs.matrices }}
+      runnner: ${{ steps.set-runner.outputs.runner }}
     steps:
       - name: Lowercase repository owner
         shell: bash
@@ -68,10 +69,23 @@ jobs:
           echo "matrices=${matrices}" >> $GITHUB_OUTPUT
           echo "${matrices}"
 
+      - name: Set Runner
+        id: set-runner
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          if [ "${{ matrix.image.target_arch }}" == "arm64" ]; then
+              TARGET_RUNNER=arc-runner-set-containers-${{ matrix.image.target_arch }}
+          else
+              TARGET_RUNNER=ubuntu-latest
+          fi
+          echo "runner=${TARGET_RUNNER}" >> $GITHUB_OUTPUT
+
   build-platform-images:
     name: Build/Test ${{ matrix.image.name }} (${{ matrix.image.platform }})
     needs: prepare
-    runs-on: arc-runner-set-containers-${{ matrix.image.target_arch }}
+    runs-on: ${{ needs.prepare.outputs.runner }}
     if: ${{ toJSON(fromJSON(needs.prepare.outputs.matrices).imagePlatforms) != '[]' && toJSON(fromJSON(needs.prepare.outputs.matrices).imagePlatforms) != '' }}
     strategy:
       fail-fast: false
