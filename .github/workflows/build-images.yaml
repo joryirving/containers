@@ -75,12 +75,13 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          if [ "${{ matrix.image.target_arch }}" == "arm64" ]; then
-              TARGET_RUNNER=arc-runner-set-containers-${{ matrix.image.target_arch }}
+          if [ "$matrices.target_arch" == "arm64" ]; then
+              TARGET_RUNNER=arc-runner-set-containers-$matrices.image.target_arch
           else
               TARGET_RUNNER=ubuntu-latest
           fi
           echo "runner=${TARGET_RUNNER}" >> $GITHUB_OUTPUT
+          echo "${runner}"
 
   build-platform-images:
     name: Build/Test ${{ matrix.image.name }} (${{ matrix.image.platform }})
