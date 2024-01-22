@@ -67,25 +67,13 @@ jobs:
             fi
           fi
           echo "matrices=${matrices}" >> $GITHUB_OUTPUT
-          echo "matrices=${matrices}" >> $GITHUB_ENV
           echo "${matrices}"
 
-      - name: Set Runner
-        id: set-runner
-        shell: bash
-        run: |
-          if [ "${{ env.matrices.target_arch }}" == "arm64" ]; then
-              TARGET_RUNNER=arc-runner-set-containers-${{ env.matrices.target_arch }}
-          else
-              TARGET_RUNNER=ubuntu-latest
-          fi
-          echo "runner=${TARGET_RUNNER}" >> $GITHUB_OUTPUT
-          echo "${runner}"
 
   build-platform-images:
     name: Build/Test ${{ matrix.image.name }} (${{ matrix.image.platform }})
     needs: prepare
-    runs-on: ${{ needs.prepare.outputs.runner }}
+    runs-on: ubuntu-latest
     if: ${{ toJSON(fromJSON(needs.prepare.outputs.matrices).imagePlatforms) != '[]' && toJSON(fromJSON(needs.prepare.outputs.matrices).imagePlatforms) != '' }}
     strategy:
       fail-fast: false
