@@ -75,8 +75,8 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          if [ "$matrices.target_arch" == "arm64" ]; then
-              TARGET_RUNNER=arc-runner-set-containers-$matrices.image.target_arch
+          if [ "${{ steps.prepare-matrices.outputs.matrices.target_arch }}" == "arm64" ]; then
+              TARGET_RUNNER=arc-runner-set-containers-${{ steps.prepare-matrices.outputs.matrices.target_arch }}
           else
               TARGET_RUNNER=ubuntu-latest
           fi
