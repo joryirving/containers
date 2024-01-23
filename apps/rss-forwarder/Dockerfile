@@ -11,7 +11,6 @@ LABEL maintainer="Markus Wiegand <mail@morphy2k.dev>"
 LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
 LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
 LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
-LABEL org.opencontainers.image.source="https://github.com/Qolors/FeedCord"
 LABEL org.opencontainers.image.source="https://github.com/morphy2k/rss-forwarder"
 
 ENV PKG_CONFIG_ALLOW_CROSS=1
