@@ -147,7 +147,8 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
 
             platformToBuild["goss_args"] = "tail -f /dev/null" if channel["tests"].get("type", "web") == "cli" else ""
 
-            platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform in TESTABLE_PLATFORMS
+            platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform
+            #platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform in TESTABLE_PLATFORMS
 
             imagesToBuild["imagePlatforms"].append(platformToBuild)
         imagesToBuild["images"].append(toBuild)
