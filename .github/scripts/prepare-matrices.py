@@ -14,7 +14,7 @@ from os.path import isfile
 # read repository owner's username from custom env vars, else read from GitHub Actions default env vars
 repo_owner = os.environ.get('REPO_OWNER', os.environ.get('GITHUB_REPOSITORY_OWNER'))
 
-TESTABLE_PLATFORMS = ["linux/amd64"]
+TESTABLE_PLATFORMS = ["linux/amd64", "linux/arm64"]
 
 def load_metadata_file_yaml(file_path):
     with open(file_path, "r") as f:
@@ -147,8 +147,7 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
 
             platformToBuild["goss_args"] = "tail -f /dev/null" if channel["tests"].get("type", "web") == "cli" else ""
 
-            platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform
-            #platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform in TESTABLE_PLATFORMS
+            platformToBuild["tests_enabled"] = channel["tests"]["enabled"] and platform in TESTABLE_PLATFORMS
 
             imagesToBuild["imagePlatforms"].append(platformToBuild)
         imagesToBuild["images"].append(toBuild)
