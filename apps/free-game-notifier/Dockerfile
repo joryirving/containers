@@ -1,4 +1,4 @@
-FROM node:lts-slim as build
+FROM node:lts-slim
 
 ARG TARGETPLATFORM
 ARG TARGETARCH
@@ -11,15 +11,12 @@ LABEL org.opencontainers.image.source="https://github.com/j6nca/free-game-notifi
 
 WORKDIR /app
 
-RUN wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/src/epic_games.js -P ./src \
+RUN apt update \
+  && apt install wget -y \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/src/epic_games.js -P /app/src \
   && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package.json \
   && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package-lock.json \
-  && npm ci \
-  && ls -lah
-  
+  && npm ci
 
-COPY package*.json /app/
-COPY ./node_modules /app/node_modules
-COPY ./src /app/src
-
-CMD ["npm run start"]
+COPY ./entrypoint.sh /entrypoint.sh
+CMD ["/entrypoint.sh"]
