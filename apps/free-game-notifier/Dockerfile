@@ -11,13 +11,15 @@ LABEL org.opencontainers.image.source="https://github.com/j6nca/free-game-notifi
 
 WORKDIR /app
 
-RUN wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/src/epic_games.js -P /app/src \
-  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package.json -p /app \
-  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package-lock.json -p /app \
-  && npm ci
+RUN wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/src/epic_games.js -P ./src \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package.json \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package-lock.json \
+  && npm ci \
+  && ls -lah
+  
 
 COPY package*.json /app/
-COPY node_modules /app/node_modules
-COPY src /app/src
+COPY ./node_modules /app/node_modules
+COPY ./src /app/src
 
 CMD ["npm run start"]
