@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:6a5d7469895fadcfdf9ed2bacce1def02bebd7f37d67e2b53830338b8fa56252
+FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:9033e08a981d310a1ee77461a05983d7b2f2bc9ddf730abfb7bb5d5178c3b366
 
 # https://github.com/linuxserver/docker-homeassistant
 # https://github.com/home-assistant/docker
