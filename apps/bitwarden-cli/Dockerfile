@@ -1,6 +1,5 @@
 FROM node:21.6-bookworm as build
 
-# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG VERSION
 
 ARG TARGETPLATFORM
