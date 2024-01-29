@@ -1,7 +1,6 @@
 FROM node:21.6-bookworm as build
 
-# renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION=2024.1.0
+ARG VERSION
 
 ARG TARGETPLATFORM
 ARG TARGETARCH
@@ -14,7 +13,7 @@ LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 
 WORKDIR /usr/local/bin
 
-RUN npm i -g @bitwarden/cli@${BW_VERSION}
+RUN npm i -g @bitwarden/cli@${VERSION}
 
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]

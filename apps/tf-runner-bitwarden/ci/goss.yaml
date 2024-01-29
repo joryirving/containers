@@ -3,3 +3,6 @@
 file:
   /usr/local/bin/terraform:
     exists: true
+file:
+  /usr/local/bin/bw:
+    exists: true
