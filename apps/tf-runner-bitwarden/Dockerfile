@@ -1,6 +1,6 @@
 FROM node:21.6-bookworm as build
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION
+ARG BW_VERSION=2024.1.0
 ARG VERSION
 
 ARG TARGETPLATFORM
@@ -20,8 +20,6 @@ RUN npm i -g @bitwarden/cli@${BW_VERSION}
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
 FROM hashicorp/terraform:1.7.1 as terraform
-
-# renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
 
 FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
 
