@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:3.19.1
+FROM ghcr.io/lildrunkensmurf/alpine:3.17.3
 
 ARG VERSION
 ARG CHANNEL
@@ -34,7 +34,7 @@ RUN \
     && \
     pip install --upgrade pip \
     && \
-    pip install --upgrade \
+    pip install --upgrade --break-system-packages \
       "webrtcvad-wheels>=2.0.10" \
     && apk del --purge .build-deps \
     && rm -rf \
