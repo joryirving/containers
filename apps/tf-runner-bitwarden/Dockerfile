@@ -28,7 +28,8 @@ ARG VERSION
 
 USER root
 
-RUN apk add --no-cache npm
+RUN apk add --no-cache npm \
+  && npm i -g commander
 COPY --from=build --chown=65532:65532 /usr/local/bin/bw /usr/local/bin/bw
 COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
