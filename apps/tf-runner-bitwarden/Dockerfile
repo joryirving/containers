@@ -28,8 +28,7 @@ ARG VERSION
 
 USER root
 
-RUN apk add --no-cache npm
-COPY --from=build /usr/local/bin/bw /usr/local/bin/bw
+COPY --from=build --chown=65532:65532 /usr/local/bin/bw /usr/local/bin/bw
 COPY --from=terraform --chown=65532:65532 /bin/terraform /usr/local/bin/terraform
 
 USER 65532:65532
