@@ -1,5 +1,5 @@
 FROM ghcr.io/lildrunkensmurf/par2cmdline-turbo:1.1.1 as par2cmdline-turbo
-FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:9033e08a981d310a1ee77461a05983d7b2f2bc9ddf730abfb7bb5d5178c3b366
+FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:471eef756168b58b5aa3f0d696944ced89fd8d1c920b94614210d33fa7085def
 
 ARG VERSION
 ARG CHANNEL
