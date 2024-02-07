@@ -1,5 +1,5 @@
 ARG VERSION
-FROM ghcr.io/lildrunkensmurf/bitwarden-cli:2024.1.0 as build
+FROM ghcr.io/lildrunkensmurf/bitwarden-cli:2024.2.0 as build
 
 ARG VERSION
 ARG TARGETPLATFORM
