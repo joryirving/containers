@@ -14,7 +14,7 @@ LABEL org.opencontainers.image.source="https://github.com/hashicorp/terraform"
 LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
 
 # renovate: datasource=github-releases depName=hashicorp/terraform versioning=docker
-FROM hashicorp/terraform:1.7.2 as terraform
+FROM hashicorp/terraform:1.7.3 as terraform
 ARG VERSION
 
 FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
