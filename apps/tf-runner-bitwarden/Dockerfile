@@ -18,6 +18,7 @@ ARG VERSION
 
 USER root
 
+RUN apk add --no-cache npm
 COPY --from=build --chown=65532:65532 /usr/local/bin/bw /usr/local/bin/bw
 
 USER 65532:65532
