@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:3.17.3
+FROM ghcr.io/joryirving/alpine:3.17.3
 
 ARG VERSION
 ARG CHANNEL
@@ -6,9 +6,9 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/morpheus65535/bazarr"
 
 ENV \

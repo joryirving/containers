@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:3.19.1
+FROM ghcr.io/joryirving/alpine:3.19.1
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
 ARG BW_VERSION=2024.1.0
@@ -7,9 +7,9 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 
 WORKDIR /usr/local/bin

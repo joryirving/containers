@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/ubuntu:jammy-20231211.1@sha256:3fe442c838cc00a3b778a548d187fc477f8d6979d254788bfeabda8ff086fb6b
+FROM ghcr.io/joryirving/ubuntu:jammy-20231211.1@sha256:3fe442c838cc00a3b778a548d187fc477f8d6979d254788bfeabda8ff086fb6b
 
 ARG VERSION
 ARG CHANNEL
@@ -6,9 +6,9 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 
 
 ARG TARGETPLATFORM

@@ -1,4 +1,4 @@
-FROM ghcr.io/lildrunkensmurf/alpine:rolling@sha256:471eef756168b58b5aa3f0d696944ced89fd8d1c920b94614210d33fa7085def
+FROM ghcr.io/joryirving/alpine:rolling@sha256:471eef756168b58b5aa3f0d696944ced89fd8d1c920b94614210d33fa7085def
 
 # https://github.com/linuxserver/docker-homeassistant
 # https://github.com/home-assistant/docker
@@ -11,9 +11,9 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/home-assistant/core"
 
 ENV \

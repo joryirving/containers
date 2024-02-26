@@ -1,14 +1,14 @@
 ARG VERSION
-FROM ghcr.io/lildrunkensmurf/bitwarden-cli:2024.2.0 as build
+FROM ghcr.io/joryirving/bitwarden-cli:2024.2.0 as build
 
 ARG VERSION
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 LABEL org.opencontainers.image.source="https://github.com/hashicorp/terraform"
 LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"

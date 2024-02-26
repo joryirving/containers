@@ -6,9 +6,9 @@ ARG TARGETARCH
 ARG TARGETVARIANT=""
 ARG TARGETPLATFORM
 
-LABEL dev.LilDrunkenSmurf.image.target_platform=$TARGETPLATFORM
-LABEL dev.LilDrunkenSmurf.image.target_architecture=$TARGETARCH
-LABEL dev.LilDrunkenSmurf.image.target_os=$TARGETOS
+LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
+LABEL dev.joryirving.image.target_architecture=$TARGETARCH
+LABEL dev.joryirving.image.target_os=$TARGETOS
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
