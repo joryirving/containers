@@ -1,4 +1,4 @@
-FROM ghcr.io/joryirving/alpine:3.17.3
+FROM ghcr.io/joryirving/alpine:3.19.1
 
 ARG VERSION
 ARG CHANNEL
