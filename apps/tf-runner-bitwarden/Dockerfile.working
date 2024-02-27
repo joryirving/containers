@@ -1,7 +1,7 @@
 # renovate: datasource=github-releases depName=weaveworks/tf-runner versioning=docker
 ARG VERSION=0.15.1
 
-FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
+FROM ghcr.io/flux-iac/tofu-controller:v${VERSION} as runner
 
 ARG TARGETPLATFORM
 ARG TARGETARCH

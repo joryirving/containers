@@ -10,10 +10,11 @@ LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
 LABEL dev.joryirving.image.target_architecture=$TARGETARCH
 LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
-LABEL org.opencontainers.image.source="https://github.com/hashicorp/terraform"
-LABEL org.opencontainers.image.source="https://github.com/weaveworks/tf-controller"
+LABEL org.opencontainers.image.source="https://opentofu.org/"
+LABEL org.opencontainers.image.source="https://github.com/flux-iac/tofu-controller"
 
-FROM ghcr.io/weaveworks/tf-runner:v${VERSION} as runner
+#FROM ghcr.io/flux-iac/tofu-controller:v${VERSION} as runner
+FROM ghcr.io/flux-iac/tf-runner:v${VERSION} as runner
 ARG VERSION
 
 USER root
