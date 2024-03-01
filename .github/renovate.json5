@@ -6,8 +6,7 @@
     ":label(renovate/{{depName}})",
     "security:openssf-scorecard",
     "github>joryirving/renovate-config",
-    "github>joryirving/renovate-config:automerge-github-actions",
-    "github>joryirving/renovate-config:automerge-docker-digest"
+    "github>joryirving/renovate-config:autoMerge"
   ],
   "pre-commit": {
     "enabled": true
