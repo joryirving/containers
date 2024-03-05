@@ -1,4 +1,4 @@
-FROM ghcr.io/joryirving/alpine:3.17.3
+FROM ghcr.io/joryirving/alpine:3.19.1
 
 ARG VERSION
 ARG CHANNEL
@@ -32,7 +32,7 @@ RUN \
     && \
     apk add --no-cache --virtual .build-deps py3-pip python3-dev gcc musl-dev \
     && \
-    pip install --upgrade pip \
+    pip install --upgrade pip --break-system-packages \
     && \
     pip install --upgrade --break-system-packages \
       "webrtcvad-wheels>=2.0.10" \
