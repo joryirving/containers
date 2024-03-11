@@ -1,4 +1,3 @@
-FROM ghcr.io/joryirving/par2cmdline-turbo:1.1.1 as par2cmdline-turbo
 FROM ghcr.io/joryirving/alpine:rolling@sha256:00f75c99142231ab2ce489a51830a453d739f1f9b46fe36827162dcf98c1e0c9
 
 ARG VERSION
@@ -60,10 +59,13 @@ RUN \
         /tmp/*
 
 # Install par2cmdline-turbo
-COPY --from=par2cmdline-turbo /usr/local/bin/par2 /usr/local/bin/par2
+COPY --from=ghcr.io/joryirving/par2cmdline-turbo:1.1.1 /usr/local/bin/par2 /usr/local/bin/par2
 RUN ln -s /usr/local/bin/par2 /usr/local/bin/par2create \
     && ln -s /usr/local/bin/par2 /usr/local/bin/par2repair \
     && ln -s /usr/local/bin/par2 /usr/local/bin/par2verify
+
+# Install unrar
+COPY --from=ghcr.io/linuxserver/unrar:7.0.7 /usr/bin/unrar-alpine /usr/bin/unrar
 
 USER kah
 COPY ./sabnzbd.ini /app/sabnzbd.ini

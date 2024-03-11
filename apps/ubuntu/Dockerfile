@@ -80,7 +80,6 @@ RUN \
         pv \
         tzdata \
         vim-tiny \
-        unrar \
         unzip \
         wget \
     && \
