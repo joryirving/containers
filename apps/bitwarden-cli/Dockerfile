@@ -1,4 +1,4 @@
-FROM node:21.6-bookworm as build
+FROM node:21.7-bookworm as build
 
 ARG VERSION
 
