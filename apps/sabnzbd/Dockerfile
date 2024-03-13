@@ -1,4 +1,4 @@
-FROM ghcr.io/joryirving/alpine:rolling@sha256:00f75c99142231ab2ce489a51830a453d739f1f9b46fe36827162dcf98c1e0c9
+FROM ghcr.io/joryirving/alpine:rolling@sha256:fb9ebcb74b5ecf13c400f7c9066af0db3d5f13b1f085bc84606d892e3b57dc9e
 
 ARG VERSION
 ARG CHANNEL
