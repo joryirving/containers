@@ -12,6 +12,7 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.title="${SONARR__INSTANCE_NAME} (${SONARR__BRANCH})"
 
 ENV \
+    COMPlus_EnableDiagnostics="0" \
     SONARR__INSTANCE_NAME="Sonarr" \
     SONARR__BRANCH="${CHANNEL}" \
     SONARR__PORT="8989" \

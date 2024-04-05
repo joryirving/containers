@@ -12,6 +12,7 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Prowlarr/Prowlarr"
 
 ENV \
+    COMPlus_EnableDiagnostics="0" \
     PROWLARR__INSTANCE_NAME="Prowlarr" \
     PROWLARR__BRANCH="${CHANNEL}" \
     PROWLARR__PORT="9696" \

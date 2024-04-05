@@ -12,6 +12,7 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Radarr/Radarr"
 
 ENV \
+    COMPlus_EnableDiagnostics="0" \
     RADARR__INSTANCE_NAME="Radarr" \
     RADARR__BRANCH="${CHANNEL}" \
     RADARR__PORT="7878" \

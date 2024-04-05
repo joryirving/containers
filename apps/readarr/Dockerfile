@@ -12,6 +12,7 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Readarr/Readarr"
 
 ENV \
+    COMPlus_EnableDiagnostics="0" \
     READARR__INSTANCE_NAME="Readarr" \
     READARR__BRANCH="${CHANNEL}" \
     READARR__PORT="8787" \
