@@ -3,7 +3,7 @@
 _An opinionated collection of container images_
 </div>
 <div align="center">
-![GitHub Repo stars](https://img.shields.io/github/stars/joryirving/containers?style=for-the-badge)
+[![GitHub Repo stars](https://img.shields.io/github/stars/joryirving/containers?style=for-the-badge)]
 ![GitHub forks](https://img.shields.io/github/forks/joryirving/containers?style=for-the-badge)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/joryirving/containers/release-scheduled.yaml?style=for-the-badge&label=Scheduled%20Release)
 </div>

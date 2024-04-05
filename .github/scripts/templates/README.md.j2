@@ -1,18 +1,36 @@
+<!---
+NOTE: AUTO-GENERATED FILE
+to edit this file, instead edit its template at: ./github/scripts/templates/README.md.j2
+-->
 <div align="center">
+
+
 ## Containers
+
 _An opinionated collection of container images_
+
 </div>
+
 <div align="center">
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/joryirving/containers?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/joryirving/containers?style=for-the-badge)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/joryirving/containers/release-scheduled.yaml?style=for-the-badge&label=Scheduled%20Release)
+
 </div>
+
 Welcome to our container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/joryirving?tab=packages&repo_name=containers).
+
 ## Mission statement
+
 The goal of this project is to support [semantically versioned](https://semver.org/), [rootless](https://rootlesscontaine.rs/), and [multiple architecture](https://www.docker.com/blog/multi-arch-build-and-images-the-simple-way/) containers for various applications.
+
 We also try to adhere to a [KISS principle](https://en.wikipedia.org/wiki/KISS_principle), logging to stdout, [one process per container](https://testdriven.io/tips/59de3279-4a2d-4556-9cd0-b444249ed31e/), no [s6-overlay](https://github.com/just-containers/s6-overlay) and all images are built on top of [Alpine](https://hub.docker.com/_/alpine) or [Ubuntu](https://hub.docker.com/_/ubuntu).
+
 ## Tag immutability
+
 The containers built here do not use immutable tags, as least not in the more common way you have seen from [linuxserver.io](https://fleet.linuxserver.io/) or [Bitnami](https://bitnami.com/stacks/containers).
+
 We do take a similar approach but instead of appending a `-ls69` or `-r420` prefix to the tag we instead insist on pinning to the sha256 digest of the image, while this is not as pretty it is just as functional in making the images immutable.
 
 | Container                                          | Immutable |
