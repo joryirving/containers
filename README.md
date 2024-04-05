@@ -1,38 +1,18 @@
-<!---
-NOTE: AUTO-GENERATED FILE
-to edit this file, instead edit its template at: ./github/scripts/templates/README.md.j2
--->
 <div align="center">
-
-
 ## Containers
-
 _An opinionated collection of container images_
-
 </div>
-
 <div align="center">
-
 ![GitHub Repo stars](https://img.shields.io/github/stars/joryirving/containers?style=for-the-badge)
 ![GitHub forks](https://img.shields.io/github/forks/joryirving/containers?style=for-the-badge)
 ![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/joryirving/containers/release-scheduled.yaml?style=for-the-badge&label=Scheduled%20Release)
-
 </div>
-
-Welcome to my container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/joryirving?tab=packages&repo_name=containers).
-
-Please note that this repo is *heavily* copied (or plaguarized) from [onedr0p's container repo](https://github.com/onedr0p/containers)
-
+Welcome to our container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/joryirving?tab=packages&repo_name=containers).
 ## Mission statement
-
 The goal of this project is to support [semantically versioned](https://semver.org/), [rootless](https://rootlesscontaine.rs/), and [multiple architecture](https://www.docker.com/blog/multi-arch-build-and-images-the-simple-way/) containers for various applications.
-
 We also try to adhere to a [KISS principle](https://en.wikipedia.org/wiki/KISS_principle), logging to stdout, [one process per container](https://testdriven.io/tips/59de3279-4a2d-4556-9cd0-b444249ed31e/), no [s6-overlay](https://github.com/just-containers/s6-overlay) and all images are built on top of [Alpine](https://hub.docker.com/_/alpine) or [Ubuntu](https://hub.docker.com/_/ubuntu).
-
 ## Tag immutability
-
 The containers built here do not use immutable tags, as least not in the more common way you have seen from [linuxserver.io](https://fleet.linuxserver.io/) or [Bitnami](https://bitnami.com/stacks/containers).
-
 We do take a similar approach but instead of appending a `-ls69` or `-r420` prefix to the tag we instead insist on pinning to the sha256 digest of the image, while this is not as pretty it is just as functional in making the images immutable.
 
 | Container                                          | Immutable |
@@ -67,35 +47,8 @@ For applications that need to have persistent configuration data the config volu
 
 Each Image will be built with a `rolling` tag, along with tags specific to it's version. Available Images Below
 
-Container | Channel | Image | Latest Tags
---- | --- | --- | ---
-[actions-runner](https://github.com/joryirving/containers/pkgs/container/actions-runner) | stable | ghcr.io/joryirving/actions-runner |![2](https://img.shields.io/badge/2-blue?style=flat-square) ![2.315](https://img.shields.io/badge/2.315-blue?style=flat-square) ![2.315.0](https://img.shields.io/badge/2.315.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[bazarr](https://github.com/joryirving/containers/pkgs/container/bazarr) | stable | ghcr.io/joryirving/bazarr |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.4](https://img.shields.io/badge/1.4-blue?style=flat-square) ![1.4.2](https://img.shields.io/badge/1.4.2-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[bitwarden-cli](https://github.com/joryirving/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/joryirving/bitwarden-cli |![2024.2.1](https://img.shields.io/badge/2024.2.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[feedcord](https://github.com/joryirving/containers/pkgs/container/feedcord) | stable | ghcr.io/joryirving/feedcord |![2.1.0](https://img.shields.io/badge/2.1.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[free-game-notifier](https://github.com/joryirving/containers/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier |![1.2.0](https://img.shields.io/badge/1.2.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[home-assistant](https://github.com/joryirving/containers/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant |![2024.4.1](https://img.shields.io/badge/2024.4.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[par2cmdline-turbo](https://github.com/joryirving/containers/pkgs/container/par2cmdline-turbo) | stable | ghcr.io/joryirving/par2cmdline-turbo |![1.1.1](https://img.shields.io/badge/1.1.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[plex](https://github.com/joryirving/containers/pkgs/container/plex) | stable | ghcr.io/joryirving/plex |![1.40.1.8227-c0dd5a73e](https://img.shields.io/badge/1.40.1.8227--c0dd5a73e-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[plex-beta](https://github.com/joryirving/containers/pkgs/container/plex-beta) | beta | ghcr.io/joryirving/plex-beta |![1.40.2.8312-b1c79904d](https://img.shields.io/badge/1.40.2.8312--b1c79904d-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[prowlarr](https://github.com/joryirving/containers/pkgs/container/prowlarr) | master | ghcr.io/joryirving/prowlarr |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.15](https://img.shields.io/badge/1.15-blue?style=flat-square) ![1.15.0](https://img.shields.io/badge/1.15.0-blue?style=flat-square) ![1.15.0.4361](https://img.shields.io/badge/1.15.0.4361-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[prowlarr-develop](https://github.com/joryirving/containers/pkgs/container/prowlarr-develop) | develop | ghcr.io/joryirving/prowlarr-develop |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.15](https://img.shields.io/badge/1.15-blue?style=flat-square) ![1.15.0](https://img.shields.io/badge/1.15.0-blue?style=flat-square) ![1.15.0.4361](https://img.shields.io/badge/1.15.0.4361-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[prowlarr-nightly](https://github.com/joryirving/containers/pkgs/container/prowlarr-nightly) | nightly | ghcr.io/joryirving/prowlarr-nightly |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.16](https://img.shields.io/badge/1.16-blue?style=flat-square) ![1.16.0](https://img.shields.io/badge/1.16.0-blue?style=flat-square) ![1.16.0.4387](https://img.shields.io/badge/1.16.0.4387-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[qbittorrent](https://github.com/joryirving/containers/pkgs/container/qbittorrent) | stable | ghcr.io/joryirving/qbittorrent |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.6](https://img.shields.io/badge/4.6-blue?style=flat-square) ![4.6.4](https://img.shields.io/badge/4.6.4-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[qbittorrent-beta](https://github.com/joryirving/containers/pkgs/container/qbittorrent-beta) | beta | ghcr.io/joryirving/qbittorrent-beta |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.6](https://img.shields.io/badge/4.6-blue?style=flat-square) ![4.6.4](https://img.shields.io/badge/4.6.4-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[radarr](https://github.com/joryirving/containers/pkgs/container/radarr) | master | ghcr.io/joryirving/radarr |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.3](https://img.shields.io/badge/5.3-blue?style=flat-square) ![5.3.6](https://img.shields.io/badge/5.3.6-blue?style=flat-square) ![5.3.6.8612](https://img.shields.io/badge/5.3.6.8612-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[radarr-develop](https://github.com/joryirving/containers/pkgs/container/radarr-develop) | develop | ghcr.io/joryirving/radarr-develop |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.4](https://img.shields.io/badge/5.4-blue?style=flat-square) ![5.4.4](https://img.shields.io/badge/5.4.4-blue?style=flat-square) ![5.4.4.8688](https://img.shields.io/badge/5.4.4.8688-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[radarr-nightly](https://github.com/joryirving/containers/pkgs/container/radarr-nightly) | nightly | ghcr.io/joryirving/radarr-nightly |![5](https://img.shields.io/badge/5-blue?style=flat-square) ![5.4](https://img.shields.io/badge/5.4-blue?style=flat-square) ![5.4.5](https://img.shields.io/badge/5.4.5-blue?style=flat-square) ![5.4.5.8703](https://img.shields.io/badge/5.4.5.8703-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[readarr-develop](https://github.com/joryirving/containers/pkgs/container/readarr-develop) | develop | ghcr.io/joryirving/readarr-develop |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.3](https://img.shields.io/badge/0.3-blue?style=flat-square) ![0.3.21](https://img.shields.io/badge/0.3.21-blue?style=flat-square) ![0.3.21.2475](https://img.shields.io/badge/0.3.21.2475-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[readarr-nightly](https://github.com/joryirving/containers/pkgs/container/readarr-nightly) | nightly | ghcr.io/joryirving/readarr-nightly |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.3](https://img.shields.io/badge/0.3-blue?style=flat-square) ![0.3.22](https://img.shields.io/badge/0.3.22-blue?style=flat-square) ![0.3.22.2488](https://img.shields.io/badge/0.3.22.2488-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[sabnzbd](https://github.com/joryirving/containers/pkgs/container/sabnzbd) | stable | ghcr.io/joryirving/sabnzbd |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.2](https://img.shields.io/badge/4.2-blue?style=flat-square) ![4.2.3](https://img.shields.io/badge/4.2.3-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[smartctl_exporter](https://github.com/joryirving/containers/pkgs/container/smartctl_exporter) | stable | ghcr.io/joryirving/smartctl_exporter |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.12](https://img.shields.io/badge/0.12-blue?style=flat-square) ![0.12.0](https://img.shields.io/badge/0.12.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[sonarr](https://github.com/joryirving/containers/pkgs/container/sonarr) | main | ghcr.io/joryirving/sonarr |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.0](https://img.shields.io/badge/4.0-blue?style=flat-square) ![4.0.3](https://img.shields.io/badge/4.0.3-blue?style=flat-square) ![4.0.3.1413](https://img.shields.io/badge/4.0.3.1413-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[sonarr-develop](https://github.com/joryirving/containers/pkgs/container/sonarr-develop) | develop | ghcr.io/joryirving/sonarr-develop |![4](https://img.shields.io/badge/4-blue?style=flat-square) ![4.0](https://img.shields.io/badge/4.0-blue?style=flat-square) ![4.0.2](https://img.shields.io/badge/4.0.2-blue?style=flat-square) ![4.0.2.1408](https://img.shields.io/badge/4.0.2.1408-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[tautulli](https://github.com/joryirving/containers/pkgs/container/tautulli) | master | ghcr.io/joryirving/tautulli |![2](https://img.shields.io/badge/2-blue?style=flat-square) ![2.13](https://img.shields.io/badge/2.13-blue?style=flat-square) ![2.13.4](https://img.shields.io/badge/2.13.4-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[tf-runner-bitwarden](https://github.com/joryirving/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/joryirving/tf-runner-bitwarden |![0.15.1](https://img.shields.io/badge/0.15.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[theme-park](https://github.com/joryirving/containers/pkgs/container/theme-park) | stable | ghcr.io/joryirving/theme-park |![1](https://img.shields.io/badge/1-blue?style=flat-square) ![1.16](https://img.shields.io/badge/1.16-blue?style=flat-square) ![1.16.1](https://img.shields.io/badge/1.16.1-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
-[volsync](https://github.com/joryirving/containers/pkgs/container/volsync) | stable | ghcr.io/joryirving/volsync |![0](https://img.shields.io/badge/0-blue?style=flat-square) ![0.9](https://img.shields.io/badge/0.9-blue?style=flat-square) ![0.9.0](https://img.shields.io/badge/0.9.0-blue?style=flat-square) ![rolling](https://img.shields.io/badge/rolling-blue?style=flat-square)
+Container | Channel | Image
+--- | --- | ---
 
 
 ## Contributing
