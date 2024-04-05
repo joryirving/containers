@@ -129,7 +129,8 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
             if platform == "linux/amd64":
               platformToBuild["builder"] = "ubuntu-latest"
             elif platform == "linux/arm64":
-              platformToBuild["builder"] = "arc-runner-set-containers-arm64"
+              platformToBuild["builder"] = "ubuntu-latest"
+              #platformToBuild["builder"] = "arc-runner-set-containers-arm64"
 
             if meta.get("base", False):
                 platformToBuild["label_type"] ="org.opencontainers.image.base"
