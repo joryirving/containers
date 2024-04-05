@@ -48,6 +48,10 @@ if __name__ == "__main__":
                     "html_url": f"https://github.com/{repo_name}/pkgs/container/{name}",
                     "owner": repo_owner
                 }
+                if meta["base"]:
+                    base_images.append(image)
+                else:
+                    app_images.append(image)
 
     template = env.get_template("README.md.j2")
     with open("./README.md", "w") as f:
