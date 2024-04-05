@@ -67,6 +67,33 @@ Each Image will be built with a `rolling` tag, along with tags specific to it's 
 
 Container | Channel | Image
 --- | --- | ---
+[actions-runner](https://github.com/joryirving/containers/pkgs/container/actions-runner) | stable | ghcr.io/joryirving/actions-runner
+[bazarr](https://github.com/joryirving/containers/pkgs/container/bazarr) | stable | ghcr.io/joryirving/bazarr
+[bitwarden-cli](https://github.com/joryirving/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/joryirving/bitwarden-cli
+[feedcord](https://github.com/joryirving/containers/pkgs/container/feedcord) | stable | ghcr.io/joryirving/feedcord
+[free-game-notifier](https://github.com/joryirving/containers/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier
+[home-assistant](https://github.com/joryirving/containers/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant
+[par2cmdline-turbo](https://github.com/joryirving/containers/pkgs/container/par2cmdline-turbo) | stable | ghcr.io/joryirving/par2cmdline-turbo
+[plex](https://github.com/joryirving/containers/pkgs/container/plex) | stable | ghcr.io/joryirving/plex
+[plex-beta](https://github.com/joryirving/containers/pkgs/container/plex-beta) | beta | ghcr.io/joryirving/plex-beta
+[prowlarr](https://github.com/joryirving/containers/pkgs/container/prowlarr) | master | ghcr.io/joryirving/prowlarr
+[prowlarr-develop](https://github.com/joryirving/containers/pkgs/container/prowlarr-develop) | develop | ghcr.io/joryirving/prowlarr-develop
+[prowlarr-nightly](https://github.com/joryirving/containers/pkgs/container/prowlarr-nightly) | nightly | ghcr.io/joryirving/prowlarr-nightly
+[qbittorrent](https://github.com/joryirving/containers/pkgs/container/qbittorrent) | stable | ghcr.io/joryirving/qbittorrent
+[qbittorrent-beta](https://github.com/joryirving/containers/pkgs/container/qbittorrent-beta) | beta | ghcr.io/joryirving/qbittorrent-beta
+[radarr](https://github.com/joryirving/containers/pkgs/container/radarr) | master | ghcr.io/joryirving/radarr
+[radarr-develop](https://github.com/joryirving/containers/pkgs/container/radarr-develop) | develop | ghcr.io/joryirving/radarr-develop
+[radarr-nightly](https://github.com/joryirving/containers/pkgs/container/radarr-nightly) | nightly | ghcr.io/joryirving/radarr-nightly
+[readarr-develop](https://github.com/joryirving/containers/pkgs/container/readarr-develop) | develop | ghcr.io/joryirving/readarr-develop
+[readarr-nightly](https://github.com/joryirving/containers/pkgs/container/readarr-nightly) | nightly | ghcr.io/joryirving/readarr-nightly
+[sabnzbd](https://github.com/joryirving/containers/pkgs/container/sabnzbd) | stable | ghcr.io/joryirving/sabnzbd
+[smartctl_exporter](https://github.com/joryirving/containers/pkgs/container/smartctl_exporter) | stable | ghcr.io/joryirving/smartctl_exporter
+[sonarr](https://github.com/joryirving/containers/pkgs/container/sonarr) | main | ghcr.io/joryirving/sonarr
+[sonarr-develop](https://github.com/joryirving/containers/pkgs/container/sonarr-develop) | develop | ghcr.io/joryirving/sonarr-develop
+[tautulli](https://github.com/joryirving/containers/pkgs/container/tautulli) | master | ghcr.io/joryirving/tautulli
+[tf-runner-bitwarden](https://github.com/joryirving/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/joryirving/tf-runner-bitwarden
+[theme-park](https://github.com/joryirving/containers/pkgs/container/theme-park) | stable | ghcr.io/joryirving/theme-park
+[volsync](https://github.com/joryirving/containers/pkgs/container/volsync) | stable | ghcr.io/joryirving/volsync
 
 
 ## Contributing
