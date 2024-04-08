@@ -102,7 +102,7 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
 
         # Image Tags
         toBuild["tags"] = ["rolling", version]
-        if meta.get("semantic_versioning", False):
+        if meta.get("semver", False):
             parts = version.split(".")[:-1]
             while len(parts) > 0:
                 toBuild["tags"].append(".".join(parts))
@@ -126,16 +126,11 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
             platformToBuild["target_arch"] = target_arch
             platformToBuild["version"] = version
             platformToBuild["channel"] = channel["name"]
-            if platform == "linux/amd64":
-              platformToBuild["builder"] = "ubuntu-latest"
-            elif platform == "linux/arm64":
-              platformToBuild["builder"] = "ubuntu-latest"
-              #platformToBuild["builder"] = "arc-runner-set-containers-arm64"
-
-            if meta.get("base", False):
-                platformToBuild["label_type"] ="org.opencontainers.image.base"
-            else:
-                platformToBuild["label_type"]="org.opencontainers.image"
+            # if platform == "linux/amd64":
+            #   platformToBuild["builder"] = "ubuntu-latest"
+            # elif platform == "linux/arm64":
+            #   #platformToBuild["builder"] = "arc-runner-set-containers-arm64"
+            platformToBuild["label_type"]="org.opencontainers.image"
 
             if isfile(os.path.join(subdir, channel["name"], "Dockerfile")):
                 platformToBuild["dockerfile"] = os.path.join(subdir, channel["name"], "Dockerfile")

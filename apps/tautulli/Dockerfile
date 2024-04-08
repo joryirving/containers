@@ -1,4 +1,4 @@
-FROM ghcr.io/joryirving/alpine:rolling@sha256:7bc458290f433489d5e0e8403bf7508ad165f8fba1e28f684273a52c7346efb1
+FROM docker.io/library/python:3.11-alpine
 
 ARG VERSION
 ARG CHANNEL
@@ -26,7 +26,34 @@ ENV \
 
 ENV TAUTULLI_DOCKER="True"
 
+USER root
+WORKDIR /app
+
+#hadolint ignore=DL3018,DL3013
 RUN \
+    apk add --no-cache \
+        bash \
+        ca-certificates \
+        catatonit \
+        curl \
+        jq \
+        nano \
+        tzdata \
+    && \
+    apk add --no-cache --virtual .build-deps \
+        build-base \
+        cargo \
+        libffi-dev \
+        musl-dev \
+        openssl-dev \
+    && \
+    pip install uv \
+    && \
+    uv pip install --system \
+        --requirement "https://raw.githubusercontent.com/Tautulli/tautulli-baseimage/python3/requirements.txt" \
+    && \
+    mkdir -p /app \
+    && \
     curl -fsSL "https://github.com/Tautulli/Tautulli/archive/v${VERSION}.tar.gz" | tar xzf - -C /app --strip-components 1 \
     && \
     echo "v${VERSION}" > /app/version.txt \
@@ -34,25 +61,13 @@ RUN \
     echo "${CHANNEL}" > /app/branch.txt \
     && chown -R root:root /app \
     && chmod -R 755 /app \
-    && rm -rf /tmp/*
-
-#hadolint ignore=DL3018,DL3013
-RUN \
-    apk add --no-cache ca-certificates python3 py3-lxml py3-openssl py3-setuptools \
-    && \
-    apk add --no-cache --virtual .build-deps py3-pip make gcc g++ python3-dev \
-    && \
-    pip install --upgrade pip \
-    && \
-    pip install --upgrade \
-        plexapi \
-        pycryptodomex \
     && apk del --purge .build-deps \
     && rm -rf \
         /root/.cache \
         /root/.cargo \
         /tmp/*
 
-USER kah
 COPY ./entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

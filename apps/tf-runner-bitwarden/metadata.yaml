@@ -1,7 +1,6 @@
 ---
 app: tf-runner-bitwarden
-base: false
-semantic_versioning: false
+semver: false
 channels:
   - name: stable
     platforms: ["linux/amd64", "linux/arm64"] # ["linux/amd64", "linux/arm64"] arm64 is failing right now

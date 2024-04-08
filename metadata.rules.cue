@@ -1,7 +1,6 @@
 #Spec: {
     app:  #AcceptableAppName
-    base: bool
-    semantic_versioning?: bool
+    semver?: bool
     channels: [...#Channels]
 }
 
@@ -17,4 +16,4 @@
 
 #AcceptableAppName:           string & !="" & =~"^[a-zA-Z0-9_-]+$"
 #AcceptableChannelName:       string & !="" & =~"^[a-zA-Z0-9._-]+$"
-#AcceptedPlatforms:        "linux/amd64" | "linux/arm64"
+#AcceptedPlatforms: "linux/amd64" | "linux/arm64"

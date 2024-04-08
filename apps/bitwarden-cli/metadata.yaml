@@ -1,7 +1,6 @@
 ---
 app: bitwarden-cli
-base: false
-semantic_versioning: false
+semver: false
 channels:
   - name: stable
     platforms: ["linux/amd64"]

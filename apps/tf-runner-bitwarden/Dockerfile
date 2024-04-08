@@ -13,8 +13,7 @@ LABEL org.opencontainers.image.source="https://github.com/bitwarden/clients"
 LABEL org.opencontainers.image.source="https://opentofu.org/"
 LABEL org.opencontainers.image.source="https://github.com/flux-iac/tofu-controller"
 
-#FROM ghcr.io/flux-iac/tofu-controller:v${VERSION} as runner
-FROM ghcr.io/flux-iac/tf-runner:v${VERSION} as runner
+FROM ghcr.io/flux-iac/tofu-controller:v${VERSION} as runner
 ARG VERSION
 
 USER root
