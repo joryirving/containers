@@ -19,5 +19,12 @@
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     }
+  ],
+  "packageRules": [
+    {
+      "matchFileNames": ["apps/**"],
+      "additionalBranchPrefix": "{{parentDir}}-",
+      "labels": ["app/{{parentDir}}"]
+    }
   ]
 }

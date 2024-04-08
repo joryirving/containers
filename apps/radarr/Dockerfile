@@ -1,4 +1,17 @@
-FROM ghcr.io/joryirving/alpine:rolling@sha256:7bc458290f433489d5e0e8403bf7508ad165f8fba1e28f684273a52c7346efb1
+ARG VERSION
+FROM docker.io/library/golang:1.22-alpine as envsubst
+ARG VERSION
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT=""
+ARG TARGETPLATFORM
+ENV CGO_ENABLED=0 \
+    GOOS=${TARGETOS} \
+    GOARCH=${TARGETARCH} \
+    GOARM=${TARGETVARIANT}
+RUN go install -ldflags="-s -w" github.com/drone/envsubst/cmd/envsubst@latest
+
+FROM docker.io/library/alpine:3.19
 
 ARG VERSION
 ARG CHANNEL
@@ -18,10 +31,27 @@ ENV \
     RADARR__PORT="7878" \
     RADARR__ANALYTICS_ENABLED="False"
 
-#hadolint ignore=DL3018
-RUN apk add --no-cache ca-certificates icu-libs libintl sqlite-libs xmlstarlet
-#hadolint ignore=DL3059
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
+
+USER root
+WORKDIR /app
+
+#hadolint ignore=DL3018,DL3059
 RUN \
+    apk add --no-cache \
+        bash \
+        ca-certificates \
+        catatonit \
+        curl \
+        icu-libs \
+        jq \
+        libintl \
+        nano \
+        sqlite-libs \
+        tzdata \
+        xmlstarlet \
+    && \
     case "${TARGETPLATFORM}" in \
         'linux/amd64') export ARCH='x64' ;; \
         'linux/arm64') export ARCH='arm64' ;; \
@@ -32,16 +62,16 @@ RUN \
     curl -fsSL "https://radarr.servarr.com/v1/update/${RADARR__BRANCH}/updatefile?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
         | tar xzf - -C /app/bin --strip-components=1 \
     && \
-    rm -rf \
-        /app/bin/Radarr.Update \
+    rm -rf /app/bin/Radarr.Update \
     && \
     printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${RADARR__BRANCH}" "${VERSION}" > /app/package_info \
     && chown -R root:root /app \
     && chmod -R 755 /app \
     && rm -rf /tmp/*
 
-USER kah
-
 COPY ./config.xml.tmpl /app/config.xml.tmpl
 COPY ./entrypoint.sh /entrypoint.sh
+COPY --from=envsubst /go/bin/envsubst /usr/local/bin/envsubst
+
+ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

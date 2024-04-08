@@ -1,4 +1,4 @@
-FROM ghcr.io/joryirving/alpine:rolling@sha256:7bc458290f433489d5e0e8403bf7508ad165f8fba1e28f684273a52c7346efb1
+FROM docker.io/library/alpine:3.19
 
 ARG VERSION
 ARG CHANNEL
@@ -14,16 +14,32 @@ LABEL org.opencontainers.image.source="https://github.com/qbittorrent/qBittorren
 ENV QBITTORRENT__PORT=8080 \
     QBITTORRENT__BT_PORT=50413
 
-#hadolint ignore=DL3018
-RUN \
-    apk add --no-cache ca-certificates geoip p7zip python3 \
-    && apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community qt6-qtbase-sqlite
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
+USER root
+WORKDIR /app
+
+#hadolint ignore=DL3018,DL3059
 RUN \
+    apk add --no-cache \
+        bash \
+        ca-certificates \
+        catatonit \
+        curl \
+        geoip \
+        jq \
+        nano \
+        p7zip \
+        python3 \
+        tzdata \
+    && \
     case "${TARGETPLATFORM}" in \
         'linux/amd64') export ARCH="x86_64" ;; \
         'linux/arm64') export ARCH="aarch64" ;; \
     esac \
+    && \
+    mkdir -p /app \
     && \
     case "${CHANNEL}" in \
         'stable') \
@@ -40,9 +56,8 @@ RUN \
     && chmod -R 755 /app/qbittorrent-nox \
     && rm -rf /tmp/*
 
-USER kah
-
-COPY ./config.py /scripts/config.py
+COPY ./scripts/config.py /scripts/config.py
 COPY ./entrypoint.sh /entrypoint.sh
 
+ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]
