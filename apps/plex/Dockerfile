@@ -1,4 +1,4 @@
-FROM docker.io/library/ubuntu:22.04
+FROM docker.io/library/ubuntu:22.10
 
 LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
 LABEL dev.joryirving.image.target_architecture=$TARGETARCH
