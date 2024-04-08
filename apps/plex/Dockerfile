@@ -1,5 +1,3 @@
-RUN go install -ldflags="-s -w" github.com/drone/envsubst/cmd/envsubst@latest
-
 FROM docker.io/library/ubuntu:22.04
 
 LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
