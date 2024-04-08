@@ -14,6 +14,9 @@ LABEL org.opencontainers.image.source="https://github.com/qbittorrent/qBittorren
 ENV QBITTORRENT__PORT=8080 \
     QBITTORRENT__BT_PORT=50413
 
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
+
 USER root
 WORKDIR /app
 
