@@ -1,7 +1,7 @@
 FROM ghcr.io/joryirving/alpine:3.19.1
 
 # renovate: datasource=npm depName=@bitwarden/cli versioning=npm
-ARG BW_VERSION=2024.2.1
+ARG BW_VERSION=2024.3.1
 
 ARG TARGETPLATFORM
 ARG TARGETARCH
