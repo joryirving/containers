@@ -70,7 +70,6 @@ Container | Channel | Image
 [actions-runner](https://github.com/joryirving/containers/pkgs/container/actions-runner) | stable | ghcr.io/joryirving/actions-runner
 [bazarr](https://github.com/joryirving/containers/pkgs/container/bazarr) | stable | ghcr.io/joryirving/bazarr
 [bitwarden-cli](https://github.com/joryirving/containers/pkgs/container/bitwarden-cli) | stable | ghcr.io/joryirving/bitwarden-cli
-[feedcord](https://github.com/joryirving/containers/pkgs/container/feedcord) | stable | ghcr.io/joryirving/feedcord
 [free-game-notifier](https://github.com/joryirving/containers/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier
 [home-assistant](https://github.com/joryirving/containers/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant
 [par2cmdline-turbo](https://github.com/joryirving/containers/pkgs/container/par2cmdline-turbo) | stable | ghcr.io/joryirving/par2cmdline-turbo
