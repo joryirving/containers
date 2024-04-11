@@ -22,9 +22,39 @@
   ],
   "packageRules": [
     {
-      "matchFileNames": ["apps/**"],
+      "addLabels": ["renovate/container", "type/major"],
       "additionalBranchPrefix": "{{parentDir}}-",
-      "labels": ["app/{{parentDir}}"]
+      "commitMessageExtra": " ( {{currentVersion}} → {{newVersion}} )",
+      "commitMessagePrefix": "feat({{parentDir}})!: ",
+      "commitMessageTopic": "{{depName}}",
+      "labels": ["app/{{parentDir}}"],
+      "matchDatasources": ["docker"],
+      "matchFileNames": ["apps/**/Dockerfile"],
+      "matchUpdateTypes": ["major"]
+    },
+    {
+      "addLabels": ["renovate/container", "type/minor"],
+      "additionalBranchPrefix": "{{parentDir}}-",
+      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )",
+      "commitMessageTopic": "{{depName}}",
+      "labels": ["app/{{parentDir}}"],
+      "matchDatasources": ["docker"],
+      "matchFileNames": ["apps/**/Dockerfile"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitScope": "{{parentDir}}",
+      "semanticCommitType": "feat"
+    },
+    {
+      "addLabels": ["renovate/container", "type/patch"],
+      "additionalBranchPrefix": "{{parentDir}}-",
+      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )",
+      "commitMessageTopic": "{{depName}}",
+      "labels": ["app/{{parentDir}}"],
+      "matchDatasources": ["docker"],
+      "matchFileNames": ["apps/**/Dockerfile"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitScope": "{{parentDir}}",
+      "semanticCommitType": "fix"
     }
   ]
 }
