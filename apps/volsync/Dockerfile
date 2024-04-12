@@ -25,6 +25,8 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
 
 RUN \
+    apk update && \
+    apk upgrade && \
     apk add --no-cache \
         acl \
         bash \
