@@ -25,13 +25,12 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
 
 RUN \
-    apk update && \
-    apk upgrade && \
     apk add --no-cache \
         acl \
         bash \
         ca-certificates \
         curl \
+        coreutils \
         tzdata \
     && \
     curl -fsSL "https://github.com/backube/volsync/archive/refs/tags/v${VERSION}.tar.gz" \
