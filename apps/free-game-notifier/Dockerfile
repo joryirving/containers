@@ -13,9 +13,9 @@ WORKDIR /app
 
 RUN apt update \
   && apt install wget -y \
-  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/src/epic_games.js -P /app/src \
-  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package.json \
-  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/package-lock.json \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/bot/src/epic_games.js -P /app/src \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/bot/package.json \
+  && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/bot/package-lock.json \
   && npm ci
 
 COPY ./entrypoint.sh /entrypoint.sh
