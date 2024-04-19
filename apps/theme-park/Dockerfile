@@ -1,4 +1,4 @@
-FROM docker.io/nginxinc/nginx-unprivileged:1.25.5
+FROM ghcr.io/nginxinc/nginx-unprivileged:1.25
 
 ARG VERSION
 ARG CHANNEL
