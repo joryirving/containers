@@ -1,5 +1,5 @@
-ARG VERSION
-FROM ghcr.io/joryirving/bitwarden-cli:2024.3.1 as build
+# renovate: datasource=docker depName=bitwarden/bws
+FROM bitwarden/bws:0.5.0 as build
 
 ARG VERSION
 ARG TARGETPLATFORM
@@ -19,6 +19,6 @@ ARG VERSION
 USER root
 
 RUN apk add --no-cache npm
-COPY --from=build --chown=65532:65532 /usr/local/bin/bw /usr/local/bin/bw
+COPY --from=build --chown=65532:65532 /bin/bw /usr/local/bin/bw
 
 USER 65532:65532

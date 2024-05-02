@@ -3,5 +3,5 @@
 file:
   /usr/local/bin/terraform:
     exists: true
-  /usr/local/bin/bw:
+  /usr/local/bin/bws:
     exists: true
