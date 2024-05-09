@@ -73,5 +73,9 @@ COPY ./config.xml.tmpl /app/config.xml.tmpl
 COPY ./entrypoint.sh /entrypoint.sh
 COPY --from=envsubst /go/bin/envsubst /usr/local/bin/envsubst
 
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
+
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

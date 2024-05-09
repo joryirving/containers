@@ -108,5 +108,9 @@ RUN \
 
 COPY ./entrypoint.sh /entrypoint.sh
 
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
+
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

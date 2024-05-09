@@ -59,5 +59,9 @@ RUN \
 COPY ./scripts/config.py /scripts/config.py
 COPY ./entrypoint.sh /entrypoint.sh
 
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
+
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]
