@@ -72,5 +72,9 @@ RUN ln -s /usr/local/bin/par2 /usr/local/bin/par2create \
 
 COPY --from=ghcr.io/linuxserver/unrar:7.0.7 /usr/bin/unrar-alpine /usr/bin/unrar
 
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
+
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]
