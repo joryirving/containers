@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.19.1
+FROM docker.io/library/alpine:3.20.0
 
 ARG VERSION
 ARG CHANNEL
