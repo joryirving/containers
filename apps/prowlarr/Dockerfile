@@ -1,16 +1,4 @@
 ARG VERSION
-FROM docker.io/library/golang:1.22-alpine as envsubst
-ARG VERSION
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT=""
-ARG TARGETPLATFORM
-ENV CGO_ENABLED=0 \
-    GOOS=${TARGETOS} \
-    GOARCH=${TARGETARCH} \
-    GOARM=${TARGETVARIANT}
-RUN go install -ldflags="-s -w" github.com/drone/envsubst/cmd/envsubst@latest
-
 FROM docker.io/library/alpine:3.20
 
 ARG VERSION
@@ -26,10 +14,7 @@ LABEL org.opencontainers.image.source="https://github.com/Prowlarr/Prowlarr"
 
 ENV \
     COMPlus_EnableDiagnostics="0" \
-    PROWLARR__INSTANCE_NAME="Prowlarr" \
-    PROWLARR__BRANCH="${CHANNEL}" \
-    PROWLARR__PORT="9696" \
-    PROWLARR__ANALYTICS_ENABLED="False"
+    PROWLARR__UPDATE__BRANCH="${CHANNEL}"
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"
@@ -50,7 +35,6 @@ RUN \
         nano \
         sqlite-libs \
         tzdata \
-        xmlstarlet \
     && \
     case "${TARGETPLATFORM}" in \
         'linux/amd64') export ARCH='x64' ;; \
@@ -59,19 +43,17 @@ RUN \
     && \
     mkdir -p /app/bin \
     && \
-    curl -fsSL "https://prowlarr.servarr.com/v1/update/${PROWLARR__BRANCH}/updatefile?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
+    curl -fsSL "https://prowlarr.servarr.com/v1/update/${PROWLARR__UPDATE__BRANCH}/updatefile?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
         | tar xzf - -C /app/bin --strip-components=1 \
     && \
     rm -rf /app/bin/Prowlarr.Update \
     && \
-    printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${PROWLARR__BRANCH}" "${VERSION}" > /app/package_info \
+    printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${PROWLARR__UPDATE__BRANCH}" "${VERSION}" > /app/package_info \
     && chown -R root:root /app \
     && chmod -R 755 /app \
     && rm -rf /tmp/*
 
-COPY ./config.xml.tmpl /app/config.xml.tmpl
 COPY ./entrypoint.sh /entrypoint.sh
-COPY --from=envsubst /go/bin/envsubst /usr/local/bin/envsubst
 
 USER nobody:nogroup
 WORKDIR /config
