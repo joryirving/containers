@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.11-alpine
+FROM docker.io/library/python:3.12-alpine
 
 ARG VERSION
 ARG CHANNEL
@@ -35,6 +35,8 @@ RUN \
         curl \
         ffmpeg \
         jq \
+        libxml2 \
+        libxslt \
         mediainfo \
         nano \
         tzdata \
@@ -42,22 +44,22 @@ RUN \
         libpq \
     && \
     apk add --no-cache --virtual .build-deps \
-        gcc \
+        build-base \
+        cargo \
         libffi-dev \
-        musl-dev \
-        postgresql-dev \
-    && \
-    pip install --upgrade "cryptography>=42.0.7" \
-    pip install --upgrade "gevent>=24.2.1" \
-    pip install --upgrade "lxml>=4.3.0, <5.0.0" \
-    pip install --upgrade "numpy>=1.12.0" \
-    pip install --upgrade --only-binary=Pillow "Pillow>=9.0.0" \
-    pip install --upgrade "psycopg2>=2.9.9" \
-    pip install --upgrade "setuptools>=70.0.0" \
-    pip install --upgrade "webrtcvad-wheels>=2.0.10" \
+        libpq-dev \
+        libxml2-dev \
+        libxslt-dev \
     && \
     curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/v${VERSION}/bazarr.zip" \
-    && unzip -q /tmp/app.zip -d /app \
+    && unzip -q /tmp/app.zip -d /app/bin \
+    && \
+    rm -rf /app/bin/bin \
+    && \
+    printf "UpdateMethod=docker\nBranch=master\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${VERSION}" > /app/package_info \
+    && pip install --no-cache-dir --find-links https://wheel-index.linuxserver.io/alpine-3.20/ \
+        --requirement /app/bin/requirements.txt \
+        --requirement /app/bin/postgres-requirements.txt \
     && chown -R root:root /app \
     && chmod -R 755 /app \
     && apk del --purge .build-deps \
@@ -67,7 +69,7 @@ RUN \
         /tmp/*
 
 COPY ./entrypoint.sh /entrypoint.sh
-COPY --from=ghcr.io/linuxserver/unrar:7.0.7 /usr/bin/unrar-alpine /usr/bin/unrar
+COPY --from=ghcr.io/linuxserver/unrar:7.0.9 /usr/bin/unrar-alpine /usr/bin/unrar
 
 USER nobody:nogroup
 WORKDIR /config
