@@ -21,8 +21,11 @@ FROM cgr.dev/chainguard/wolfi-base:latest
 # trunk-ignore(hadolint/DL3018)
 RUN apk update && \
   apk add --no-cache \
+    coreutils \
     libgcc \
+    jo \
     tini \
+    trurl \
     wget
 
 USER nonroot

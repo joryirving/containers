@@ -32,13 +32,16 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         ffmpeg \
+        jo \
         jq \
         libxml2 \
         libxslt \
         mediainfo \
         nano \
+        trurl \
         tzdata \
         unzip \
         libpq \

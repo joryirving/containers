@@ -33,10 +33,13 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
+        jo \
         jq \
         nano \
         p7zip \
+        trurl \
         tzdata \
     && \
     apk add --no-cache --virtual=.build-deps \

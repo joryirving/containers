@@ -29,12 +29,15 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         icu-libs \
+        jo \
         jq \
         libintl \
         nano \
         sqlite-libs \
+        trurl \
         tzdata \
     && \
     case "${TARGETPLATFORM}" in \
