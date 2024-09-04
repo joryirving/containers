@@ -26,12 +26,15 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         geoip \
+        jo \
         jq \
         nano \
         p7zip \
         python3 \
+        trurl \
         tzdata \
     && \
     case "${TARGETPLATFORM}" in \
