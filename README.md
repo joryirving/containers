@@ -112,7 +112,6 @@ Container | Channel | Image
 [bazarr](https://github.com/joryirving/containers/pkgs/container/bazarr) | stable | ghcr.io/joryirving/bazarr
 [free-game-notifier](https://github.com/joryirving/containers/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier
 [home-assistant](https://github.com/joryirving/containers/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant
-[par2cmdline-turbo](https://github.com/joryirving/containers/pkgs/container/par2cmdline-turbo) | stable | ghcr.io/joryirving/par2cmdline-turbo
 [plex](https://github.com/joryirving/containers/pkgs/container/plex) | stable | ghcr.io/joryirving/plex
 [plex-beta](https://github.com/joryirving/containers/pkgs/container/plex-beta) | beta | ghcr.io/joryirving/plex-beta
 [prowlarr](https://github.com/joryirving/containers/pkgs/container/prowlarr) | master | ghcr.io/joryirving/prowlarr
@@ -130,8 +129,7 @@ Container | Channel | Image
 [smartctl_exporter](https://github.com/joryirving/containers/pkgs/container/smartctl_exporter) | stable | ghcr.io/joryirving/smartctl_exporter
 [sonarr](https://github.com/joryirving/containers/pkgs/container/sonarr) | main | ghcr.io/joryirving/sonarr
 [sonarr-develop](https://github.com/joryirving/containers/pkgs/container/sonarr-develop) | develop | ghcr.io/joryirving/sonarr-develop
-[tf-runner-bitwarden](https://github.com/joryirving/containers/pkgs/container/tf-runner-bitwarden) | stable | ghcr.io/joryirving/tf-runner-bitwarden
-[theme-park](https://github.com/joryirving/containers/pkgs/container/theme-park) | stable | ghcr.io/joryirving/theme-park
+[tautulli](https://github.com/joryirving/containers/pkgs/container/tautulli) | master | ghcr.io/joryirving/tautulli
 [volsync](https://github.com/joryirving/containers/pkgs/container/volsync) | stable | ghcr.io/joryirving/volsync
 
 
