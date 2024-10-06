@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.12-alpine
+FROM docker.io/library/python:3.12.7-alpine
 
 ARG VERSION
 ARG CHANNEL
@@ -31,19 +31,24 @@ WORKDIR /app
 RUN \
     apk add --no-cache \
         bash \
+        binutils \
         bluez \
         bluez-deprecated \
         bluez-libs \
         ca-certificates \
         catatonit \
+        coreutils \
         cups-libs \
         curl \
         eudev-libs \
         ffmpeg \
         git \
+        iputils \
+        jo \
         jq \
         libcap \
-        libturbojpeg \
+        libjpeg-turbo-dev \
+        libpcap-dev \
         libstdc++ \
         libxslt \
         mariadb-connector-c \
@@ -54,6 +59,7 @@ RUN \
         postgresql-libs \
         socat \
         tiff \
+        trurl \
         tzdata \
         unzip \
     && \
@@ -99,6 +105,11 @@ RUN \
     uv pip install --system --only-binary=:all: --find-links "${HOMEASSISTANT_WHEELS}" \
         homeassistant=="${VERSION}" \
     && \
+    mkdir -p /config \
+    && chown nobody:nogroup -R /config \
+    && \
+    pip uninstall --yes uv \
+    && \
     apk del --purge .build-deps \
     && \
     rm -rf \
@@ -107,6 +118,10 @@ RUN \
         /tmp/*
 
 COPY ./entrypoint.sh /entrypoint.sh
+
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

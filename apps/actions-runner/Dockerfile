@@ -24,16 +24,10 @@ RUN \
     && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
-        curl \
         gcc \
-        git \
         jo \
-        jq \
         moreutils \
-        unrar \
-        unzip \
         wget \
-        zip \
     && rm -rf /var/lib/apt/lists/*
 
 USER runner

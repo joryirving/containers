@@ -18,5 +18,7 @@ RUN apt update \
   && wget https://raw.githubusercontent.com/j6nca/free-game-notifier/main/bot/package-lock.json \
   && npm ci
 
+USER nobody:nogroup
+
 COPY ./entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]

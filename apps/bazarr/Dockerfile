@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.19
+FROM docker.io/library/python:3.12-alpine
 
 ARG VERSION
 ARG CHANNEL
@@ -32,32 +32,37 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         ffmpeg \
+        jo \
         jq \
+        libxml2 \
+        libxslt \
         mediainfo \
         nano \
-        py3-cryptography \
-        py3-gevent \
-        py3-lxml \
-        py3-numpy \
-        py3-pillow \
-        py3-psycopg2 \
-        py3-setuptools \
-        python3 \
+        trurl \
         tzdata \
         unzip \
+        libpq \
     && \
     apk add --no-cache --virtual .build-deps \
-        py3-pip \
-        gcc \
-        python3-dev \
-        musl-dev \
-    && \
-    pip install --upgrade "webrtcvad-wheels>=2.0.10" \
+        build-base \
+        cargo \
+        libffi-dev \
+        libpq-dev \
+        libxml2-dev \
+        libxslt-dev \
     && \
     curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/v${VERSION}/bazarr.zip" \
-    && unzip -q /tmp/app.zip -d /app \
+    && unzip -q /tmp/app.zip -d /app/bin \
+    && \
+    rm -rf /app/bin/bin \
+    && \
+    printf "UpdateMethod=docker\nBranch=master\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${VERSION}" > /app/package_info \
+    && pip install --no-cache-dir --find-links https://wheel-index.linuxserver.io/alpine-3.20/ \
+        --requirement /app/bin/requirements.txt \
+        --requirement /app/bin/postgres-requirements.txt \
     && chown -R root:root /app \
     && chmod -R 755 /app \
     && apk del --purge .build-deps \
@@ -67,7 +72,11 @@ RUN \
         /tmp/*
 
 COPY ./entrypoint.sh /entrypoint.sh
-COPY --from=ghcr.io/linuxserver/unrar:7.0.7 /usr/bin/unrar-alpine /usr/bin/unrar
+COPY --from=ghcr.io/linuxserver/unrar:7.0.9 /usr/bin/unrar-alpine /usr/bin/unrar
+
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.19
+FROM docker.io/library/alpine:3.20
 
 ARG VERSION
 ARG CHANNEL
@@ -26,12 +26,15 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         geoip \
+        jo \
         jq \
         nano \
         p7zip \
         python3 \
+        trurl \
         tzdata \
     && \
     case "${TARGETPLATFORM}" in \
@@ -58,6 +61,10 @@ RUN \
 
 COPY ./scripts/config.py /scripts/config.py
 COPY ./entrypoint.sh /entrypoint.sh
+
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--"]
 CMD ["/entrypoint.sh"]

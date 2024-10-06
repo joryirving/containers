@@ -34,7 +34,9 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
+        jo \
         jq \
         nano \
         tzdata \
@@ -66,6 +68,10 @@ RUN \
         /var/tmp/
 
 COPY ./entrypoint.sh /entrypoint.sh
+
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
 ENTRYPOINT [ "/usr/bin/catatonit", "--" ]
 CMD ["/entrypoint.sh"]
