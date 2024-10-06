@@ -11,11 +11,16 @@ LABEL dev.joryirving.image.target_architecture=$TARGETARCH
 LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/qbittorrent/qBittorrent"
 
-ENV QBITTORRENT__PORT=8080 \
-    QBITTORRENT__BT_PORT=50413
+ENV QBT_CONFIRM_LEGAL_NOTICE=1 \
+    QBT_WEBUI_PORT=8080 \
+    QBT_TORRENTING_PORT=50413
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"
+
+ENV HOME="/config" \
+    XDG_CONFIG_HOME="/config" \
+    XDG_DATA_HOME="/config"
 
 USER root
 WORKDIR /app
@@ -33,7 +38,8 @@ RUN \
         jq \
         nano \
         p7zip \
-        python3 \
+        qt6-qtbase \
+        qt6-qtbase-sqlite \
         trurl \
         tzdata \
     && \
@@ -59,7 +65,7 @@ RUN \
     && chmod -R 755 /app/qbittorrent-nox \
     && rm -rf /tmp/*
 
-COPY ./scripts/config.py /scripts/config.py
+COPY ./qBittorrent.conf /app/qBittorrent.conf
 COPY ./entrypoint.sh /entrypoint.sh
 
 USER nobody:nogroup
