@@ -11,14 +11,13 @@ LABEL dev.joryirving.image.target_architecture=$TARGETARCH
 LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/qbittorrent/qBittorrent"
 
-ENV QBT_CONFIRM_LEGAL_NOTICE=1 \
-    QBT_WEBUI_PORT=8080 \
-    QBT_TORRENTING_PORT=50413
-
 ENV UMASK="0002" \
     TZ="Etc/UTC"
 
-ENV HOME="/config" \
+ENV QBT_CONFIRM_LEGAL_NOTICE=1 \
+    QBT_WEBUI_PORT=8080 \
+    QBT_TORRENTING_PORT=50413 \
+    HOME="/config" \
     XDG_CONFIG_HOME="/config" \
     XDG_DATA_HOME="/config"
 
@@ -60,8 +59,7 @@ RUN \
             && curl -fsSL -o /app/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/${RELEASE}/${ARCH}-qbittorrent-nox" \
         ;; \
     esac \
-    && \
-    chown -R root:root /app/qbittorrent-nox \
+    && chown -R root:root /app/qbittorrent-nox \
     && chmod -R 755 /app/qbittorrent-nox \
     && rm -rf /tmp/*
 
@@ -72,5 +70,4 @@ USER nobody:nogroup
 WORKDIR /config
 VOLUME ["/config"]
 
-ENTRYPOINT ["/usr/bin/catatonit", "--"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

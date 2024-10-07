@@ -12,12 +12,12 @@ LABEL dev.joryirving.image.target_architecture=$TARGETARCH
 LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Readarr/Readarr"
 
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
+
 ENV \
     COMPlus_EnableDiagnostics="0" \
     READARR__UPDATE__BRANCH="${CHANNEL}"
-
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
 
 USER root
 WORKDIR /app
@@ -44,18 +44,13 @@ RUN \
         'linux/amd64') export ARCH='x64' ;; \
         'linux/arm64') export ARCH='arm64' ;; \
     esac \
-    && \
-    mkdir -p /app/bin \
-    && \
-    curl -fsSL "https://readarr.servarr.com/v1/update/${READARR__UPDATE__BRANCH}/updatefile?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
+    && mkdir -p /app/bin \
+    && curl -fsSL "https://readarr.servarr.com/v1/update/${READARR__UPDATE__BRANCH}/updatefile?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
         | tar xzf - -C /app/bin --strip-components=1 \
-    && \
-    rm -rf /app/bin/Readarr.Update \
-    && \
-    printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${READARR__UPDATE__BRANCH}" "${VERSION}" > /app/package_info \
-    && chown -R root:root /app \
-    && chmod -R 755 /app \
-    && rm -rf /tmp/*
+    && rm -rf /app/bin/Readarr.Update \
+    && printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${READARR__UPDATE__BRANCH}" "${VERSION}" > /app/package_info \
+    && chown -R root:root /app && chmod -R 755 /app \
+    && rm -rf /tmp/* /app/bin/Readarr.Update
 
 COPY ./entrypoint.sh /entrypoint.sh
 
@@ -63,5 +58,4 @@ USER nobody:nogroup
 WORKDIR /config
 VOLUME ["/config"]
 
-ENTRYPOINT ["/usr/bin/catatonit", "--"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

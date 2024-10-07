@@ -23,6 +23,8 @@ ENV \
 ENV UMASK="0002" \
     TZ="Etc/UTC"
 
+ENV BAZARR__PORT=6767
+
 USER root
 WORKDIR /app
 
@@ -63,20 +65,15 @@ RUN \
     && pip install --no-cache-dir --find-links https://wheel-index.linuxserver.io/alpine-3.20/ \
         --requirement /app/bin/requirements.txt \
         --requirement /app/bin/postgres-requirements.txt \
-    && chown -R root:root /app \
-    && chmod -R 755 /app \
+    && chown -R root:root /app && chmod -R 755 /app \
     && apk del --purge .build-deps \
-    && rm -rf \
-        /root/.cache \
-        /root/.cargo \
-        /tmp/*
+    && rm -rf /root/.cache /root/.cargo /tmp/*
 
-COPY ./entrypoint.sh /entrypoint.sh
-COPY --from=ghcr.io/linuxserver/unrar:7.0.9 /usr/bin/unrar-alpine /usr/bin/unrar
+    COPY ./entrypoint.sh /entrypoint.sh
+    COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-alpine /usr/bin/unrar
 
-USER nobody:nogroup
-WORKDIR /config
-VOLUME ["/config"]
+    USER nobody:nogroup
+    WORKDIR /config
+    VOLUME ["/config"]
 
-ENTRYPOINT ["/usr/bin/catatonit", "--"]
-CMD ["/entrypoint.sh"]
+    ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
