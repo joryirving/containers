@@ -7,4 +7,3 @@ channels:
     stable: true
     tests:
       enabled: false
-      type: cli
