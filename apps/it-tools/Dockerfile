@@ -1,9 +1,7 @@
 ARG VERSION
-ARG FULLVERSION
 FROM node:lts-alpine AS build
 
 ARG VERSION
-ARG FULLVERSION
 ARG CHANNEL
 ARG TARGETPLATFORM
 ARG TARGETARCH
@@ -15,10 +13,11 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/CorentinTh/it-tools"
 
 RUN \
-  apk add --no-cache curl git \
+  apk add --no-cache curl git jq \
+  && fullversion=$(curl -sX GET "https://api.github.com/repos/CorentinTh/it-tools/releases/latest" | jq --raw-output '.tag_name') \
   && git clone https://github.com/CorentinTh/it-tools.git /app \
   && cd /app \
-  && git checkout $FULLVERSION
+  && git checkout "$fullversion"
 
 WORKDIR /app
 
