@@ -1,4 +1,5 @@
 ARG VERSION
+ARG FULLVERSION
 FROM node:lts-alpine AS build
 
 ARG VERSION
