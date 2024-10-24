@@ -109,6 +109,7 @@ Container | Channel | Image
 --- | --- | ---
 [actions-runner](https://github.com/joryirving/pkgs/container/actions-runner) | stable | ghcr.io/joryirving/actions-runner
 [bazarr](https://github.com/joryirving/pkgs/container/bazarr) | stable | ghcr.io/joryirving/bazarr
+[caddy-scratch](https://github.com/joryirving/pkgs/container/caddy-scratch) | stable | ghcr.io/joryirving/caddy-scratch
 [free-game-notifier](https://github.com/joryirving/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier
 [home-assistant](https://github.com/joryirving/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant
 [it-tools](https://github.com/joryirving/pkgs/container/it-tools) | stable | ghcr.io/joryirving/it-tools
