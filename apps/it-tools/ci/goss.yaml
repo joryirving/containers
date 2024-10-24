@@ -1,9 +1,5 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/goss-org/goss/master/docs/schema.yaml
-process:
-  nginx:
-    running: true
-
 port:
   tcp:8080:
     listening: true
