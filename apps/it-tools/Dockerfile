@@ -14,15 +14,9 @@ LABEL org.opencontainers.image.source="https://github.com/CorentinTh/it-tools"
 
 RUN \
   apk add --no-cache curl git jq \
-  && fullversion=$(curl -sX GET "https://api.github.com/repos/CorentinTh/it-tools/releases/latest" | jq --raw-output '.tag_name') \
-  && git clone https://github.com/CorentinTh/it-tools.git /app \
+  && git clone -b v$VERSION --single-branch https://github.com/CorentinTh/it-tools.git /app \
   && cd /app \
-  && git checkout "$fullversion"
-
-WORKDIR /app
-
-RUN \
-  corepack enable  \
+  && corepack enable  \
   && corepack prepare pnpm@latest --activate \
   && pnpm install --prefer-offline \
   && pnpm build
