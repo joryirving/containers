@@ -14,6 +14,21 @@
       name: Cleanup untagged images
       runs-on: ubuntu-latest
       steps:
+        - name: Get Secrets
+          uses: bitwarden/sm-action@v2
+          with:
+            access_token: ${{ secrets.BW_ACCESS_TOKEN }}
+            secrets: |
+              e062dcb9-8cd7-471e-b9be-b10100497102 > BOT_APP_ID
+              5856238d-3fae-4a0f-9847-b1010049f697 > BOT_APP_PRIVATE_KEY
+
+        - name: Generate Token
+          uses: actions/create-github-app-token@v1
+          id: app-token
+          with:
+            app-id: ${{ env.BOT_APP_ID }}
+            private-key: ${{ env.BOT_APP_PRIVATE_KEY }}
+
         - name: Set up Docker Buildx
           uses: docker/setup-buildx-action@v3
 
@@ -22,12 +37,12 @@
           with:
             registry: ghcr.io
             username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+            password: ${{ steps.app-token.outputs.token }}
 
         - name: Delete all containers from package without tags
           uses: Chizkiyahu/delete-untagged-ghcr-action@v5
           with:
-            token: ${{ secrets.GITHUB_TOKEN }}
+            token: ${{ steps.app-token.outputs.token }}
             repository_owner: ${{ github.repository_owner }}
             repository: ${{ github.repository }}
             untagged_only: true

@@ -24,6 +24,6 @@ jobs:
     uses: joryirving/containers/.github/workflows/build-images.yaml@main
     secrets: inherit
     with:
-      appsToBuild: "${{ needs.get-changed-images.outputs.addedOrModifiedImages }}"
+      appsToBuild: ${{ needs.get-changed-images.outputs.addedOrModifiedImages }}
       pushImages: false
       sendNotifications: false

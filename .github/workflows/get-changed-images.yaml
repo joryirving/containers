@@ -17,8 +17,8 @@ jobs:
     name: Get Changed Images
     runs-on: ubuntu-latest
     outputs:
-      addedOrModified: "${{ steps.changed-files.outputs.all_changed_and_modified_files_count > 0 }}"
-      addedOrModifiedImages: "${{ steps.changed-containers.outputs.addedOrModifiedImages }}"
+      addedOrModified: ${{ steps.changed-files.outputs.all_changed_and_modified_files_count > 0 }}
+      addedOrModifiedImages: ${{ steps.changed-containers.outputs.addedOrModifiedImages }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
