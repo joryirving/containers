@@ -232,11 +232,13 @@ jobs:
       fail-fast: false
     steps:
       - name: Get Secrets
-        uses: bitwarden/sm-action@v2
+        uses: 1password/load-secrets-action@v2
         with:
-          access_token: ${{ secrets.BW_ACCESS_TOKEN }}
-          secrets: |
-            2bbfdad1-0051-4df7-a928-b0fc01272fcf > DISCORD_WEBHOOK
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.ONEPASS_SA_TOKEN }}
+          DISCORD_WEBHOOK: op://Kubernetes/discord/DISCORD_WEBHOOK_URL
+
       - name: Lowercase repository owner
         shell: bash
         run: echo "LOWERCASE_REPO_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
