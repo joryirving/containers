@@ -6,7 +6,8 @@
     ":label(renovate/{{depName}})",
     "security:openssf-scorecard",
     "github>joryirving/renovate-config",
-    "github>joryirving/renovate-config:autoMerge",
+    "github>joryirving/renovate-config:autoMergeDocker",
+    "github>joryirving/renovate-config:autoMergeGithubActions"
   ],
   "packageRules": [
     {
