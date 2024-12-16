@@ -126,10 +126,10 @@ def get_image_metadata(subdir, meta, forRelease=False, force=False, channels=Non
             platformToBuild["target_arch"] = target_arch
             platformToBuild["version"] = version
             platformToBuild["channel"] = channel["name"]
-            # if platform == "linux/amd64":
-            #   platformToBuild["builder"] = "ubuntu-latest"
-            # elif platform == "linux/arm64":
-            #   #platformToBuild["builder"] = "arc-runner-set-containers-arm64"
+            if platform == "linux/amd64":
+              platformToBuild["builder"] = "ubuntu-latest"
+            elif platform == "linux/arm64":
+              platformToBuild["builder"] = "ARM64"
             platformToBuild["label_type"]="org.opencontainers.image"
 
             if isfile(os.path.join(subdir, channel["name"], "Dockerfile")):
