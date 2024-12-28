@@ -28,6 +28,7 @@ RUN \
         jo \
         moreutils \
         wget \
+        zstd \
     && rm -rf /var/lib/apt/lists/*
 
 USER runner
