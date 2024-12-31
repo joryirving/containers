@@ -41,7 +41,7 @@
             password: ${{ steps.app-token.outputs.token }}
 
         - name: Delete all containers from package without tags
-          uses: Chizkiyahu/delete-untagged-ghcr-action@v5
+          uses: Chizkiyahu/delete-untagged-ghcr-action@v6
           with:
             token: ${{ steps.app-token.outputs.token }}
             repository_owner: ${{ github.repository_owner }}
