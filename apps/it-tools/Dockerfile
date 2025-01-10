@@ -21,6 +21,6 @@ RUN \
   && pnpm install --prefer-offline \
   && pnpm build
 
-  FROM ghcr.io/joryirving/caddy-scratch:2.9.1@sha256:1d6dceb3db7e7bcd89eb831e68c94cff9c3dad963d52d6880b08eca332158835
+  FROM ghcr.io/joryirving/caddy-scratch:2.9.1@sha256:43117d20015a45da48d32b79a6e7759f494023e36234780f8a925f9ffc59cbd9
   COPY --chown=1000:1000 --from=build /app/dist/ /app
   CMD ["file-server", "--root", "/app", "--listen", ":8080"]
