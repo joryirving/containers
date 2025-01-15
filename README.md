@@ -113,6 +113,7 @@ Container | Channel | Image
 [free-game-notifier](https://github.com/joryirving/containers/pkgs/container/free-game-notifier) | stable | ghcr.io/joryirving/free-game-notifier
 [home-assistant](https://github.com/joryirving/containers/pkgs/container/home-assistant) | stable | ghcr.io/joryirving/home-assistant
 [it-tools](https://github.com/joryirving/containers/pkgs/container/it-tools) | stable | ghcr.io/joryirving/it-tools
+[opentofu-runner](https://github.com/joryirving/containers/pkgs/container/opentofu-runner) | stable | ghcr.io/joryirving/opentofu-runner
 [plex](https://github.com/joryirving/containers/pkgs/container/plex) | stable | ghcr.io/joryirving/plex
 [plex-beta](https://github.com/joryirving/containers/pkgs/container/plex-beta) | beta | ghcr.io/joryirving/plex-beta
 [prowlarr](https://github.com/joryirving/containers/pkgs/container/prowlarr) | master | ghcr.io/joryirving/prowlarr
