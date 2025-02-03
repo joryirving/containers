@@ -17,7 +17,8 @@ RUN \
   && git clone -b v${VERSION} --single-branch https://github.com/CorentinTh/it-tools.git /app \
   && cd /app \
   && corepack enable  \
-  && corepack prepare pnpm@latest --activate \
+  && corepack install \
+  && corepack prepare pnpm --activate \
   && pnpm install --prefer-offline \
   && pnpm build
 
