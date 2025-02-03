@@ -4,10 +4,6 @@ name: "Render Readme"
 
 on:
   workflow_call:
-    secrets:
-      BW_ACCESS_TOKEN:
-        description: Bitwarden Secret Manager Access Token
-        required: true
 
 jobs:
   render-readme:
