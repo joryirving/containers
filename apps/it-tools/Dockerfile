@@ -13,8 +13,8 @@ LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/CorentinTh/it-tools"
 
 RUN \
-  apk add --no-cache curl git jq \
-  && git clone -b v$VERSION --single-branch https://github.com/CorentinTh/it-tools.git /app \
+  apk add --no-cache curl git \
+  && git clone -b v${VERSION} --single-branch https://github.com/CorentinTh/it-tools.git /app \
   && cd /app \
   && corepack enable  \
   && corepack prepare pnpm@latest --activate \
