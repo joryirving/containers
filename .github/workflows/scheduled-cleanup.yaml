@@ -15,24 +15,24 @@
       runs-on: ubuntu-latest
       steps:
         - name: Generate Token
-          uses: actions/create-github-app-token@v1
+          uses: actions/create-github-app-token@21cfef2b496dd8ef5b904c159339626a10ad380e # v1
           id: app-token
           with:
             app-id: ${{ secrets.BOT_APP_ID }}
             private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
         - name: Set up Docker Buildx
-          uses: docker/setup-buildx-action@v3
+          uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3
 
         - name: Login to GHCR
-          uses: docker/login-action@v3
+          uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3
           with:
             registry: ghcr.io
             username: ${{ github.actor }}
             password: ${{ steps.app-token.outputs.token }}
 
         - name: Delete all containers from package without tags
-          uses: Chizkiyahu/delete-untagged-ghcr-action@v6
+          uses: Chizkiyahu/delete-untagged-ghcr-action@4a33ce3cf2456d2aef98a1b6c60a12dad56cffd9 # v6
           with:
             token: ${{ steps.app-token.outputs.token }}
             repository_owner: ${{ github.repository_owner }}
