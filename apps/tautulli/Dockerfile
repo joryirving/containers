@@ -1,16 +1,17 @@
 FROM docker.io/library/python:3.13.2-alpine
 
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETPLATFORM
+ARG VERSION
 
 LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
 LABEL dev.joryirving.image.target_architecture=$TARGETARCH
 LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Tautulli/Tautulli"
 
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETPLATFORM
-ARG VERSION
-ARG CHANNEL
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -20,9 +21,6 @@ ENV \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
     CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
 
 ENV TAUTULLI_DOCKER="True" \
     TAUTULLI__PORT=8181
@@ -36,6 +34,7 @@ RUN \
         bash \
         ca-certificates \
         catatonit \
+        coreutils \
         curl \
         jo \
         jq \
@@ -55,11 +54,15 @@ RUN \
     && curl -fsSL "https://github.com/Tautulli/Tautulli/archive/v${VERSION}.tar.gz" \
         | tar xzf - -C /app --strip-components 1 \
     && echo "v${VERSION}" > /app/version.txt \
-    && echo "${CHANNEL}" > /app/branch.txt \
+    && echo "master" > /app/branch.txt \
     && chown -R root:root /app && chmod -R 755 /app \
     && pip uninstall --yes uv && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
 
 COPY ./entrypoint.sh /entrypoint.sh
+
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

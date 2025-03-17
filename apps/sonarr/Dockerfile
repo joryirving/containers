@@ -1,9 +1,6 @@
-ARG VERSION
-FROM docker.io/library/golang:1.24-alpine AS envsubst
 FROM docker.io/library/alpine:3.21
 
 ARG VERSION
-ARG CHANNEL
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
@@ -18,7 +15,7 @@ ENV UMASK="0002" \
 
 ENV \
     DOTNET_EnableDiagnostics="0" \
-    SONARR__UPDATE__BRANCH="${CHANNEL}"
+    SONARR__UPDATE__BRANCH="develop"
 
 USER root
 WORKDIR /app
@@ -47,7 +44,7 @@ RUN \
     && mkdir -p /app/bin \
     && curl -fsSL "https://services.sonarr.tv/v1/update/${SONARR__UPDATE__BRANCH}/download?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${ARCH}" \
         | tar xzf - -C /app/bin --strip-components=1 \
-    && printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${SONARR__UPDATE__BRANCH}" "${VERSION}" > /app/package_info \
+    && printf "UpdateMethod=docker\nBranch=%s\nPackageVersion=%s\nPackageAuthor=[%s](https://github.com/%s)\n" "${SONARR__UPDATE__BRANCH}" "${VERSION}" "${VENDOR}" "${VENDOR}" > /app/package_info \
     && chown -R root:root /app && chmod -R 755 /app \
     && rm -rf /tmp/* /app/bin/Sonarr.Update
 

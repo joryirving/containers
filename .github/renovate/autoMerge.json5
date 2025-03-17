@@ -1,0 +1,12 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  packageRules: [
+    {
+      description: ["Auto-merge container app updates"],
+      matchFileNames: ["**/metadata.yaml"],
+      automerge: true,
+      automergeType: "pr",
+      ignoreTests: false,
+    },
+  ],
+}

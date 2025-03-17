@@ -1,9 +1,4 @@
 ---
-app: smartctl_exporter
-semver: true
-channels:
-  - name: stable
-    platforms: ["linux/amd64", "linux/arm64"]
-    stable: true
-    tests:
-      enabled: false
+# renovate: datasource=github-releases depName=prometheus-community/smartctl_exporter
+version: v0.13.0
+name: smartctl_exporter

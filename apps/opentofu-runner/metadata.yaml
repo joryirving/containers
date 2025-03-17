@@ -1,10 +1,4 @@
 ---
-app: opentofu-runner
-semver: true
-channels:
-  - name: stable
-    platforms: ["linux/amd64", "linux/arm64"]
-    stable: true
-    tests:
-      enabled: false
-      type: cli
+# renovate: datasource=github-releases depName=opentofu/opentofu
+version: v1.9.0
+name: opentofu-runner
