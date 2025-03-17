@@ -5,11 +5,7 @@ ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT=""
-ARG TARGETPLATFORM
 
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
 
 ENV CGO_ENABLED=0 \
@@ -19,7 +15,6 @@ ENV CGO_ENABLED=0 \
 RUN go install -a -ldflags "-X=main.volsyncVersion=${VERSION}" github.com/backube/volsync@${VERSION}
 
 FROM docker.io/library/alpine:3.21
-ARG TARGETPLATFORM
 ARG VERSION
 ARG CHANNEL
 

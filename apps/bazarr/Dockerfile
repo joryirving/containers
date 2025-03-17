@@ -2,13 +2,9 @@ FROM docker.io/library/python:3.12-alpine
 
 ARG TARGETARCH
 ARG TARGETOS
-ARG TARGETPLATFORM
 ARG VENDOR
 ARG VERSION
 
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/morpheus65535/bazarr"
 
 ENV UMASK="0002" \

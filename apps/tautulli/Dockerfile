@@ -2,12 +2,8 @@ FROM docker.io/library/python:3.13.2-alpine
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG TARGETPLATFORM
 ARG VERSION
 
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/Tautulli/Tautulli"
 
 ENV UMASK="0002" \

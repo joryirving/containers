@@ -2,7 +2,6 @@ FROM docker.io/library/ubuntu:25.04
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG TARGETPLATFORM
 ARG VERSION
 
 LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM

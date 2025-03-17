@@ -1,13 +1,9 @@
 FROM docker.io/library/python:3.13.2-alpine
 
 ARG VERSION
-ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
 
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/home-assistant/core"
 
 ENV UMASK="0002" \
