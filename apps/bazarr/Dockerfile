@@ -53,7 +53,7 @@ RUN \
         libxml2-dev \
         libxslt-dev \
     && \
-    curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/${VERSION}/bazarr.zip" \
+    curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/v${VERSION}/bazarr.zip" \
     && unzip -q /tmp/app.zip -d /app/bin \
     && rm -rf /app/bin/bin \
     && pip install --no-cache-dir \

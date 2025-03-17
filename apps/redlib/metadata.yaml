@@ -1,4 +1,4 @@
 ---
 # renovate: datasource=github-releases depName=redlib-org/redlib
-version: v0.35.1
+version: 0.35.1
 name: redlib

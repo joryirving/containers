@@ -1,4 +1,4 @@
 ---
 # renovate: datasource=github-releases depName=prometheus-community/smartctl_exporter
-version: v0.13.0
+version: 0.13.0
 name: smartctl_exporter

@@ -6,8 +6,6 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT=""
 ARG TARGETPLATFORM
-
-
 ENV CGO_ENABLED=0 \
     GOOS=${TARGETOS} \
     GOARCH=${TARGETARCH} \
@@ -15,6 +13,7 @@ ENV CGO_ENABLED=0 \
 RUN go install -a -ldflags "-X=main.volsyncVersion=${VERSION}" github.com/backube/volsync@${VERSION}
 
 FROM docker.io/library/alpine:3.21
+ARG TARGETPLATFORM
 ARG VERSION
 ARG CHANNEL
 
@@ -42,3 +41,5 @@ COPY --from=docker.io/restic/restic:0.17.3 /usr/bin/restic /usr/local/bin/restic
 COPY --from=volsync /go/bin/volsync /manager
 
 ENTRYPOINT ["/bin/bash"]
+
+LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
