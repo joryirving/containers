@@ -1,11 +1,9 @@
 ARG VERSION
 FROM public.ecr.aws/docker/library/caddy:builder AS build
-
+LABEL org.opencontainers.image.source="https://github.com/caddyserver/caddy"
 ARG VERSION
 ARG TARGETARCH
 ARG TARGETOS
-
-LABEL org.opencontainers.image.source="https://github.com/caddyserver/caddy"
 
 RUN \
   xcaddy build "v${VERSION}" --with "github.com/caddyserver/replace-response" \

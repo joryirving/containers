@@ -50,8 +50,6 @@ jobs:
             VENDOR=${{ github.repository_owner }}
             VERSION=${{ inputs.version }}
             REVISION=${{ github.sha }}
-            TARGETARCH=${{ matrix.platform }}
-            TARGETOS="linux"
           cache-from: |
             ${{ format('type=registry,ref=ghcr.io/{0}/build_cache:{1}-{2},mode=max', github.repository_owner, inputs.app, matrix.platform) }}
           cache-to: |

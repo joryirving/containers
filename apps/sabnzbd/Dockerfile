@@ -1,11 +1,7 @@
 FROM docker.io/library/python:3.13-alpine
-
-ARG VERSION
-
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/sabnzbd/sabnzbd"
+ARG TARGETPLATFORM
+ARG VERSION
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"

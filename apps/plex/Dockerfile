@@ -1,12 +1,7 @@
 FROM docker.io/library/ubuntu:25.04
-
-ARG TARGETOS
 ARG TARGETARCH
+ARG VENDOR
 ARG VERSION
-
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"

@@ -1,12 +1,12 @@
 ARG VERSION
 FROM docker.io/library/golang:1.24-alpine AS volsync
-
+LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
 ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT=""
+ARG TARGETPLATFORM
 
-LABEL org.opencontainers.image.source="https://github.com/backube/volsync"
 
 ENV CGO_ENABLED=0 \
     GOOS=${TARGETOS} \

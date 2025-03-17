@@ -1,11 +1,7 @@
 ARG VERSION
 FROM node:lts-alpine AS build
-
 LABEL org.opencontainers.image.source="https://github.com/CorentinTh/it-tools"
-
 ARG VERSION
-ARG TARGETARCH
-ARG TARGETOS
 
 RUN \
   apk add --no-cache curl git \

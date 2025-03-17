@@ -1,10 +1,7 @@
 FROM cgr.dev/chainguard/rust:latest-dev as builder
-
-ARG VERSION
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/redlib-org/redlib"
+ARG TARGETPLATFORM
+ARG VERSION
 
 WORKDIR /app
 

@@ -1,10 +1,8 @@
 FROM docker.io/library/python:3.13.2-alpine
-
-ARG VERSION
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/home-assistant/core"
+ARG TARGETARCH
+ARG TARGETPLATFORM
+ARG VERSION
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"
@@ -115,3 +113,4 @@ WORKDIR /config
 VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
+

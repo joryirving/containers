@@ -1,10 +1,7 @@
 ARG VERSION
 FROM ghcr.io/actions/actions-runner:${VERSION}
-
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/actions/runner"
+ARG TARGETARCH
 
 ENV DEBCONF_NONINTERACTIVE_SEEN=true \
     DEBIAN_FRONTEND="noninteractive" \

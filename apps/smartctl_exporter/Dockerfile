@@ -1,10 +1,9 @@
 FROM docker.io/library/alpine:3.21
-
-ARG VERSION
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/prometheus-community/smartctl_exporter"
+ARG VERSION
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETPLATFORM
 
 RUN apk add smartmontools
 RUN wget "https://github.com/prometheus-community/smartctl_exporter/releases/download/v$VERSION/smartctl_exporter-$VERSION.$TARGETOS-$TARGETARCH.tar.gz" \

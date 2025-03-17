@@ -1,10 +1,8 @@
 FROM docker.io/library/alpine:3.21
-
-ARG VERSION
-ARG TARGETARCH
-ARG TARGETOS
-
 LABEL org.opencontainers.image.source="https://github.com/Prowlarr/Prowlarr"
+ARG TARGETPLATFORM
+ARG VENDOR
+ARG VERSION
 
 ENV UMASK="0002" \
     TZ="Etc/UTC"
