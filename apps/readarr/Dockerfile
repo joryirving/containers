@@ -7,9 +7,8 @@ ARG VERSION
 ENV UMASK="0002" \
     TZ="Etc/UTC"
 
-ENV \
-    DOTNET_EnableDiagnostics="0" \
-    READARR__UPDATE__BRANCH="develop"
+ENV COMPlus_EnableDiagnostics=0 \
+    READARR__UPDATE__BRANCH=develop
 
 USER root
 WORKDIR /app
