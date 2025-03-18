@@ -1,4 +1,5 @@
 ---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Image Build
 
 on:
@@ -36,8 +37,8 @@ jobs:
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         with:
           registry: ghcr.io
-          username: "${{ github.actor }}"
-          password: "${{ github.token }}"
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
@@ -74,26 +75,26 @@ jobs:
             echo "tool=none" >> $GITHUB_OUTPUT
             exit 0
           fi
-          if ! yq --exit-status '.schemaVersion' ./apps/${{ inputs.app }}/tests.yaml &>/dev/null; then
-              echo "tool=goss" >> $GITHUB_OUTPUT
+          if yq --exit-status '.schemaVersion' ./apps/${{ inputs.app }}/tests.yaml &>/dev/null; then
+              echo "tool=cst" >> $GITHUB_OUTPUT
           else
-              echo 'tool=cst' >> $GITHUB_OUTPUT
+              echo "tool=goss" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run container-structure-test
-        if: ${{ steps.test.outputs.tool == 'cst' }}
+      - if: ${{ steps.test.outputs.tool == 'cst' }}
+        name: Run container-structure-test
         uses: docker://ghcr.io/googlecontainertools/container-structure-test:1.19.3
         with:
-          args: test --image ${{ steps.build.outputs.imageid }} --config /github/workspace/apps/${{ inputs.app }}/tests.yaml
+          args: test --image ${{ steps.build.outputs.imageid }} --config ./apps/${{ inputs.app }}/tests.yaml
 
-      - name: Setup goss
-        if: ${{ steps.test.outputs.tool == 'goss' }}
+      - if: ${{ steps.test.outputs.tool == 'goss' }}
+        name: Setup goss
         uses: mlipscombe/goss-installation-action@a440e50e0ca070a5b84fc4b99a4e2bc7f9390201 # v1.2.2
         with:
           version: latest
 
-      - name: Run goss
-        if: ${{ steps.test.outputs.tool == 'goss' }}
+      - if: ${{ steps.test.outputs.tool == 'goss' }}
+        name: Run goss
         env:
           CONTAINER_RUNTIME: docker
           GOSS_FILE: ./apps/${{ inputs.app }}/tests.yaml
@@ -101,7 +102,8 @@ jobs:
           GOSS_SLEEP: 2
           GOSS_FILES_STRATEGY: cp
           CONTAINER_LOG_OUTPUT: goss_container_log_output
-        run: dgoss run ${{ steps.build.outputs.imageid }}
+        run: |
+          dgoss run ${{ steps.build.outputs.imageid }}
 
       - if: ${{ inputs.release }}
         name: Export Digest
@@ -114,13 +116,15 @@ jobs:
     needs: build
     name: Release ${{ inputs.app }}
     runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.digest.outputs.digest }}
     steps:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         with:
           registry: ghcr.io
-          username: "${{ github.actor }}"
-          password: "${{ github.token }}"
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
 
       - name: Setup Node
         uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
@@ -130,44 +134,37 @@ jobs:
       - name: Install Semver
         run: npm install semver
 
-      - name: Determine definitive version
+      - name: Determine Definitive Version
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: version
         with:
           script: |
+            const semver = require('semver');
+
             function sanitizeInputVersion(version) {
-                // Remove any pre-release suffixes
-                const output = version.split('-')[0];
-                return output;
+                return version.split('-')[0]; // Remove any pre-release suffixes
             }
 
-            const semver = require('semver');
-            const validSemverRegex = new RegExp('^v?(\\d+(\\.\\d+)?(\\.\\d+)?)');
+            const version = '${{ inputs.version }}';
+            const validSemverRegex = /^v?(\d+(\.\d+)?(\.\d+)?)/;
             const date = new Date();
             const parsedVersion = validSemverRegex.exec(version);
-            const validSemver = parsedVersion != null;
-            const version = "${{ inputs.version }}";
+            const validSemver = parsedVersion !== null;
 
-            const parsedSemver =
-                validSemver
-                ? semver.coerce(parsedVersion[0])
-                : null;
-            const outputVersion =
-                validSemver
+            const parsedSemver = validSemver ? semver.coerce(parsedVersion[0]) : null;
+            const outputVersion = validSemver
                 ? `${parsedSemver.major}.${parsedSemver.minor}.${parsedSemver.patch}`
                 : `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
-            const sanitizedInputVersion =
-                validSemver
-                ? `${sanitizeInputVersion(version)}`
-                : version
+
+            const sanitizedInputVersion = validSemver ? sanitizeInputVersion(version) : version;
 
             core.setOutput('version', outputVersion);
             core.setOutput('validSemver', validSemver);
-            core.setOutput('sanitizedInputVersion', validSemver);
+            core.setOutput('sanitizedInputVersion', sanitizedInputVersion);
 
       - name: Build Meta
-        id: meta
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+        id: meta
         with:
           flavor: latest=false
           images: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}
@@ -177,12 +174,10 @@ jobs:
             type=semver,pattern={{major}},value=${{ steps.version.outputs.version }},enable=${{ steps.version.outputs.validSemver }}
             type=raw,value=${{ steps.version.outputs.sanitizedInputVersion }},enable=${{ steps.version.outputs.validSemver }}
             type=raw,value=rolling
-          labels: |
-            org.opencontainers.image.version=${{ steps.version.outputs.sanitizedInputVersion }}
 
       - name: Push Images
-        id: push
         uses: Noelware/docker-manifest-action@b33ab348026b120a895167160f5605b0197f0862 # 0.4.3
+        id: push
         with:
           inputs: ${{ join(fromJSON(steps.meta.outputs.json).tags, ',') }}
           images: >-
@@ -196,8 +191,84 @@ jobs:
           digest=$(echo "${{ steps.push.outputs.images }}" | grep -oP 'sha256:[^, ]+' | head -n1)
           echo "digest=${digest}" >> $GITHUB_OUTPUT
 
+  sign:
+    if: ${{ inputs.release }}
+    needs: release
+    name: Sign ${{ inputs.app }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
 
-      - name: Sign Image
-        run: cosign sign --yes ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}@${{ steps.digest.outputs.digest }}
+      - name: Sign Digest
+        run: cosign sign --yes ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}@${{ needs.release.outputs.digest }}
+
+  attest:
+    if: ${{ inputs.release }}
+    needs: release
+    name: Attest ${{ inputs.app }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Generate SBOM
+        uses: anchore/sbom-action@f325610c9f50a54015d37c8d16cb3b0e2c8f4de0 # v0.18.0
+        with:
+          format: spdx-json
+          image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}@${{ needs.release.outputs.digest }}
+          output-file: ${{ inputs.app }}-sbom.spdx.json
+
+      - name: Scan SBOM
+        uses: anchore/scan-action@7c05671ae9be166aeb155bad2d7df9121823df32 # v6.1.0
+        id: scan
+        with:
+          cache-db: true
+          fail-build: false
+          sbom: ${{ inputs.app }}-sbom.spdx.json
+
+      - name: Attest
+        uses: actions/attest-sbom@115c3be05ff3974bcbd596578934b3f9ce39bf68 # v2.2.0
+        id: attest
+        with:
+          push-to-registry: true
+          sbom-path: ${{ inputs.app }}-sbom.spdx.json
+          subject-name: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}
+          subject-digest: ${{ needs.release.outputs.digest }}
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@6bb031afdd8eb862ea3fc1848194185e076637e5 # v3.28.11
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+  notify:
+    if: ${{ inputs.release && !cancelled() }}
+    needs: ["release", "sign", "attest"]
+    name: Notify
+    runs-on: ubuntu-latest
+    steps:
+      - if: ${{ contains(needs.*.result, 'failure') }}
+        name: Send Discord Webhook
+        uses: sarisia/actions-status-discord@5ddd3b114a98457dd80a39b2f00b6a998cd69008 # v1.15.3
+        with:
+          color: "0xFF0000"
+          description: |
+            Application: `${{ inputs.app }}`
+            Version: `${{ inputs.version }}`
+            [Rebuild](${{ github.server_url }}/${{ github.repository }}/actions/workflows/release.yaml)
+          nodetail: true
+          title: Container build failed
+          username: GitHub Actions
+          url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
