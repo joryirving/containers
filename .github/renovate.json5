@@ -1,49 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
-    "docker:enableMajor",
-    ":label(renovate/{{depName}})",
-    "security:openssf-scorecard",
+    "helpers:pinGitHubActionDigests",
     "github>joryirving/renovate-config",
     "github>joryirving/renovate-config:autoMergeDocker",
-    "github>joryirving/renovate-config:autoMergeGithubActions"
-  ],
-  "packageRules": [
-    {
-      "addLabels": ["renovate/container", "type/major"],
-      "additionalBranchPrefix": "{{parentDir}}-",
-      "commitMessageExtra": " ( {{currentVersion}} → {{newVersion}} )",
-      "commitMessagePrefix": "feat({{parentDir}})!: ",
-      "commitMessageTopic": "{{depName}}",
-      "labels": ["app/{{parentDir}}"],
-      "matchDatasources": ["docker"],
-      "matchFileNames": ["apps/**/Dockerfile"],
-      "matchUpdateTypes": ["major"]
-    },
-    {
-      "addLabels": ["renovate/container", "type/minor"],
-      "additionalBranchPrefix": "{{parentDir}}-",
-      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )",
-      "commitMessageTopic": "{{depName}}",
-      "labels": ["app/{{parentDir}}"],
-      "matchDatasources": ["docker"],
-      "matchFileNames": ["apps/**/Dockerfile"],
-      "matchUpdateTypes": ["minor"],
-      "semanticCommitScope": "{{parentDir}}",
-      "semanticCommitType": "feat"
-    },
-    {
-      "addLabels": ["renovate/container", "type/patch"],
-      "additionalBranchPrefix": "{{parentDir}}-",
-      "commitMessageExtra": "( {{currentVersion}} → {{newVersion}} )",
-      "commitMessageTopic": "{{depName}}",
-      "labels": ["app/{{parentDir}}"],
-      "matchDatasources": ["docker"],
-      "matchFileNames": ["apps/**/Dockerfile"],
-      "matchUpdateTypes": ["patch"],
-      "semanticCommitScope": "{{parentDir}}",
-      "semanticCommitType": "fix"
-    }
+    "github>joryirving/renovate-config:autoMergeGithubActions",
+    "github>joryirving/containers//renovate/autoMerge.json5",
+    "github>joryirving/containers//renovate/customDatasources.json5",
+    "github>joryirving/containers//renovate/customManagers.json5",
+    ":automergeBranch",
+    ":semanticCommits"
   ]
 }

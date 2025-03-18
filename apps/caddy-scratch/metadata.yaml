@@ -1,10 +1,4 @@
 ---
-app: caddy-scratch
-semver: true
-channels:
-  - name: stable
-    platforms: ["linux/amd64", "linux/arm64"]
-    stable: true
-    tests:
-      enabled: false
-      type: web
+# renovate: datasource=github-releases depName=caddyserver/caddy
+version: 2.9.1
+name: caddy-scratch

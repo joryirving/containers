@@ -1,16 +1,4 @@
 ---
-app: readarr
-semver: true
-channels:
-  - name: develop
-    platforms: ["linux/amd64", "linux/arm64"]
-    stable: false
-    tests:
-      enabled: true
-      type: web
-  - name: nightly
-    platforms: ["linux/amd64", "linux/arm64"]
-    stable: false
-    tests:
-      enabled: true
-      type: web
+# renovate: datasource=custom.servarr depName=readarr versioning=loose
+version: 0.4.12.2753
+name: readarr

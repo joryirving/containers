@@ -1,15 +1,11 @@
 FROM docker.io/library/python:3.12-alpine
-
-ARG VERSION
-ARG CHANNEL
-ARG TARGETPLATFORM
-ARG TARGETARCH
-ARG TARGETOS
-
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/morpheus65535/bazarr"
+ARG TARGETPLATFORM
+ARG VENDOR
+ARG VERSION
+
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -20,10 +16,11 @@ ENV \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
     CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
-
-ENV BAZARR__PORT=6767
+ENV \
+    BAZARR__PORT=6767 \
+    BAZARR_PACKAGE_AUTHOR=${VENDOR} \
+    BAZARR_PACKAGE_VERSION=${VERSION} \
+    BAZARR_VERSION=${VERSION}
 
 USER root
 WORKDIR /app
@@ -58,22 +55,19 @@ RUN \
     && \
     curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/v${VERSION}/bazarr.zip" \
     && unzip -q /tmp/app.zip -d /app/bin \
-    && \
-    rm -rf /app/bin/bin \
-    && \
-    printf "UpdateMethod=docker\nBranch=master\nPackageVersion=%s\nPackageAuthor=[joryirving](https://github.com/joryirving)\n" "${VERSION}" > /app/package_info \
-    && pip install --no-cache-dir --find-links https://wheel-index.linuxserver.io/alpine-3.20/ \
+    && rm -rf /app/bin/bin \
+    && pip install --no-cache-dir \
         --requirement /app/bin/requirements.txt \
         --requirement /app/bin/postgres-requirements.txt \
     && chown -R root:root /app && chmod -R 755 /app \
     && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
 
-    COPY ./entrypoint.sh /entrypoint.sh
-    COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-alpine /usr/bin/unrar
+COPY ./entrypoint.sh /entrypoint.sh
+COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-alpine /usr/bin/unrar
 
-    USER nobody:nogroup
-    WORKDIR /config
-    VOLUME ["/config"]
+USER nobody:nogroup
+WORKDIR /config
+VOLUME ["/config"]
 
-    ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]

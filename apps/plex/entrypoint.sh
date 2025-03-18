@@ -109,9 +109,6 @@ if [[ "${PLEX_PURGE_CODECS}" == "true" ]]; then
     find "${PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR}/Plex Media Server/Codecs" -mindepth 1 -not -name '.device-id' -print -delete
 fi
 
-[[ -f "${PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR}/Plex Media Server/plexmediaserver.pid" ]] && \
-    rm -f "${PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR}/Plex Media Server/plexmediaserver.pid"
-
 exec \
     /usr/lib/plexmediaserver/Plex\ Media\ Server \
     "$@"

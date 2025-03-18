@@ -1,15 +1,10 @@
 FROM docker.io/library/python:3.13-alpine
-
-ARG VERSION
-ARG CHANNEL
-ARG TARGETPLATFORM
-ARG TARGETARCH
-ARG TARGETOS
-
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/sabnzbd/sabnzbd"
+ARG TARGETPLATFORM
+ARG VERSION
+
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -19,9 +14,6 @@ ENV \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
     CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
 
 ENV SABNZBD__ADDRESS=0.0.0.0 \
     SABNZBD__PORT=8080
@@ -60,7 +52,9 @@ RUN \
 
 COPY ./sabnzbd.ini /app/sabnzbd.ini
 COPY ./entrypoint.sh /entrypoint.sh
+
 COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-alpine /usr/bin/unrar
+
 COPY --from=ghcr.io/linuxserver/sabnzbd:latest /usr/local/bin/par2 /usr/local/bin/par2
 RUN ln -s /usr/local/bin/par2 /usr/local/bin/par2create \
     && ln -s /usr/local/bin/par2 /usr/local/bin/par2repair \

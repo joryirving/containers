@@ -1,9 +1,4 @@
 ---
-app: free-game-notifier
-semver: true
-channels:
-  - name: stable
-    platforms: ["linux/amd64", "linux/arm64"] # ["linux/amd64", "linux/arm64"]
-    stable: true
-    tests:
-      enabled: false
+# renovate: datasource=github-releases depName=j6nca/free-game-notifier
+version: 1.6.0
+name: free-game-notifier

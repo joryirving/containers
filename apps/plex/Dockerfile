@@ -1,27 +1,21 @@
-FROM docker.io/library/ubuntu:24.04
-
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
-
-ARG TARGETOS
+FROM docker.io/library/ubuntu:25.04
 ARG TARGETARCH
-ARG TARGETPLATFORM
+ARG VENDOR
 ARG VERSION
-ARG CHANNEL
+
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
 ENV DEBCONF_NONINTERACTIVE_SEEN="true" \
     DEBIAN_FRONTEND="noninteractive" \
     APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE="DontWarn"
 
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
-
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support" \
     PLEX_MEDIA_SERVER_HOME="/usr/lib/plexmediaserver" \
+    PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS="6" \
     PLEX_MEDIA_SERVER_INFO_VENDOR="Docker" \
-    PLEX_MEDIA_SERVER_INFO_DEVICE="Docker Container (joryirving)"
+    PLEX_MEDIA_SERVER_INFO_DEVICE="Docker Container (${VENDOR})"
 
 USER root
 WORKDIR /app
@@ -43,17 +37,8 @@ RUN \
         uuid-runtime \
         xmlstarlet \
     && \
-    case "${TARGETPLATFORM}" in \
-        'linux/amd64') \
-            export ARCH='amd64'; \
-        ;; \
-        'linux/arm64') \
-            export ARCH='arm64'; \
-        ;; \
-    esac \
-    && \
     curl -fsSL -o /tmp/plex.deb \
-        "https://downloads.plex.tv/plex-media-server-new/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb" \
+        "https://downloads.plex.tv/plex-media-server-new/${VERSION}/debian/plexmediaserver_${VERSION}_${TARGETARCH}.deb" \
     && \
     dpkg -i --force-confold /tmp/plex.deb \
     && chmod -R 755 "${PLEX_MEDIA_SERVER_HOME}" \

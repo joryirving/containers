@@ -1,15 +1,11 @@
 FROM docker.io/library/python:3.13.2-alpine
-
-ARG VERSION
-ARG CHANNEL
-ARG TARGETPLATFORM
-ARG TARGETARCH
-ARG TARGETOS
-
-LABEL dev.joryirving.image.target_platform=$TARGETPLATFORM
-LABEL dev.joryirving.image.target_architecture=$TARGETARCH
-LABEL dev.joryirving.image.target_os=$TARGETOS
 LABEL org.opencontainers.image.source="https://github.com/home-assistant/core"
+ARG TARGETARCH
+ARG TARGETPLATFORM
+ARG VERSION
+
+ENV UMASK="0002" \
+    TZ="Etc/UTC"
 
 ENV \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -24,9 +20,6 @@ ENV \
     HOMEASSISTANT_WHEELS="https://wheels.home-assistant.io/musllinux/" \
     HOME="/config" \
     VENV_FOLDER="/config/.venv"
-
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
 
 USER root
 WORKDIR /app
@@ -47,7 +40,6 @@ RUN \
         eudev-libs \
         ffmpeg \
         git \
-        go2rtc \
         iputils \
         jo \
         jq \
@@ -82,7 +74,6 @@ RUN \
         libxml2-dev \
         libxslt-dev \
         postgresql-dev \
-        python3-dev \
         unixodbc-dev \
     && \
     pip install uv \
@@ -93,11 +84,9 @@ RUN \
     case "${TARGETPLATFORM}" in \
         'linux/amd64') \
             export ARCH='amd64'; \
-            export GO2RTC_SUFFIX='amd64'; \
         ;; \
         'linux/arm64') \
             export ARCH='aarch64'; \
-            export GO2RTC_SUFFIX='arm64'; \
         ;; \
     esac \
     && \
@@ -111,7 +100,7 @@ RUN \
     && \
     uv pip install --only-binary=:all: --find-links "${HOMEASSISTANT_WHEELS}" \
         homeassistant=="${VERSION}" \
-    && curl -L https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_${GO2RTC_SUFFIX} --output /bin/go2rtc \
+    && curl -L https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_${TARGETARCH} --output /bin/go2rtc \
     && chmod +x /bin/go2rtc \
     && mkdir -p /config && chown nobody:nogroup -R /config \
     && apk del --purge .build-deps \
@@ -124,3 +113,4 @@ WORKDIR /config
 VOLUME ["/config"]
 
 ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
+
