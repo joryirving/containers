@@ -24,13 +24,10 @@ RUN \
         catatonit \
         coreutils \
         curl \
-        geoip \
         jo \
         jq \
         nano \
         p7zip \
-        qt6-qtbase \
-        qt6-qtbase-sqlite \
         trurl \
         tzdata \
     && \
