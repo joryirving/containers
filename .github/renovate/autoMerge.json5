@@ -21,7 +21,7 @@
         "apps/bazarr/Dockerfile",
       ],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.12-alpine/",
+      allowedVersions: "/3\\.12/",
     },
   ],
 }
