@@ -3,7 +3,6 @@
   "extends": [
     "helpers:pinGitHubActionDigests",
     "github>joryirving/renovate-config",
-    "github>joryirving/renovate-config:autoMergeGithubActions",
     "github>joryirving/containers//.github/renovate/autoMerge.json5",
     "github>joryirving/containers//.github/renovate/customDatasources.json5",
     "github>joryirving/containers//.github/renovate/customManagers.json5",
