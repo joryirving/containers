@@ -100,6 +100,16 @@ Some applications do not support defining configuration via environment variable
 
 For applications that need to have persistent configuration data the config volume is hardcoded to `/config` inside the container. This is not able to be changed in most cases.
 
+## Verify image signature
+
+These container images are signed using the [attest-build-provenance](https://github.com/actions/attest-build-provenance) action.
+
+The attestations can be checked with the following command, verifying that the image is actually built by the GitHub CI system:
+
+```sh
+gh attestation verify --repo joryirving/containers oci://ghcr.io/joryirving/${App}:${TAG}
+```
+
 ## Deprecations
 
 Containers here can be **deprecated** at any point, this could be for any reason described below.

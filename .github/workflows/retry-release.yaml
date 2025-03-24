@@ -9,7 +9,7 @@ on:
 
 jobs:
   repository:
-    name: Get Repository App Verisons
+    name: Get Repository Apps
     runs-on: ubuntu-latest
     outputs:
       apps: ${{ steps.repository.outputs.apps }}
