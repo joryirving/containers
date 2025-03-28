@@ -1,5 +1,5 @@
 FROM docker.io/library/alpine:3.21
-LABEL org.opencontainers.image.source="https://github.com/prometheus-community/smartctl_exporter"
+
 ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH

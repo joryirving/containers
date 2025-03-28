@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "helpers:pinGitHubActionDigests",
+    "github>joryirving/renovate-config",
+    ":automergeBranch",
+    ":semanticCommits",
+  ],
+  customManagers: [
+    {
+      customType: "regex",
+      description: "Process Annotations in Docker Bake",
+      fileMatch: ["(^|/)docker-bake\\.hcl$"],
+      matchStrings: [
+        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = \"(?<currentValue>[^\"]+)\"",
+      ],
+      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+    },
+  ],
+  customDatasources: {
+    servarr: {
+      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/develop/changes?os=linux&runtime=netcore",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    },
+    sonarr: {
+      defaultRegistryUrlTemplate: "https://services.sonarr.tv/v1/update/develop/changes?os=linux&runtime=netcore&version=4.0",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    },
+    plex: {
+      defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
+      format: "json",
+      transformTemplates: [
+        '{"releases":[{"version": computer.Linux.version}]}',
+      ],
+    },
+  },
+  packageRules: [
+    {
+      description: ["Auto-merge container app updates"],
+      matchFileNames: ["**/docker-bake.hcl"],
+      automerge: true,
+      automergeType: "pr",
+      ignoreTests: false,
+    },
+    {
+      description: ["Allowed Ubuntu versions for all container images"],
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/ubuntu/"],
+      allowedVersions: "/24\\.04/",
+    },
+    {
+      description: ["Allowed Python versions for Bazarr"],
+      matchDatasources: ["docker"],
+      matchFileNames: [
+        "apps/bazarr/Dockerfile",
+      ],
+      matchPackageNames: ["/python/"],
+      allowedVersions: "/3\\.12/",
+    },
+  ],
+}

@@ -1,0 +1,23 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+set: [pipefail]
+shopt: [globstar]
+
+tasks:
+
+  default:
+    cmd: task --list
+    silent: true
+
+  build-*:
+    desc: Build an app [RELEASE=true]
+    cmd: gh workflow run release.yaml -f app={{.APP}} -f release={{.RELEASE}}
+    vars:
+      APP: '{{index .MATCH 0}}'
+      RELEASE: '{{.RELEASE | default "true"}}'
+    preconditions:
+      - gh auth status
+      - test -f {{.ROOT_DIR}}/.github/workflows/release.yaml
+      - which gh

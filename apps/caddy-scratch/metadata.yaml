@@ -1,4 +1,0 @@
----
-# renovate: datasource=github-releases depName=caddyserver/caddy
-version: 2.9.1
-name: caddy-scratch
