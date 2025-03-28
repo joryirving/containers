@@ -1,4 +1,0 @@
----
-# renovate: datasource=github-releases depName=opentofu/opentofu
-version: 1.9.0
-name: opentofu-runner

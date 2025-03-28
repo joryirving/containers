@@ -1,5 +1,5 @@
 FROM node:lts-slim
-LABEL org.opencontainers.image.source="https://github.com/j6nca/free-game-notifier"
+
 ARG TARGETARCH
 ARG TARGETOS
 ARG VERSION

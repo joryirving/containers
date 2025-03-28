@@ -1,5 +1,5 @@
 FROM docker.io/library/alpine:3.21
-LABEL org.opencontainers.image.source="https://github.com/Sonarr/Sonarr"
+
 ARG TARGETPLATFORM
 ARG VENDOR
 ARG VERSION
@@ -7,9 +7,8 @@ ARG VERSION
 ENV UMASK="0002" \
     TZ="Etc/UTC"
 
-ENV \
-    DOTNET_EnableDiagnostics="0" \
-    SONARR__UPDATE__BRANCH="develop"
+ENV DOTNET_EnableDiagnostics=0 \
+    SONARR__UPDATE__BRANCH=develop
 
 USER root
 WORKDIR /app

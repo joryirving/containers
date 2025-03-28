@@ -1,5 +1,5 @@
 FROM docker.io/library/alpine:3.21
-LABEL org.opencontainers.image.source="https://github.com/Readarr/Readarr"
+
 ARG TARGETPLATFORM
 ARG VENDOR
 ARG VERSION

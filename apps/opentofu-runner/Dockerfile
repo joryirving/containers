@@ -1,5 +1,5 @@
 FROM docker.io/library/alpine:3.21 AS opentofu
-LABEL org.opencontainers.image.source="https://github.com/opentofu/opentofu"
+
 ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
@@ -18,8 +18,6 @@ FROM ghcr.io/flux-iac/tf-runner:v0.16.0-rc.5 AS runner
 ARG VERSION
 ARG TARGETARCH
 ARG TARGETOS
-
-LABEL org.opencontainers.image.source="https://github.com/opentofu/opentofu"
 
 USER root
 
