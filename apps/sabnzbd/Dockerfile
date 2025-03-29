@@ -1,5 +1,5 @@
 FROM docker.io/library/python:3.13-alpine
-LABEL org.opencontainers.image.source="https://github.com/sabnzbd/sabnzbd"
+
 ARG TARGETPLATFORM
 ARG VERSION
 
@@ -50,8 +50,7 @@ RUN \
     && pip uninstall --yes uv && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
 
-COPY ./sabnzbd.ini /app/sabnzbd.ini
-COPY ./entrypoint.sh /entrypoint.sh
+COPY . /
 
 COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-alpine /usr/bin/unrar
 

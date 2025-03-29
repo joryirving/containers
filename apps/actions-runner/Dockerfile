@@ -1,6 +1,5 @@
 ARG VERSION
 FROM ghcr.io/actions/actions-runner:${VERSION}
-LABEL org.opencontainers.image.source="https://github.com/actions/runner"
 ARG TARGETARCH
 
 ENV HOMEBREW_NO_ANALYTICS=1 \

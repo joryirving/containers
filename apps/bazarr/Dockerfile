@@ -1,5 +1,5 @@
 FROM docker.io/library/python:3.12-alpine
-LABEL org.opencontainers.image.source="https://github.com/morpheus65535/bazarr"
+
 ARG TARGETPLATFORM
 ARG VENDOR
 ARG VERSION
@@ -53,7 +53,7 @@ RUN \
         libxml2-dev \
         libxslt-dev \
     && \
-    curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/v${VERSION}/bazarr.zip" \
+    curl -fsSL -o /tmp/app.zip "https://github.com/morpheus65535/bazarr/releases/download/${VERSION}/bazarr.zip" \
     && unzip -q /tmp/app.zip -d /app/bin \
     && rm -rf /app/bin/bin \
     && pip install --no-cache-dir \
