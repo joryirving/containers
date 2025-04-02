@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-action.json
 name: Container Tests
-description: Takes an app and container image and runs container tests
+description: Takes an app, container image and token then runs container tests
 
 inputs:
   app:
@@ -21,14 +21,17 @@ runs:
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
-      run: echo "$GITHUB_ACTION_PATH" >> "$GITHUB_PATH"
+      run: |
+        echo "$GITHUB_ACTION_PATH" >> "$GITHUB_PATH"
 
     - name: Setup Testing Tools
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
-      run: setup.sh "${{ inputs.app }}"
+      run: |
+        setup.sh "${{ inputs.app }}"
 
     - name: Run Tests
       shell: bash
-      run: run.sh "${{ inputs.app }}" "${{ inputs.image }}"
+      run: |
+        run.sh "${{ inputs.app }}" "${{ inputs.image }}"

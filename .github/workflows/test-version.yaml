@@ -12,7 +12,7 @@ on:
 
 jobs:
   test-version:
-    name: Test Version
+    name: Test Version (${{ inputs.version }})
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,5 +28,5 @@ jobs:
         run: |
           echo "Input Version: ${{ inputs.version }}"
           echo "Is Valid Semver: ${{ steps.image-versions.outputs.is-valid-semver }}"
-          echo "Output Version: ${{ steps.image-versions.outputs.semantic }}"
-          echo "Sanitized Version: ${{ steps.image-versions.outputs.raw }}"
+          echo "Semantic Version: ${{ steps.image-versions.outputs.semantic }}"
+          echo "Raw Version: ${{ steps.image-versions.outputs.raw }}"

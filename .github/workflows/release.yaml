@@ -3,8 +3,6 @@
 name: Release
 
 on:
-  pull_request:
-    branches: ["main"]
   push:
     branches: ["main"]
     paths: ["apps/**"]
@@ -27,9 +25,9 @@ jobs:
     outputs:
       changed-files: ${{ steps.changed-files.outputs.changed_files }}
     steps:
-      - name: Get changed files
+      - name: Get Changed Files
         id: changed-files
-        uses: bjw-s-labs/action-changed-files@2cc35474e9d534ed0d743aa122fd142afbdaa0ad # v0.3.1
+        uses: bjw-s-labs/action-changed-files@b1144fc772fca235a50902c7bb6cc431cc7d8e27 # v0.3.2
         with:
           path: apps
           include_only_directories: true
@@ -43,10 +41,7 @@ jobs:
     outputs:
       apps: ${{ steps.apps.outputs.apps }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - name: Get Apps to Build
+      - name: Get Apps
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         id: apps
         env:
@@ -63,7 +58,7 @@ jobs:
     if: ${{ needs.changed.outputs.apps != '[]' }}
     needs: changed
     name: Build ${{ matrix.app }}
-    uses: ./.github/workflows/image-build-action.yaml
+    uses: ./.github/workflows/image-builder.yaml
     permissions:
       attestations: write
       contents: write
