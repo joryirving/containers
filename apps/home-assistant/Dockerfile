@@ -107,7 +107,7 @@ RUN \
     && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
 
-COPY ./entrypoint.sh /entrypoint.sh
+COPY . /
 
 USER nobody:nogroup
 WORKDIR /config
