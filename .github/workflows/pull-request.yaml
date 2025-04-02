@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Pull Request
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths: ["apps/**"]
+
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      changed-files: ${{ steps.changed-files.outputs.changed_files }}
+    steps:
+      - name: Get changed files
+        id: changed-files
+        uses: bjw-s-labs/action-changed-files@b1144fc772fca235a50902c7bb6cc431cc7d8e27 # v0.3.2
+        with:
+          path: apps
+          include_only_directories: true
+          max_depth: 1
+
+  build:
+    if: ${{ needs.prepare.outputs.changed-files != '[]' }}
+    needs: prepare
+    name: Build ${{ matrix.app }}
+    uses: ./.github/workflows/image-builder.yaml
+    permissions:
+      contents: read
+      packages: read
+    secrets: inherit
+    strategy:
+      matrix:
+        app: ${{ fromJSON(needs.prepare.outputs.changed-files) }}
+      fail-fast: false
+      max-parallel: 4
+    with:
+      app: ${{ matrix.app }}
+      release: false
+
+  status:
+    if: ${{ !cancelled() }}
+    needs: build
+    name: Build Success
+    runs-on: ubuntu-latest
+    steps:
+      - name: Any jobs failed?
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+
+      - name: All jobs passed or skipped?
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: echo "All jobs passed or skipped" && echo "${{ toJSON(needs.*.result) }}"

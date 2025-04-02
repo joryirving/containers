@@ -15,5 +15,5 @@ RUN apt update \
 
 USER nobody:nogroup
 
-COPY ./entrypoint.sh /entrypoint.sh
+COPY . /
 CMD ["/entrypoint.sh"]

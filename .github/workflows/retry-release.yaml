@@ -4,31 +4,31 @@ name: Retry Release
 
 on:
   schedule:
-    - cron: "30 5 * * *"
+    - cron: "30 1 * * *"
   workflow_dispatch:
 
 jobs:
-  repository:
-    name: Get Repository Apps
+  apps:
+    name: Get App Inventory
     runs-on: ubuntu-latest
     outputs:
-      apps: ${{ steps.repository.outputs.apps }}
+      apps: ${{ steps.inventory.outputs.apps }}
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Get Apps
+      - name: Get App Inventory
         uses: ./.github/actions/app-inventory
-        id: repository
+        id: inventory
 
   retry:
-    if: ${{ needs.repository.outputs.apps != '[]' }}
+    if: ${{ needs.apps.outputs.apps != '[]' }}
     name: Retry Release
     runs-on: ubuntu-latest
-    needs: repository
+    needs: apps
     strategy:
       matrix:
-        app: ${{ fromJSON(needs.repository.outputs.apps) }}
+        app: ${{ fromJSON(needs.apps.outputs.apps) }}
       max-parallel: 4
       fail-fast: false
     steps:
@@ -53,14 +53,13 @@ jobs:
         uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
 
       - name: Install regctl
-        uses: regclient/actions/regctl-installer@main
+        uses: regclient/actions/regctl-installer@ce5fd131e371ffcdd7508b478cb223b3511a9183 # main
 
-      - name: Get App Version
-        id: app-version
-        working-directory: ./apps/${{ matrix.app }}
-        run: |
-          VERSION=$(docker buildx bake image-all --print | jq --raw-output --compact-output '.target."image-all".args.VERSION')
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      - name: Get Bake Options
+        id: bake-options
+        uses: ./.github/actions/bake-options
+        with:
+          app: ${{ matrix.app }}
 
       - name: Get Container Registry Version
         id: registry
@@ -75,7 +74,7 @@ jobs:
           fi
           echo "version=${version}" >> $GITHUB_OUTPUT
 
-      - if: ${{ steps.app-version.outputs.version != steps.registry.outputs.version }}
+      - if: ${{ steps.bake-options.outputs.version != steps.registry.outputs.version }}
         name: Retry Release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -90,5 +89,5 @@ jobs:
               echo
               echo '| Container Name | Actual Version | Expected Version |'
               echo '|----------------|------------------|----------------|'
-              echo '| `${{ matrix.app }}` | `${{ steps.registry.outputs.version }}` | `${{ steps.app-version.outputs.version }}` |'
+              echo '| `${{ matrix.app }}` | `${{ steps.registry.outputs.version }}` | `${{ steps.bake-options.outputs.version }}` |'
           } >> $GITHUB_STEP_SUMMARY
