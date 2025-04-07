@@ -5,6 +5,10 @@ variable "VERSION" {
   default = "2.9.1"
 }
 
+variable "SOURCE" {
+  default = "https://github.com/caddyserver/caddy"
+}
+
 group "default" {
   targets = ["image-local"]
 }
@@ -15,7 +19,7 @@ target "image" {
     VERSION = "${VERSION}"
   }
   labels = {
-    "org.opencontainers.image.source" = "https://github.com/caddyserver/caddy"
+    "org.opencontainers.image.source" = "${SOURCE}"
   }
 }
 

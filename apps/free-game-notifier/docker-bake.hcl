@@ -5,6 +5,10 @@ variable "VERSION" {
   default = "1.6.0"
 }
 
+variable "SOURCE" {
+  default = "https://github.com/j6nca/free-game-notifier"
+}
+
 group "default" {
   targets = ["image-local"]
 }
@@ -15,7 +19,7 @@ target "image" {
     VERSION = "${VERSION}"
   }
   labels = {
-    "org.opencontainers.image.source" = "https://github.com/j6nca/free-game-notifier"
+    "org.opencontainers.image.source" = "${SOURCE}"
   }
 }
 

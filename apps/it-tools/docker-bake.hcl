@@ -5,6 +5,10 @@ variable "VERSION" {
   default = "2024.10.22-7ca5933"
 }
 
+variable "SOURCE" {
+  default = "https://github.com/CorentinTh/it-tools"
+}
+
 group "default" {
   targets = ["image-local"]
 }
@@ -15,7 +19,7 @@ target "image" {
     VERSION = "${VERSION}"
   }
   labels = {
-    "org.opencontainers.image.source" = "https://github.com/CorentinTh/it-tools"
+    "org.opencontainers.image.source" = "${SOURCE}"
   }
 }
 
