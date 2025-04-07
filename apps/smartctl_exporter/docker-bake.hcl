@@ -5,6 +5,10 @@ variable "VERSION" {
   default = "0.13.0"
 }
 
+variable "SOURCE" {
+  default = "https://github.com/prometheus-community/smartctl_exporter"
+}
+
 group "default" {
   targets = ["image-local"]
 }
@@ -15,7 +19,7 @@ target "image" {
     VERSION = "${VERSION}"
   }
   labels = {
-    "org.opencontainers.image.source" = "https://github.com/prometheus-community/smartctl_exporter"
+    "org.opencontainers.image.source" = "${SOURCE}"
   }
 }
 
