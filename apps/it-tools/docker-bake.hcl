@@ -1,8 +1,8 @@
 target "docker-metadata-action" {}
 
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=CorentinTh/it-tools versioning=regex:^(v?(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-(?<revision>.*))$
-  default = "2024.10.22-7ca5933"
+  // renovate: datasource=github-releases depName=CorentinTh/it-tools
+  default = "v2024.10.22-7ca5933"
 }
 
 variable "SOURCE" {
