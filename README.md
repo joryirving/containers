@@ -121,6 +121,14 @@ Containers here can be **deprecated** at any point, this could be for any reason
 
 **Note**: Deprecated containers will remained published to this repo for 6 months after which they will be pruned.
 
+## Maintaining a Fork (This is a fork of [home-operations/containers](https://github.com/home-operations/containers))
+
+Forking this repository is fairly straightforward, but there are a couple of important notes:
+
+1. You’ll need to set up a GitHub Bot for Renovate, you can find instructions for that outlined [here](https://github.com/renovatebot/github-action).
+
+2. If your GitHub username or the repository name includes uppercase letters, you’ll need to update the workflows. This is because pushing to GHCR requires both the username and repository name to be entirely lowercase.
+
 ## Credits
 
-A lot of inspiration and ideas are thanks to the hard work of the home-ops community, [onedr0p](https://github.com/onedr0p), [hotio.dev](https://hotio.dev/) and [linuxserver.io](https://www.linuxserver.io/) contributors.
+A lot of inspiration and ideas are thanks to the hard work of the home-ops community, [home-operations](https://github.com/home-operations), [hotio.dev](https://hotio.dev/) and [linuxserver.io](https://www.linuxserver.io/) contributors.
