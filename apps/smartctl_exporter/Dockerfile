@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM docker.io/library/alpine:3.21
 
 ARG VERSION

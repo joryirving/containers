@@ -1,5 +1,6 @@
-FROM node:lts-slim
+# syntax=docker/dockerfile:1
 
+FROM node:lts-slim
 ARG TARGETARCH
 ARG TARGETOS
 ARG VERSION
