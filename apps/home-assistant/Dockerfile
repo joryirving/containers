@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.13-alpine
 ARG TARGETARCH
-ARG HOME_ASSISTANT_ARCH=${TARGETARCH/arm64/aarch64}
+ARG ARCH=${TARGETARCH/arm64/aarch64}
+FROM ghcr.io/home-assistant/${ARCH}-base-python:3.13-alpine3.21
+ARG TARGETARCH
+ARG ARCH=${TARGETARCH/arm64/aarch64}
 ARG VERSION
 
 ENV UMASK="0002" \
@@ -26,7 +28,6 @@ ENV \
 USER root
 WORKDIR /app
 
-#hadolint ignore=DL3018,DL3013,DL3059,DL4006
 RUN \
     apk add --no-cache \
         bash \
@@ -42,46 +43,47 @@ RUN \
         eudev-libs \
         ffmpeg \
         git \
+        grep \
+        hwdata-usb \
+        imlib2 \
+        iperf3 \
         iputils \
         jq \
         libcap \
-        libjpeg-turbo-dev \
-        libpcap-dev \
+        libftdi1 \
+        libgpiod \
+        libturbojpeg \
+        libpulse \
         libstdc++ \
         libxslt \
+        libzbar \
+        mailcap \
         mariadb-connector-c \
-        mariadb-connector-c-dev \
         nano \
+        net-tools \
+        nmap \
         openssh-client \
         openssl \
+        pianobar \
         postgresql-libs \
+        pulseaudio-alsa \
         socat \
         tiff \
         tzdata \
         unzip \
+        xz \
     && \
     apk add --no-cache --virtual=.build-deps \
         autoconf \
         build-base \
-        cargo \
-        cmake \
-        cups-dev \
-        eudev-dev \
-        ffmpeg-dev \
-        glib-dev \
-        jpeg-dev \
         libffi-dev \
-        libxml2-dev \
-        libxslt-dev \
-        postgresql-dev \
-        unixodbc-dev \
     && \
     pip install uv \
     && \
     curl -fsSL "https://github.com/home-assistant/core/archive/${VERSION}.tar.gz" \
         | tar xzf - -C /tmp --strip-components=1 \
     && \
-    HOME_ASSISTANT_BASE=$(curl -fsSL "https://raw.githubusercontent.com/home-assistant/core/${VERSION}/build.yaml" | grep "${HOME_ASSISTANT_ARCH}: " | cut -d ":" -f3) \
+    HOME_ASSISTANT_BASE=$(curl -fsSL "https://raw.githubusercontent.com/home-assistant/core/${VERSION}/build.yaml" | grep "${ARCH}: " | cut -d ":" -f3) \
     && \
     uv pip install --only-binary=:all: --find-links "${HOMEASSISTANT_WHEELS}" \
         --requirement "https://raw.githubusercontent.com/home-assistant/docker/${HOME_ASSISTANT_BASE}/requirements.txt" \
@@ -91,7 +93,8 @@ RUN \
     && \
     uv pip install --only-binary=:all: --find-links "${HOMEASSISTANT_WHEELS}" \
         homeassistant=="${VERSION}" \
-    && curl -L https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_${TARGETARCH} --output /bin/go2rtc \
+    && curl -fsSL -o /bin/go2rtc \
+        "https://github.com/AlexxIT/go2rtc/releases/latest/download/go2rtc_linux_${TARGETARCH}" \
     && chmod +x /bin/go2rtc \
     && mkdir -p /config && chown nobody:nogroup -R /config \
     && apk del --purge .build-deps \
