@@ -1,42 +1,54 @@
 {
-  $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  extends: ["github>home-operations/renovate-config"],
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'github>home-operations/renovate-config',
+  ],
   customManagers: [
     {
-      customType: "regex",
-      description: "Process Annotations in Docker Bake",
-      fileMatch: ["(^|/)docker-bake\\.hcl$"],
-      matchStrings: [
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = \"(?<currentValue>[^\"]+)\"",
+      customType: 'regex',
+      description: 'Process Annotations in Docker Bake',
+      managerFilePatterns: [
+        '/(^|/)docker-bake\\.hcl$/',
       ],
-      datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
-      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      matchStrings: [
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = "(?<currentValue>[^"]+)"',
+      ],
+      datasourceTemplate: '{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}',
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
   ],
   customDatasources: {
     qbittorrent: {
-      defaultRegistryUrlTemplate: "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": qbittorrent}]}'],
+      defaultRegistryUrlTemplate: 'https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":[{"version": qbittorrent}]}',
+      ],
     },
-    "servarr-develop": {
-      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/develop/changes?os=linux&runtime=netcore",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    'servarr-develop': {
+      defaultRegistryUrlTemplate: 'https://{{packageName}}.servarr.com/v1/update/develop/changes?os=linux&runtime=netcore',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":[{"version": $[0].version}]}',
+      ],
     },
-    "servarr-nightly": {
-      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/nightly/changes?os=linux&runtime=netcore",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    'servarr-nightly': {
+      defaultRegistryUrlTemplate: 'https://{{packageName}}.servarr.com/v1/update/nightly/changes?os=linux&runtime=netcore',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":[{"version": $[0].version}]}',
+      ],
     },
-    "sonarr-develop": {
-      defaultRegistryUrlTemplate: "https://services.sonarr.tv/v1/update/develop/changes?os=linux&runtime=netcore&version=4.0",
-      format: "json",
-      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    'sonarr-develop': {
+      defaultRegistryUrlTemplate: 'https://services.sonarr.tv/v1/update/develop/changes?os=linux&runtime=netcore&version=4.0',
+      format: 'json',
+      transformTemplates: [
+        '{"releases":[{"version": $[0].version}]}',
+      ],
     },
     plex: {
-      defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
-      format: "json",
+      defaultRegistryUrlTemplate: 'https://plex.tv/api/downloads/5.json',
+      format: 'json',
       transformTemplates: [
         '{"releases":[{"version": computer.Linux.version}]}',
       ],
@@ -44,42 +56,83 @@
   },
   packageRules: [
     {
-      description: ["Auto-merge Application Updates"],
-      matchFileNames: ["**/docker-bake.hcl"],
+      description: [
+        'Auto-merge Application Updates',
+      ],
+      matchFileNames: [
+        '**/docker-bake.hcl',
+      ],
       automerge: true,
-      automergeType: "pr",
+      automergeType: 'pr',
       ignoreTests: false,
     },
     {
-      description: "Create Individual PRs for Application Base Image Updates",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/alpine/", "/golang/", "/node/", "/python/", "/ubuntu/"],
-      additionalBranchPrefix: "{{parentDir}}-",
+      description: 'Create Individual PRs for Application Base Image Updates',
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        '/alpine/',
+        '/golang/',
+        '/node/',
+        '/python/',
+        '/ubuntu/',
+      ],
+      additionalBranchPrefix: '{{parentDir}}-',
     },
     {
-      description: ["Assign Application Labels"],
-      addLabels: ["app/{{parentDir}}"],
-      matchFileNames: ["**/docker-bake.hcl", "**/Dockerfile"],
+      description: [
+        'Assign Application Labels',
+      ],
+      addLabels: [
+        'app/{{parentDir}}',
+      ],
+      matchFileNames: [
+        '**/docker-bake.hcl',
+        '**/Dockerfile',
+      ],
     },
     {
-      description: ["Allowed Ubuntu Version"],
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/ubuntu/"],
-      allowedVersions: "/24\\.04/",
+      description: [
+        'Allowed Ubuntu Version',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        '/ubuntu/',
+      ],
+      allowedVersions: '/24\\.04/',
     },
     {
-      description: ["Allowed Alpine Version"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/alpine/"],
-      allowedVersions: "/3\\.21/",
+      description: [
+        'Allowed Alpine Version',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchFileNames: [
+        '**/Dockerfile',
+      ],
+      matchPackageNames: [
+        '/alpine/',
+      ],
+      allowedVersions: '/3\\.21/',
     },
     {
-      description: ["Allowed Python Version"],
-      matchDatasources: ["docker"],
-      matchFileNames: ["**/Dockerfile"],
-      matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.13-alpine3\\.21/",
+      description: [
+        'Allowed Python Version',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchFileNames: [
+        '**/Dockerfile',
+      ],
+      matchPackageNames: [
+        '/python/',
+      ],
+      allowedVersions: '/3\\.13-alpine3\\.21/',
     },
   ],
 }
