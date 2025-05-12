@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Get App Inventory
         uses: ./.github/actions/app-inventory
@@ -34,6 +36,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: Generate Token
         uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
@@ -68,6 +72,15 @@ jobs:
           echo "version=${version}" >> $GITHUB_OUTPUT
 
       - if: ${{ steps.app-options.outputs.version != steps.registry.outputs.version }}
+        name: Find Pull Request
+        uses: juliangruber/find-pull-request-action@48b6133aa6c826f267ebd33aa2d29470f9d9e7d0 # v1.9.0
+        id: find-pull-request
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          labels: app/${{ matrix.app }}
+          state: open
+
+      - if: ${{ steps.find-pull-request.outputs.number != '' }}
         name: Retry Release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

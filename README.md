@@ -14,49 +14,42 @@ _An opinionated collection of container images_
 
 </div>
 
-Welcome to container images, if looking for a container start by [browsing the GitHub Packages page for this repo's packages](https://github.com/joryirving?tab=packages&repo_name=containers). Please also check out the inspiration repo from [onedr0p](https://github.com/onedr0p/containers).
+Welcome to my container images! If you are looking for a container, start by [browsing the GitHub Packages page for this repository's packages](https://github.com/joryirving?tab=packages&repo_name=containers). Please also check out the inspiration repo from [home-operations](https://github.com/home-operations/containers).
 
-## Mission statement
+## Mission Statement
 
-The goal of this project is to support [semantically versioned](https://semver.org/), [rootless](https://rootlesscontaine.rs/), and [multiple architecture](https://www.docker.com/blog/multi-arch-build-and-images-the-simple-way/) containers for various applications.
+The goal of this project is to provide [semantically versioned](https://semver.org/), [rootless](https://rootlesscontaine.rs/), and [multi-architecture](https://www.docker.com/blog/multi-arch-build-and-images-the-simple-way/) containers for various applications.
 
-I try to adhere to a [KISS principle](https://en.wikipedia.org/wiki/KISS_principle), logging to stdout, [one process per container](https://testdriven.io/tips/59de3279-4a2d-4556-9cd0-b444249ed31e/), no [s6-overlay](https://github.com/just-containers/s6-overlay) and all images are built on top of [Alpine](https://hub.docker.com/_/alpine) or [Ubuntu](https://hub.docker.com/_/ubuntu).
+I adhere to the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle), logging to stdout, maintaining [one process per container](https://testdriven.io/tips/59de3279-4a2d-4556-9cd0-b444249ed31e/), avoiding tools like [s6-overlay](https://github.com/just-containers/s6-overlay), and building all images on top of [Alpine](https://hub.docker.com/_/alpine) or [Ubuntu](https://hub.docker.com/_/ubuntu).
 
-## Tag immutability
+### Tag Immutability
 
-The containers built here do not use immutable tags, as least not in the more common way you have seen from [linuxserver.io](https://fleet.linuxserver.io/) or [Bitnami](https://bitnami.com/stacks/containers).
+Containers built here do not use immutable tags in the traditional sense, as seen with [linuxserver.io](https://fleet.linuxserver.io/) or [Bitnami](https://bitnami.com/stacks/containers). Instead, we insist on pinning to the `sha256` digest of the image. While this approach is less visually appealing, it ensures functionality and immutability.
 
-We do take a similar approach but instead of appending a `-ls69` or `-r420` prefix to the tag we instead insist on pinning to the sha256 digest of the image, while this is not as pretty it is just as functional in making the images immutable.
+| Container                                         | Immutable |
+|--------------------------------------------------|-----------|
+| `ghcr.io/joryirving/actions-runner:rolling` | ❌         |
+| `ghcr.io/joryirving/actions-runner:2.323.0` | ❌         |
+| `ghcr.io/joryirving/actions-runner:rolling@sha256:8053...` | ✅ |
+| `ghcr.io/joryirving/actions-runner:2.323.0@sha256:8053...` | ✅ |
 
-| Container                                          | Immutable |
-|----------------------------------------------------|-----------|
-| `ghcr.io/joryirving/sonarr:rolling`                   | ❌         |
-| `ghcr.io/joryirving/sonarr:4.0.13.2932`                | ❌         |
-| `ghcr.io/joryirving/sonarr:rolling@sha256:8053...`    | ✅         |
-| `ghcr.io/joryirving/sonarr:4.0.13.2932@sha256:8053...` | ✅         |
+_If pinning an image to the `sha256` digest, tools like [Renovate](https://github.com/renovatebot/renovate) can update containers based on digest or version changes._
 
-_If pinning an image to the sha256 digest, tools like [Renovate](https://github.com/renovatebot/renovate) support updating the container on a digest or application version change._
+### Rootless
 
-## Eschewed features
+By default the majority of these containers run as a non-root user (`65534:65534`), you are able to change the user/group by updating your configuration files.
 
-There is no multiple "channels" of the same application. For example Prowlarr, Radarr, and Sonarr will only have the develop branch published and not the master "stable" branch. Qbittorrent will only be published with LibTorrent 2.x.
-
-## Rootless
-
-To run these containers as non-root make sure you update your configuration to the user and group you want.
-
-### Docker compose
+#### Docker Compose
 
 ```yaml
-networks:
-  sonarr:
-    name: sonarr
-    external: true
 services:
-  sonarr:
-    image: ghcr.io/joryirving/sonarr:4.0.13.2932
-    container_name: sonarr
-    user: 65534:65534
+  home-assistant:
+    image: ghcr.io/joryirving/home-assistant:2025.5.1
+    container_name: home-assistant
+    user: 1000:1000 # The data volume permissions must match this user:group
+    read_only: true # May require mounting in additional dirs as tmpfs
+    tmpfs:
+      - /tmp:rw
     # ...
 ```
 
@@ -66,69 +59,96 @@ services:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sonarr
+  name: home-assistant
 # ...
 spec:
   # ...
   template:
     # ...
     spec:
+      containers:
+        - name: home-assistant
+          image: ghcr.io/joryirving/home-assistant:2025.5.1
+          securityContext: # May require mounting in additional dirs as emptyDir
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
       # ...
       securityContext:
-        runAsUser: 65534
-        runAsGroup: 65534
-        fsGroup: 65534
-        fsGroupChangePolicy: OnRootMismatch
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 65534 # (Requires CSI support)
+        fsGroupChangePolicy: OnRootMismatch # (Requires CSI support)
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      # ...
 # ...
 ```
 
-## Passing arguments to a application
+### Passing Arguments to Applications
 
-Some applications do not support defining configuration via environment variables and instead only allow certain config to be set in the command line arguments for the app. To circumvent this, for applications that have an `entrypoint.sh` read below.
+Some applications only allow certain configurations via command-line arguments rather than environment variables. For such cases, refer to the Kubernetes documentation on [defining commands and arguments for a container](https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/). Then, specify the desired arguments as shown below:
 
-1. First read the Kubernetes docs on [defining command and arguments for a Container](https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/).
-2. Look up the documentation for the application and find a argument you would like to set.
-3. Set the extra arguments in the `args` section like below.
+```yaml
+args:
+  - --port
+  - "8080"
+```
 
-    ```yaml
-    args:
-      - --port
-      - "8080"
-    ```
+### Configuration Volume
 
-## Configuration volume
+For applications requiring persistent configuration data, the configuration volume is hardcoded to `/config` within the container. In most cases, this path cannot be changed.
 
-For applications that need to have persistent configuration data the config volume is hardcoded to `/config` inside the container. This is not able to be changed in most cases.
-
-## Verify image signature
+### Verify Image Signature
 
 These container images are signed using the [attest-build-provenance](https://github.com/actions/attest-build-provenance) action.
 
-The attestations can be checked with the following command, verifying that the image is actually built by the GitHub CI system:
+To verify that the image was built by GitHub CI, use the following command:
 
 ```sh
 gh attestation verify --repo joryirving/containers oci://ghcr.io/joryirving/${App}:${TAG}
 ```
 
+or by using [cosign](https://github.com/sigstore/cosign):
+
+```sh
+cosign verify-attestation --new-bundle-format --type slsaprovenance1 \
+    --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+    --certificate-identity-regexp "^https://github.com/joryirving/containers/.github/workflows/app-builder.yaml@refs/heads/main" \
+    ghcr.io/joryirving/${APP}:${TAG}
+```
+
+### Eschewed Features
+
+This repository does not support multiple "channels" for the same application. For example:
+
+- **Prowlarr**, **Radarr**, and **Sonarr** only publish the **develop** branch, not the **master** (stable) branch.
+- **qBittorrent** is only published with **LibTorrent 2.x**.
+
+This approach ensures consistency and focuses on streamlined builds.
+
 ## Deprecations
 
-Containers here can be **deprecated** at any point, this could be for any reason described below.
+Containers in this repository may be deprecated for the following reasons:
 
-1. The upstream application is **no longer actively developed**
-2. The upstream application has an **official upstream container** that follows closely to the mission statement described here
-3. The upstream application has been **replaced with a better alternative**
-4. The **maintenance burden** of keeping the container here **is too bothersome**
+1. The upstream application is **no longer actively maintained**.
+2. An **official upstream container exists** that aligns with this repository's mission statement.
+3. The **maintenance burden** is unsustainable, such as frequent build failures or instability.
 
-**Note**: Deprecated containers will remained published to this repo for 6 months after which they will be pruned.
+**Note**: Deprecated containers will be announced with a release and remain available in the registry for 6 months before removal.
 
 ## Maintaining a Fork (This is a fork of [home-operations/containers](https://github.com/home-operations/containers))
 
-Forking this repository is fairly straightforward, but there are a couple of important notes:
-
-1. You’ll need to set up a GitHub Bot for Renovate, you can find instructions for that outlined [here](https://github.com/renovatebot/github-action).
-
-2. If your GitHub username or the repository name includes uppercase letters, you’ll need to update the workflows. This is because pushing to GHCR requires both the username and repository name to be entirely lowercase.
+1. **Renovate Bot**: Set up a GitHub Bot for Renovate by following the instructions [here](https://github.com/renovatebot/github-action).
+2. **Renovate Configuration**: Configuration files are located in the [`.github`](https://github.com/home-operations/.github) and [renovate-config](https://github.com/home-operations/renovate-config) repositories.
+3. **Lowercase Naming**: Ensure your GitHub username/organization and repository names are entirely lowercase to comply with GHCR requirements. Rename them or update workflows as needed.
 
 ## Credits
 
-A lot of inspiration and ideas are thanks to the hard work of the home-ops community, [home-operations](https://github.com/home-operations), [hotio.dev](https://hotio.dev/) and [linuxserver.io](https://www.linuxserver.io/) contributors.
+This repository draws inspiration and ideas from the home-ops community, [home-operations](https://github.com/home-operations), [hotio.dev](https://hotio.dev/) and [linuxserver.io](https://www.linuxserver.io/) contributors.

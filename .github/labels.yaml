@@ -1,0 +1,22 @@
+---
+# Areas
+- name: area/apps
+  color: 0e8a16
+- name: area/github
+  color: 0e8a16
+- name: area/renovate
+  color: 0e8a16
+- name: area/taskfile
+  color: 0e8a16
+# Semantic Types
+- name: type/digest
+  color: ffeC19
+- name: type/patch
+  color: ffeC19
+- name: type/minor
+  color: ff9800
+- name: type/major
+  color: f6412d
+# Uncategorized
+- name: hold
+  color: ee0701

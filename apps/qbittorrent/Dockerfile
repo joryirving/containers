@@ -1,36 +1,36 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.13-alpine
+FROM docker.io/library/python:3.13-alpine3.21
+ARG TARGETARCH
+ARG TARGETARCH=${TARGETARCH/arm64/aarch64}
+ARG TARGETARCH=${TARGETARCH/amd64/x86_64}
 ARG VERSION
 
-ENV UMASK="0002" \
-    TZ="Etc/UTC"
-
 ENV QBT_CONFIRM_LEGAL_NOTICE=1 \
-    QBT_WEBUI_PORT=8080 \
-    QBT_TORRENTING_PORT=50413 \
     HOME="/config" \
     XDG_CONFIG_HOME="/config" \
     XDG_DATA_HOME="/config"
 
 USER root
+WORKDIR /app
 
 RUN \
     apk add --no-cache \
+        7zip \
         bash \
         ca-certificates \
         catatonit \
         coreutils \
         curl \
-        icu-libs \
         jq \
         nano \
-        p7zip \
-        qt6-qtbase-sqlite \
         tzdata \
     && \
-    apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community \
-        qbittorrent-nox=="${VERSION}" \
+    mkdir -p /app \
+    && LIBTORRENT=$(curl -sL "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json" | jq -r '.libtorrent_2_0') \
+    && curl -fsSL -o /app/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-${VERSION}_v${LIBTORRENT}/${TARGETARCH}-qbittorrent-nox" \
+    && chown -R root:root /app/qbittorrent-nox \
+    && chmod -R 755 /app/qbittorrent-nox \
     && rm -rf /tmp/*
 
 COPY . /

@@ -1,11 +1,6 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "helpers:pinGitHubActionDigests",
-    "github>joryirving/renovate-config",
-    ":automergeBranch",
-    ":semanticCommits",
-  ],
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["github>home-operations/renovate-config"],
   customManagers: [
     {
       customType: "regex",
@@ -19,12 +14,22 @@
     },
   ],
   customDatasources: {
-    servarr: {
+    qbittorrent: {
+      defaultRegistryUrlTemplate: "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": qbittorrent}]}'],
+    },
+    "servarr-develop": {
       defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/develop/changes?os=linux&runtime=netcore",
       format: "json",
       transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
     },
-    sonarr: {
+    "servarr-nightly": {
+      defaultRegistryUrlTemplate: "https://{{packageName}}.servarr.com/v1/update/nightly/changes?os=linux&runtime=netcore",
+      format: "json",
+      transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
+    },
+    "sonarr-develop": {
       defaultRegistryUrlTemplate: "https://services.sonarr.tv/v1/update/develop/changes?os=linux&runtime=netcore&version=4.0",
       format: "json",
       transformTemplates: ['{"releases":[{"version": $[0].version}]}'],
@@ -39,26 +44,42 @@
   },
   packageRules: [
     {
-      description: ["Auto-merge container app updates"],
+      description: ["Auto-merge Application Updates"],
       matchFileNames: ["**/docker-bake.hcl"],
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,
     },
     {
-      description: ["Allowed Ubuntu versions for all container images"],
+      description: "Create Individual PRs for Application Base Image Updates",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/alpine/", "/golang/", "/node/", "/python/", "/ubuntu/"],
+      additionalBranchPrefix: "{{parentDir}}-",
+    },
+    {
+      description: ["Assign Application Labels"],
+      addLabels: ["app/{{parentDir}}"],
+      matchFileNames: ["**/docker-bake.hcl", "**/Dockerfile"],
+    },
+    {
+      description: ["Allowed Ubuntu Version"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
       allowedVersions: "/24\\.04/",
     },
     {
-      description: ["Allowed Python versions for Bazarr"],
+      description: ["Allowed Alpine Version"],
       matchDatasources: ["docker"],
-      matchFileNames: [
-        "apps/bazarr/Dockerfile",
-      ],
+      matchFileNames: ["**/Dockerfile"],
+      matchPackageNames: ["/alpine/"],
+      allowedVersions: "/3\\.21/",
+    },
+    {
+      description: ["Allowed Python Version"],
+      matchDatasources: ["docker"],
+      matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.12/",
+      allowedVersions: "/3\\.13-alpine3\\.21/",
     },
   ],
 }
