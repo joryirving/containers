@@ -6,7 +6,7 @@ variable "VERSION" {
 }
 
 variable "SOURCE" {
-  default = "https://github.com/morpheus65535/bazar"
+  default = "https://github.com/morpheus65535/bazarr"
 }
 
 group "default" {
