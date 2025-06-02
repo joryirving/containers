@@ -1,5 +1,9 @@
 target "docker-metadata-action" {}
 
+variable "APP" {
+  default = "free-game-notifier"
+}
+
 variable "VERSION" {
   // renovate: datasource=github-releases depName=j6nca/free-game-notifier
   default = "1.6.0"
@@ -26,6 +30,7 @@ target "image" {
 target "image-local" {
   inherits = ["image"]
   output = ["type=docker"]
+  tags = ["${APP}:${VERSION}"]
 }
 
 target "image-all" {

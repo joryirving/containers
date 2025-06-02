@@ -3,6 +3,7 @@
 name: Labeler
 
 on:
+  # zizmor: ignore[dangerous-triggers]
   pull_request_target:
 
 permissions:
@@ -25,14 +26,14 @@ jobs:
         uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
         id: app-token
         with:
-          app-id: "${{ secrets.BOT_APP_ID }}"
-          private-key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+          app-id: ${{ secrets.BOT_APP_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Setup Workflow Tools
-        run: brew install go-task
+      - name: Install Task
+        uses: arduino/setup-task@b91d5d2c96a56797b48ac1e0e89220bf64044611 # v2.0.0
+        with:
+          repo-token: ${{ steps.app-token.outputs.token }}
+          version: 3.x
 
       - name: Generate Label Config
         run: task generate-label-config --force
@@ -40,5 +41,5 @@ jobs:
       - name: Labeler
         uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
         with:
-          repo-token: "${{ steps.app-token.outputs.token }}"
+          repo-token: ${{ steps.app-token.outputs.token }}
           configuration-path: .github/labeler.yaml

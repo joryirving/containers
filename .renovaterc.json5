@@ -5,7 +5,7 @@
     {
       customType: "regex",
       description: "Process Annotations in Docker Bake",
-      fileMatch: ["(^|/)docker-bake\\.hcl$"],
+      managerFilePatterns: ["/(^|/)docker-bake\\.hcl$/"],
       matchStrings: [
         "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = \"(?<currentValue>[^\"]+)\"",
       ],
@@ -37,12 +37,20 @@
     plex: {
       defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
       format: "json",
-      transformTemplates: [
-        '{"releases":[{"version": computer.Linux.version}]}',
-      ],
+      transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
     },
   },
   packageRules: [
+    {
+      description: ["Release Rules for Application Updates"],
+      addLabels: ["app/{{parentDir}}"],
+      additionalBranchPrefix: "{{parentDir}}-",
+      commitMessageExtra: "( {{currentVersion}} → {{newVersion}} )",
+      commitMessageTopic: "{{depName}}",
+      matchFileNames: ["**/docker-bake.hcl", "**/Dockerfile"],
+      semanticCommitScope: "{{parentDir}}",
+      semanticCommitType: "release",
+    },
     {
       description: ["Auto-merge Application Updates"],
       matchFileNames: ["**/docker-bake.hcl"],
@@ -51,35 +59,24 @@
       ignoreTests: false,
     },
     {
-      description: "Create Individual PRs for Application Base Image Updates",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/alpine/", "/golang/", "/node/", "/python/", "/ubuntu/"],
-      additionalBranchPrefix: "{{parentDir}}-",
-    },
-    {
-      description: ["Assign Application Labels"],
-      addLabels: ["app/{{parentDir}}"],
-      matchFileNames: ["**/docker-bake.hcl", "**/Dockerfile"],
-    },
-    {
-      description: ["Allowed Ubuntu Version"],
+      description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
       allowedVersions: "/24\\.04/",
     },
     {
-      description: ["Allowed Alpine Version"],
+      description: ["Allowed Alpine Version for Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/alpine/"],
-      allowedVersions: "/3\\.21/",
+      allowedVersions: "/3\\.22/",
     },
     {
-      description: ["Allowed Python Version"],
+      description: ["Allowed Python Version for Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.13-alpine3\\.21/",
+      allowedVersions: "/3\\.13-alpine3\\.22/",
     },
   ],
 }

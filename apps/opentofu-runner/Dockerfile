@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.21 AS builder
+FROM docker.io/library/alpine:3.22 AS builder
 ARG TARGETARCH
 ARG VERSION
 RUN apk add --no-cache curl \
@@ -10,5 +10,4 @@ RUN apk add --no-cache curl \
 FROM ghcr.io/flux-iac/tf-runner:v0.16.0-rc.5
 USER root
 COPY --from=builder --chown=65532:65532 --chmod=755 /tmp/tofu /usr/local/bin/terraform
-
 USER 65532:65532
