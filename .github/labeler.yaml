@@ -17,8 +17,3 @@ area/renovate:
       - any-glob-to-any-file:
           - .renovate/**/*
           - .renovaterc.json5
-area/taskfile:
-  - changed-files:
-      - any-glob-to-any-file:
-          - .taskfiles/**/*
-          - Taskfile.yaml

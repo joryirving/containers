@@ -10,9 +10,10 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.{bash,sh}]
-indent_style = space
 indent_size = 4
 
 [Dockerfile]
-indent_style = space
+indent_size = 4
+
+[{*.just,*.justfile}]
 indent_size = 4
