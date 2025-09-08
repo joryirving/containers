@@ -8,7 +8,7 @@ GOSS_PATH = "{{config_root}}/.bin/goss/goss"
 "aqua:cli/cli" = "2.78.0"
 "aqua:GoogleContainerTools/container-structure-test" = "1.19.3"
 "aqua:jqlang/jq" = "1.8.1"
-"aqua:mikefarah/yq" = "4.47.1"
+"aqua:mikefarah/yq" = "4.47.2"
 
 [hooks]
 postinstall = [
