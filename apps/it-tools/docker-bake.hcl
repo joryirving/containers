@@ -5,12 +5,12 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=CorentinTh/it-tools
-  default = "v2024.10.22-7ca5933"
+  // renovate: datasource=github-releases depName=sharevb/it-tools
+  default = "v2025.8.31-13b8f041"
 }
 
 variable "SOURCE" {
-  default = "https://github.com/CorentinTh/it-tools"
+  default = "https://github.com/sharevb/it-tools"
 }
 
 group "default" {
