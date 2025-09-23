@@ -28,7 +28,7 @@ RUN \
     && curl -fsSL "https://github.com/mylar3/mylar3/archive/refs/tags/${VERSION}.tar.gz" \
         | tar xzf - -C /app --strip-components=1 \
     && pip install uv \
-    && uv pip --system install --requirement /app/requirements.txt \
+    && uv pip install --system --requirement /app/requirements.txt \
     && chown -R root:root /app && chmod -R 755 /app \
     && pip uninstall --yes uv && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
