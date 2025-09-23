@@ -3,8 +3,7 @@
 FROM docker.io/library/python:3.13-alpine3.22
 ARG VERSION
 
-ENV MYLAR_HOME=/app/mylar \
-    PYTHONWARNINGS="ignore"
+ENV PYTHONWARNINGS="ignore"
 
 USER root
 WORKDIR /app

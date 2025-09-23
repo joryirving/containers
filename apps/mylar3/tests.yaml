@@ -4,7 +4,7 @@ process:
   python:
     running: true
 port:
-  tcp6:8090:
+  tcp:8090:
     listening: true
 http:
   http://localhost:8090:
