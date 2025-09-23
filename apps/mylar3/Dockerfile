@@ -29,11 +29,12 @@ RUN \
         | tar xzf - -C /app --strip-components=1 \
     && pip install uv \
     && uv pip install --system --requirement /app/requirements.txt \
+    && uv pip install --system standard-imghdr \
     && chown -R root:root /app && chmod -R 755 /app \
     && pip uninstall --yes uv && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
 
-COPY . /app/mylar
+COPY . /
 
 USER nobody:nogroup
 WORKDIR /config
