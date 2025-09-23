@@ -6,17 +6,29 @@ ARG VERSION
 USER root
 WORKDIR /app
 
-ADD https://github.com/mylar3/mylar3.git#${VERSION} .
 RUN \
     apk add --no-cache \
-        git \
-        nodejs \
+        7zip \
+        bash \
+        ca-certificates \
+        catatonit \
+        coreutils \
+        curl \
+        jq \
+        nano \
+        tzdata \
+    && \
+    apk add --no-cache --virtual=.build-deps \
         build-base \
+        cargo \
         libffi-dev \
-        zlib-dev \
-        jpeg-dev \
+        musl-dev \
+        openssl-dev \
+    && mkdir -p /app \
+    && curl -fsSL "https://github.com/mylar3/mylar3/archive/refs/tags/${VERSION}.tar.gz" \
+        | tar xzf - -C /app --strip-components=1 \
     && pip install uv \
-    && uv pip install --requirement /app/mylar/requirements.txt \
+    && uv pip --system install --requirement /app/requirements.txt \
     && chown -R root:root /app && chmod -R 755 /app \
     && pip uninstall --yes uv && apk del --purge .build-deps \
     && rm -rf /root/.cache /root/.cargo /tmp/*
