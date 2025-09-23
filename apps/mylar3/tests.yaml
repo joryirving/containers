@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/goss-org/goss/master/docs/schema.yaml
 process:
-  mylar:
+  python:
     running: true
 port:
   tcp6:8090:
@@ -9,3 +9,8 @@ port:
 http:
   http://localhost:8090:
     status: 200
+file:
+  /usr/local/bin/python:
+    exists: true
+  /usr/bin/unrar:
+    exists: true
