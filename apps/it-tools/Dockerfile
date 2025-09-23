@@ -3,11 +3,17 @@
 FROM docker.io/library/node:22-alpine AS builder
 ARG VERSION
 WORKDIR /tmp
-ADD https://github.com/CorentinTh/it-tools.git#${VERSION} .
-RUN npm install -g corepack@latest \
+ADD https://github.com/sharevb/it-tools.git#${VERSION} .
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    bash \
+    git \
+    && npm install -g corepack@latest \
     && corepack enable  \
     && corepack prepare pnpm@latest --activate \
-    && pnpm install --prefer-offline \
+    && pnpm install --prefer-offline --frozen-lockfile \
     && pnpm build
 
 FROM ghcr.io/nginxinc/nginx-unprivileged:1.27-alpine
