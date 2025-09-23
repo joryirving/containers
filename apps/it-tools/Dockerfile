@@ -9,8 +9,8 @@ RUN apk add --no-cache \
     make \
     g++ \
     bash \
-    git
-RUN npm install -g corepack@latest \
+    git \
+    && npm install -g corepack@latest \
     && corepack enable  \
     && corepack prepare pnpm@latest --activate \
     && pnpm install --prefer-offline --frozen-lockfile \
