@@ -1,11 +1,11 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-action.json
-name: Application Tests
-description: Takes an app, container image and token then runs container tests
+name: App Tests
+description: Takes an app, app image and token then runs app tests
 
 inputs:
   app:
-    description: Application Name
+    description: App Name
     required: true
   image:
     description: Image
@@ -17,19 +17,15 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Setup Actions Script Path
-      shell: bash
-      run: |
-        echo "${{ github.action_path }}" >> $GITHUB_PATH
-
-    - name: Setup Testing Tools
-      shell: bash
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
-      run: |
-        setup.sh "${{ inputs.app }}"
+    - name: Setup Go
+      uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+      with:
+        go-version-file: go.mod
 
     - name: Run Tests
       shell: bash
-      run: |
-        run.sh "${{ inputs.app }}" "${{ inputs.image }}"
+      env:
+        APP: ${{ inputs.app }}
+        TEST_IMAGE: ${{ inputs.image }}
+      run: |-
+        go test -v ./apps/${APP}/...
