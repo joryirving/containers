@@ -2,26 +2,13 @@ package main
 
 import (
 	"context"
-	"os"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
-	"github.com/testcontainers/testcontainers-go"
+	"github.com/joryirving/containers/testhelpers"
 )
 
 func Test(t *testing.T) {
 	ctx := context.Background()
-
-	image := os.Getenv("TEST_IMAGE")
-	if image == "" {
-		image = "ghcr.io/joryirving/busybox:rolling"
-	}
-
-	app, err := testcontainers.Run(
-		ctx, image,
-		testcontainers.WithCmdArgs("test", "-f", "/etc/os-release"),
-	)
-	testcontainers.CleanupContainer(t, app)
-	require.NoError(t, err)
+	image := testhelpers.GetTestImage("ghcr.io/joryirving/busybox:rolling")
+	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "/bin/busybox", "--list")
 }
