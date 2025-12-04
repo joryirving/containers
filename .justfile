@@ -13,7 +13,7 @@ default:
 [working-directory('.cache')]
 local-build app:
     rsync -aqIP {{ justfile_dir() }}/include/ {{ justfile_dir() }}/apps/{{ app }}/ .
-    docker buildx bake --no-cache --metadata-file docker-bake.json --set=*.output=type=docker --load
+    docker buildx bake --no-cache --progress=plain --metadata-file docker-bake.json --set=*.output=type=docker --load
     TEST_IMAGE="$(jq -r '."image-local"."image.name" | sub("^docker.io/library/"; "")' docker-bake.json)" go test -v {{ justfile_dir() }}/apps/{{ app }}/...
 
 [doc('Trigger a remote build')]
