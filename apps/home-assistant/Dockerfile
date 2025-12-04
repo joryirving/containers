@@ -84,8 +84,8 @@ RUN \
     HOME_ASSISTANT_BASE=$(curl -fsSL "https://raw.githubusercontent.com/home-assistant/core/refs/tags/${VERSION}/.github/workflows/builder.yml" | grep 'BASE_IMAGE_VERSION: ' | sed 's|.*: "||' | sed 's|".*||') \
     && \
     uv pip install --only-binary=:all: \
-        --requirement "https://raw.githubusercontent.com/home-assistant/docker/${HOME_ASSISTANT_BASE}/requirements.txt" \
-    && \
+        --requirement "https://raw.githubusercontent.com/home-assistant/docker/${HOME_ASSISTANT_BASE}/requirements.txt"
+    RUN \
     uv pip install --only-binary=:all: --requirement /tmp/requirements_all.txt \
     && \
     uv pip install --only-binary=:all: homeassistant=="${VERSION}" \
