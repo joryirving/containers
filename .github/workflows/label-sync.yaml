@@ -4,7 +4,7 @@ name: Label Sync
 
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: 30 1 * * *
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,8 @@ jobs:
           repo: casey/just
 
       - name: Generate Label Config
-        run: just generate-label-config
+        run: |-
+          just generate-label-config
 
       - name: Sync Labels
         uses: EndBug/label-sync@52074158190acb45f3077f9099fea818aa43f97a # v2.3.3

@@ -21,4 +21,4 @@ RUN \
     && apk del --purge .build-deps \
     && rm -rf  /tmp/*
 
-CMD rsync -av /plugins/* $CNI_BIN_DIR
+CMD rsync -av --exclude=LICENSE --exclude=README.md /plugins/* $CNI_BIN_DIR
