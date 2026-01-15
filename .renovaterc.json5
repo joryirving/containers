@@ -7,7 +7,7 @@
       description: "Process Annotations in Docker Bake",
       managerFilePatterns: ["/(^|/)docker-bake\\.hcl$/"],
       matchStrings: [
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = \"(?<currentValue>[^\"]+)\"",
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\\n.+ = "(?<currentValue>[^"]+)"',
       ],
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
@@ -47,7 +47,9 @@
     plex: {
       defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
       format: "json",
-      transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
+      transformTemplates: [
+        '{"releases":[{"version": computer.Linux.version}]}',
+      ],
     },
   },
   packageRules: [
@@ -79,14 +81,14 @@
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/alpine/"],
-      allowedVersions: "/3\\.22/",
+      allowedVersions: "/3\\.23/",
     },
     {
       description: ["Allowed Python Version for Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.13-alpine3\\.22/",
+      allowedVersions: "/3\\.13-alpine3\\.23/",
     },
   ],
 }
