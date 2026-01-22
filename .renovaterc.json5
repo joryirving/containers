@@ -1,6 +1,12 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["github>joryirving/renovate-config"],
+  hostRules: [
+    {
+      matchHost: "repology.org",
+      abortOnError: false
+    }
+  ],
   customManagers: [
     {
       customType: "regex",
