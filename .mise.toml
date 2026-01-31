@@ -3,7 +3,7 @@
 "aqua:cli/cli" = "2.86.0"
 "aqua:evilmartians/lefthook" = "2.0.16"
 "aqua:jqlang/jq" = "1.8.1"
-"aqua:mikefarah/yq" = "4.52.1"
+"aqua:mikefarah/yq" = "4.52.2"
 "go" = "1.25"
 
 [hooks]
