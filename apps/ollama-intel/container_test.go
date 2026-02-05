@@ -1,1 +1,20 @@
-cGFja2FnZSBjb250YWluZXIKCmltcG9ydCAoCgkidGVzdGluZyIKCgkiZ2l0aHViLmNvbS9qb3J5aXJ2aW5nL2NvbnRhaW5lcnMvdGVzdGhlbHBlcnMiCikKCmZ1bmMgVGVzdE9sbGFtYUludGVsKHQgKnRlc3RpbmcuVCkgewoJY29udGFpbmVyIDo9ICZ0ZXN0aGVscGVycy5Db250YWluZXJ7CgkJSW1hZ2U6ICAgIm9sbGFtYS1pbnRlbDpsYXRlc3QiLAoJCUNvbW1hbmQ6IFtdc3RyaW5neyJvbGxhbWEiLCAidmVyc2lvbiJ9LAoJfQoKCW91dHB1dCA6PSBjb250YWluZXIuUnVuKHQpCgoJaWYgIW91dHB1dC5Bc3NlcnQodCkuQ29udGFpbnMoIm9sbGFtYSB2ZXJzaW9uIikgewoJCXQuRXJyb3IoIkV4cGVjdGVkIG9sbGFtYSB2ZXJzaW9uIG91dHB1dCIpCgl9Cn0=
+package container
+
+import (
+	"testing"
+
+	"github.com/joryirving/containers/testhelpers"
+)
+
+func TestOllamaIntel(t *testing.T) {
+	container := &testhelpers.Container{
+		Image:   "ollama-intel:latest",
+		Command: []string{"ollama", "version"},
+	}
+
+	output := container.Run(t)
+
+	if !output.Assert(t).Contains("ollama version") {
+		t.Error("Expected ollama version output")
+	}
+}

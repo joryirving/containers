@@ -1,1 +1,116 @@
-IyBzeW50YXg9ZG9ja2VyL2RvY2tlcmZpbGU6MQoKQVJHIFRBUkdFVEFSQ0gKQVJHIEFSQ0g9JHtUQVJHRVRBUkNIL2FtZDY0L2FtZDY0fQpBUkcgQVJDSD0ke1RBUkdFVEFSQ0gvYXJtNjQvYWFyY2g2NH0KCiMgVXNlIFVidW50dSBiYXNlIGltYWdlIHRvIHN1cHBvcnQgSW50ZWwgR1BVIGxpYnJhcmllcwpGUk9NIHVidW50dToyMi4wNCBBUyBidWlsZGVyCgojIEF2b2lkIHByb21wdHMgZnJvbSBhcHQKRU5WIERFQklBTl9GUk9OVEVORD1ub25pbnRlcmFjdGl2ZQoKIyBJbnN0YWxsIGRlcGVuZGVuY2llcyBuZWVkZWQgZm9yIEludGVsIEdQVSBzdXBwb3J0ClJVTiBhcHQtZ2V0IHVwZGF0ZSAmJiBhcHQtZ2V0IGluc3RhbGwgLXkgXAogICAgd2dldCBcCiAgICBjdXJsIFwKICAgIGNhLWNlcnRpZmljYXRlcyBcCiAgICBnbnVwZyBcCiAgICBsc2ItcmVsZWFzZSBcCiAgICAmJiBybSAtcmYgL3Zhci9saWIvYXB0L2xpc3RzLyoKCiMgQWRkIEludGVsIEdQVSByZXBvc2l0b3JpZXMKUlVOIHdnZXQgLU8tIGh0dHBzOi8vcmVwb3NpdG9yaWVzLmludGVsLmNvbS9ncmFwaGljcy9pbnRlbC1ncmFwaGljcy5rZXkgfCBncGcgLS1kZWFybW9yIC1vIC91c3Ivc2hhcmUva2V5cmluZ3MvaW50ZWwtZ3JhcGhpY3MuZ3BnClJVTiBlY2hvICJkZWIgW2FyY2g9YW1kNjQgc2lnbmVkLWJ5PS91c3Ivc2hhcmUva2V5cmluZ3MvaW50ZWwtZ3JhcGhpY3MuZ3BnXSBodHRwczovL3JlcG9zaXRvcmllcy5pbnRlbC5jb20vZ3JhcGhpY3MvdWJ1bnR1ICQobHNiX3JlbGVhc2UgLWNzKSBtYWluIiB8IHRlZSAvZXRjL2FwdC9zb3VyY2VzLmxpc3QuZC9pbnRlbC5ncHUubGlzdAoKIyBJbnN0YWxsIEludGVsIEdQVSBydW50aW1lIGxpYnJhcmllcwpSVU4gYXB0LWdldCB1cGRhdGUgJiYgYXB0LWdldCBpbnN0YWxsIC15IFwKICAgIGludGVsLW9wZW5jbC1pY2QgXAogICAgaW50ZWwtbGV2ZWwtemVyby1ncHUgXAogICAgaW50ZWwtbWVkaWEtdmEtZHJpdmVyIFwKICAgIGludGVsLWdtbWxpYiBcCiAgICBpbnRlbC1pZ2MtY29yZSBcCiAgICBpbnRlbC1pZ2Mtb3BlbmNsIFwKICAgIGxldmVsLXplcm8gXAogICAgJiYgcm0gLXJmIC92YXIvbGliL2FwdC9saXN0cy8qCgojIERvd25sb2FkIE9sbGFtYSBiaW5hcnkKUlVOIEFSQ0g9JCh1bmFtZSAtbSkgJiYgXAogICAgaWYgWyAiJEFSQ0giID0gIng4Nl82NCIgXTsgdGhlbiBBUkNIPSJhbWQ2NCI7IGZpICYmIFwKICAgIGlmIFsgIiRBUkNIIiA9ICJhYXJjaDY0IiBdOyB0aGVuIEFSQ0g9ImFybTY0IjsgZmkgJiYgXAogICAgY3VybCAtZnNTTCBodHRwczovL2dpdGh1Yi5jb20vb2xsYW1hL29sbGFtYS9yZWxlYXNlcy9sYXRlc3QvZG93bmxvYWQvb2xsYW1hX2xpbnV4XyRBUkNILnRneiB8IHRhciAteHogLUMgL3RtcCAmJiBcCiAgICBtdiAvdG1wL29sbGFtYSAvdXNyL2Jpbi9vbGxhbWEgJiYgXAogICAgY2htb2QgK3ggL3Vzci9iaW4vb2xsYW1hCgojIENyZWF0ZSBhIG5vbi1yb290IHVzZXIgZm9yIHJ1bm5pbmcgT2xsYW1hClJVTiBncm91cGFkZCAtZyAxMDAwIG9sbGFtYSAmJiBcCiAgICB1c2VyYWRkIC1tIC11IDEwMDAgLWcgb2xsYW1hIC1zIC9iaW4vYmFzaCBvbGxhbWEKCiMgQ3JlYXRlIG1vZGVscyBkaXJlY3Rvcnkgd2l0aCBwcm9wZXIgcGVybWlzc2lvbnMKUlVOIG1rZGlyIC1wIC9tb2RlbHMgJiYgXAogICAgY2hvd24gb2xsYW1hOm9sbGFtYSAvbW9kZWxzICYmIFwKICAgIGNobW9kIDc1NSAvbW9kZWxzCgojIEZpbmFsIHN0YWdlCkZST00gdWJ1bnR1OjIyLjA0CgojIEF2b2lkIHByb21wdHMgZnJvbSBhcHQKRU5WIERFQklBTl9GUk9OVEVORD1ub25pbnRlcmFjdGl2ZQoKIyBJbnN0YWxsIG1pbmltYWwgcnVudGltZSBkZXBlbmRlbmNpZXMKUlVOIGFwdC1nZXQgdXBkYXRlICYmIGFwdC1nZXQgaW5zdGFsbCAteSBcCiAgICBjYS1jZXJ0aWZpY2F0ZXMgXAogICAgY3VybCBcCiAgICAmJiBybSAtcmYgL3Zhci9saWIvYXB0L2xpc3RzLyoKCiMgQ29weSBJbnRlbCBHUFUgcnVudGltZSBsaWJyYXJpZXMgZnJvbSBidWlsZGVyCkNPUFkgLS1mcm9tPWJ1aWxkZXIgL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJpZ2MqIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvCkNPUFkgLS1mcm9tPWJ1aWxkZXIgL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJpZ2RmY2wqIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvCkNPUFkgLS1mcm9tPWJ1aWxkZXIgL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJpZ2Z4Y21ydCogL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS8KQ09QWSAtLWZyb209YnVpbGRlciAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L2xpYmlnZHJjbCogL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS8KQ09QWSAtLWZyb209YnVpbGRlciAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251L2xpYnplKiAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251LwpDT1BZIC0tZnJvbT1idWlsZGVyIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliemV4KiAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251LwpDT1BZIC0tZnJvbT1idWlsZGVyIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGliT3BlbkNMKiAvdXNyL2xpYi94ODZfNjQtbGludXgtZ251LwpDT1BZIC0tZnJvbT1idWlsZGVyIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvbGlidmEqIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvCkNPUFkgLS1mcm9tPWJ1aWxkZXIgL3Vzci9saWIveDg2XzY0LWxpbnV4LWdudS9saWJkcm0qIC91c3IvbGliL3g4Nl82NC1saW51eC1nbnUvCgojIENvcHkgT2xsYW1hIGJpbmFyeQpDT1BZIC0tZnJvbT1idWlsZGVyIC91c3IvYmluL29sbGFtYSAvdXNyL2Jpbi9vbGxhbWEKCiMgQ29weSB1c2VyIGFuZCBncm91cCBmcm9tIGJ1aWxkZXIKQ09QWSAtLWZyb209YnVpbGRlciAvZXRjL3Bhc3N3ZCAvZXRjL3Bhc3N3ZApDT1BZIC0tZnJvbT1idWlsZGVyIC9ldGMvZ3JvdXAgL2V0Yy9ncm91cAoKIyBDcmVhdGUgbW9kZWxzIGRpcmVjdG9yeQpSVU4gbWtkaXIgLXAgL21vZGVscyAmJiBcCiAgICBjaG93biBvbGxhbWE6b2xsYW1hIC9tb2RlbHMKCiMgU3dpdGNoIHRvIG5vbi1yb290IHVzZXIKVVNFUiBvbGxhbWE6b2xsYW1hCgojIFNldCB3b3JraW5nIGRpcmVjdG9yeQpXT1JLRElSIC9ob21lL29sbGFtYQoKIyBFeHBvc2UgcG9ydApFWFBPU0UgMTE0MzQKCiMgQ3JlYXRlIHN0YXJ0dXAgc2NyaXB0ClJVTiBlY2hvICcjIS9iaW4vYmFzaFxuXApleHBvcnQgT0xMQU1BX0hPU1Q9IiR7T0xMQU1BX0hPU1Q6LTAuMC4wLjB9IlxuXApleHBvcnQgT0xMQU1BX0lOVEVMX0dQVT0iJHtPTExBTUFfSU5URUxfR1BVOi10cnVlfSJcblwKZXhwb3J0IE9MTEFNQV9OVU1fR1BVPSIke09MTEFNQV9OVU1fR1BVOi05OTl9IlxuXApleHBvcnQgT0xMQU1BX0NPTlRFWFRfTEVOR1RIPSIke09MTEFNQV9DT05URVhUX0xFTkdUSDotNjU1MzZ9IlxuXApleHBvcnQgWkVTX0VOQUJMRV9TWVNNQU49IiR7WkVTX0VOQUJMRV9TWVNNQU46LTF9IlxuXApleHBvcnQgbm9fcHJveHk9IiR7bm9fcHJveHk6LWxvY2FsaG9zdCwxMjcuMC4wLjF9IlxuXApleGVjIC91c3IvYmluL29sbGFtYSBzZXJ2ZScgPiAvaG9tZS9vbGxhbWEvc3RhcnR1cC5zaCAmJiBcCmNobW9kICt4IC9ob21lL29sbGFtYS9zdGFydHVwLnNoCgojIFNldCBoZWFsdGggY2hlY2sKSEVBTFRIQ0hFQ0sgLS1pbnRlcnZhbD0zMHMgLS10aW1lb3V0PTEwcyAtLXN0YXJ0LXBlcmlvZD01cyAtLXJldHJpZXM9MyBcCiAgICBDTUQgY3VybCAtZiBodHRwOi8vbG9jYWxob3N0OjExNDM0L2FwaS92ZXJzaW9uIHx8IGV4aXQgMQoKIyBWb2x1bWUgZm9yIG1vZGVscwpWT0xVTUUgWyIvbW9kZWxzIl0KCiMgRW50cnkgcG9pbnQKRU5UUllQT0lOVCBbIi9ob21lL29sbGFtYS9zdGFydHVwLnNoIl0=
+# syntax=docker/dockerfile:1
+
+ARG TARGETARCH
+ARG ARCH=${TARGETARCH/amd64/amd64}
+ARG ARCH=${TARGETARCH/arm64/aarch64}
+
+# Use Ubuntu base image to support Intel GPU libraries
+FROM ubuntu:22.04 AS builder
+
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies needed for Intel GPU support
+RUN apt-get update && apt-get install -y \
+    wget \
+    curl \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add Intel GPU repositories
+RUN wget -O- https://repositories.intel.com/graphics/intel-graphics.key | gpg --dearmor -o /usr/share/keyrings/intel-graphics.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/intel.gpu.list
+
+# Install Intel GPU runtime libraries
+RUN apt-get update && apt-get install -y \
+    intel-opencl-icd \
+    intel-level-zero-gpu \
+    intel-media-va-driver \
+    intel-gmmlib \
+    intel-igc-core \
+    intel-igc-opencl \
+    level-zero \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download Ollama binary
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then ARCH="amd64"; fi && \
+    if [ "$ARCH" = "aarch64" ]; then ARCH="arm64"; fi && \
+    curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_linux_$ARCH.tgz | tar -xz -C /tmp && \
+    mv /tmp/ollama /usr/bin/ollama && \
+    chmod +x /usr/bin/ollama
+
+# Create a non-root user for running Ollama
+RUN groupadd -g 1000 ollama && \
+    useradd -m -u 1000 -g ollama -s /bin/bash ollama
+
+# Create models directory with proper permissions
+RUN mkdir -p /models && \
+    chown ollama:ollama /models && \
+    chmod 755 /models
+
+# Final stage
+FROM ubuntu:22.04
+
+# Avoid prompts from apt
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install minimal runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Intel GPU runtime libraries from builder
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libigc* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libigdfcl* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libigfxcmrt* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libigdrcl* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libze* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libzex* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libOpenCL* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libva* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libdrm* /usr/lib/x86_64-linux-gnu/
+
+# Copy Ollama binary
+COPY --from=builder /usr/bin/ollama /usr/bin/ollama
+
+# Copy user and group from builder
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+# Create models directory
+RUN mkdir -p /models && \
+    chown ollama:ollama /models
+
+# Switch to non-root user
+USER ollama:ollama
+
+# Set working directory
+WORKDIR /home/ollama
+
+# Expose port
+EXPOSE 11434
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+export OLLAMA_HOST="${OLLAMA_HOST:-0.0.0.0}"\n\
+export OLLAMA_INTEL_GPU="${OLLAMA_INTEL_GPU:-true}"\n\
+export OLLAMA_NUM_GPU="${OLLAMA_NUM_GPU:-999}"\n\
+export OLLAMA_CONTEXT_LENGTH="${OLLAMA_CONTEXT_LENGTH:-65536}"\n\
+export ZES_ENABLE_SYSMAN="${ZES_ENABLE_SYSMAN:-1}"\n\
+export no_proxy="${no_proxy:-localhost,127.0.0.1}"\n\
+exec /usr/bin/ollama serve' > /home/ollama/startup.sh && \
+chmod +x /home/ollama/startup.sh
+
+# Set health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:11434/api/version || exit 1
+
+# Volume for models
+VOLUME ["/models"]
+
+# Entry point
+ENTRYPOINT ["/home/ollama/startup.sh"]

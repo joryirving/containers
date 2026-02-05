@@ -1,1 +1,42 @@
-dGFyZ2V0ICJkb2NrZXItbWV0YWRhdGEtYWN0aW9uIiB7fQoKdmFyaWFibGUgIkFQUCIgewogIGRlZmF1bHQgPSAib2xsYW1hLWludGVsIgp9Cgp2YXJpYWJsZSAiVkVSU0lPTiIgewogIC8vIHJlbm92YXRlOiBkYXRhc291cmNlPWdpdGh1Yi1yZWxlYXNlcyBkZXBOYW1lPW9sbGFtYS9vbGxhbWEKICBkZWZhdWx0ID0gIjAuNS40Igp9Cgp2YXJpYWJsZSAiU09VUkNFIiB7CiAgZGVmYXVsdCA9ICJodHRwczovL2dpdGh1Yi5jb20vam9yeWlydmluZy9jb250YWluZXJzIgp9Cgpncm91cCAiZGVmYXVsdCIgewogIHRhcmdldHMgPSBbImltYWdlLWxvY2FsIl0KfQoKdGFyZ2V0ICJpbWFnZSIgewogIGluaGVyaXRzID0gWyJkb2NrZXItbWV0YWRhdGEtYWN0aW9uIl0KICBhcmdzID0gewogICAgVkVSU0lPTiA9ICIke1ZFUlNJT059IgogIH0KICBsYWJlbHMgPSB7CiAgICAib3JnLm9wZW5jb250YWluZXJzLmltYWdlLnNvdXJjZSIgPSAiJHtTT1VSQ0V9IgogIH0KfQoKdGFyZ2V0ICJpbWFnZS1sb2NhbCIgewogIGluaGVyaXRzID0gWyJpbWFnZSJdCiAgb3V0cHV0ID0gWyJ0eXBlPWRvY2tlciJdCiAgdGFncyA9IFsiJHtBUFB9OiR7VkVSU0lPTn0iLCAiJHtBUFB9OmxhdGVzdCJdCn0KCnRhcmdldCAiaW1hZ2UtYWxsIiB7CiAgaW5oZXJpdHMgPSBbImltYWdlIl0KICBwbGF0Zm9ybXMgPSBbCiAgICAibGludXgvYW1kNjQiCiAgXQogICMgTm90ZTogT25seSBhbWQ2NCBpcyBzdXBwb3J0ZWQgZm9yIEludGVsIEdQVSBhY2NlbGVyYXRpb24KfQ==
+target "docker-metadata-action" {}
+
+variable "APP" {
+  default = "ollama-intel"
+}
+
+variable "VERSION" {
+  // renovate: datasource=github-releases depName=ollama/ollama
+  default = "0.5.4"
+}
+
+variable "SOURCE" {
+  default = "https://github.com/joryirving/containers"
+}
+
+group "default" {
+  targets = ["image-local"]
+}
+
+target "image" {
+  inherits = ["docker-metadata-action"]
+  args = {
+    VERSION = "${VERSION}"
+  }
+  labels = {
+    "org.opencontainers.image.source" = "${SOURCE}"
+  }
+}
+
+target "image-local" {
+  inherits = ["image"]
+  output = ["type=docker"]
+  tags = ["${APP}:${VERSION}", "${APP}:latest"]
+}
+
+target "image-all" {
+  inherits = ["image"]
+  platforms = [
+    "linux/amd64"
+  ]
+  # Note: Only amd64 is supported for Intel GPU acceleration
+}
