@@ -33,8 +33,8 @@ RUN curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_
     mv /tmp/ollama /usr/bin/ollama && \
     chmod +x /usr/bin/ollama
 
-# Final stage - use Ubuntu slim
-FROM ubuntu:22.04-slim
+# Final stage - use regular Ubuntu
+FROM ubuntu:22.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
