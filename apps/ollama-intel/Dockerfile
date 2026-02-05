@@ -17,7 +17,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     gnupg \
     lsb-release \
-    software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Intel GPU repositories
@@ -45,10 +44,21 @@ FROM ubuntu:22.04
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal runtime dependencies
+# Add Intel GPU repositories and install runtime dependencies in final stage
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
+    wget \
+    gnupg \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add Intel GPU repositories in final stage
+RUN curl -fsSL https://repositories.intel.com/graphics/intel-graphics.key | gpg --dearmor -o /usr/share/keyrings/intel-graphics.gpg
+RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/intel.gpu.list
+
+# Update package lists and install Intel GPU runtime libraries in final stage
+RUN apt-get update && apt-get install -y \
     intel-opencl-icd \
     intel-level-zero-gpu \
     intel-media-va-driver \
