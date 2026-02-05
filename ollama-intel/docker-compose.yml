@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ollama:
+    build:
+      context: .
+      dockerfile: Dockerfile-ollama-intel
+    image: joryirving/ollama-intel:latest
+    container_name: ollama-intel
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./models:/models  # Mount local directory for models
+    devices:
+      - /dev/dri:/dev/dri  # Intel GPU access
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_INTEL_GPU=true
+      - OLLAMA_NUM_GPU=999
+      - OLLAMA_CONTEXT_LENGTH=65536
+      - ZES_ENABLE_SYSMAN=1
+      - no_proxy=localhost,127.0.0.1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: intel
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
