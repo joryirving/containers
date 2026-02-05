@@ -22,8 +22,8 @@ RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] http
 # Update package lists and install Intel GPU runtime libraries
 RUN apt-get update && apt-get install -y \
     intel-opencl-icd \
-    intel-level-zero-gpu \
     intel-media-va-driver \
+    intel-level-zero \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Ollama binary for AMD64 (since we only have AMD64 nodes with Intel GPUs)
@@ -53,8 +53,8 @@ RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] http
 # Update package lists and install Intel GPU runtime libraries in final stage
 RUN apt-get update && apt-get install -y \
     intel-opencl-icd \
-    intel-level-zero-gpu \
     intel-media-va-driver \
+    intel-level-zero \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Ollama binary
