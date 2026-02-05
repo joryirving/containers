@@ -19,12 +19,11 @@ RUN mkdir -p /tmp/gpu && \
     cd /tmp/gpu && \
     apt-get update && \
     apt-get install -y wget && \
-    wget https://github.com/oneapi-src/level-zero/releases/download/v1.21.9/level-zero_1.21.9+u24.04_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-core_2.8.3+18762_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-opencl_2.8.3+18762_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-level-zero-gpu_1.6.32961.7_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-opencl-icd_25.09.32961.7_amd64.deb && \
-    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.6.0/libigdgmm12_22.6.0_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-core-2_2.27.10+20617_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-opencl-2_2.27.10+20617_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
     dpkg -i *.deb && \
     rm -rf /tmp/gpu && \
     apt-get clean && \
@@ -48,12 +47,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* && \
     mkdir -p /tmp/gpu && \
     cd /tmp/gpu && \
-    wget https://github.com/oneapi-src/level-zero/releases/download/v1.21.9/level-zero_1.21.9+u24.04_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-core_2.8.3+18762_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-opencl_2.8.3+18762_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-level-zero-gpu_1.6.32961.7_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-opencl-icd_25.09.32961.7_amd64.deb && \
-    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.6.0/libigdgmm12_22.6.0_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-core-2_2.27.10+20617_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-opencl-2_2.27.10+20617_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
     dpkg -i *.deb && \
     rm -rf /tmp/gpu && \
     apt-get clean && \
