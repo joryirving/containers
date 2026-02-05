@@ -1,9 +1,5 @@
 # syntax=docker/dockerfile:1
 
-ARG TARGETARCH
-ARG BUILDARCH
-ARG BUILDX_ARCH
-
 # Use Ubuntu base image to support Intel GPU libraries
 FROM ubuntu:22.04 AS builder
 
@@ -30,13 +26,8 @@ RUN apt-get update && apt-get install -y \
     intel-media-va-driver \
     && rm -rf /var/lib/apt/lists/*
 
-# Download Ollama binary based on architecture
-RUN case "$(uname -m)" in \
-        x86_64)  export OLLAMA_ARCH=amd64 ;; \
-        aarch64)  export OLLAMA_ARCH=arm64 ;; \
-        *)        export OLLAMA_ARCH=amd64 ;; \
-    esac && \
-    curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_linux_${OLLAMA_ARCH}.tgz | tar -xz -C /tmp && \
+# Download Ollama binary for AMD64 (since we only have AMD64 nodes with Intel GPUs)
+RUN curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_linux_amd64.tgz | tar -xz -C /tmp && \
     mv /tmp/ollama /usr/bin/ollama && \
     chmod +x /usr/bin/ollama
 
