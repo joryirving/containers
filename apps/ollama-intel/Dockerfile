@@ -14,19 +14,21 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Add Intel GPU repositories
-RUN curl -fsSL https://repositories.intel.com/graphics/intel-graphics.key | gpg --dearmor -o /usr/share/keyrings/intel-graphics.gpg
-RUN echo "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] https://repositories.intel.com/graphics/ubuntu jammy main" | tee /etc/apt/sources.list.d/intel.gpu.list
-
-# Update package lists and install Intel GPU runtime libraries
-RUN apt-get update && apt-get install -y \
-    intel-opencl-icd \
-    intel-media-va-driver \
-    level-zero \
-    intel-igc-opencl \
-    intel-igc-core \
-    libigdgmm12 \
-    && rm -rf /var/lib/apt/lists/*
+# Download and install Intel GPU runtime libraries directly from Intel releases
+RUN mkdir -p /tmp/gpu && \
+    cd /tmp/gpu && \
+    apt-get update && \
+    apt-get install -y wget && \
+    wget https://github.com/oneapi-src/level-zero/releases/download/v1.21.9/level-zero_1.21.9+u24.04_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-core_2.8.3+18762_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-opencl_2.8.3+18762_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-level-zero-gpu_1.6.32961.7_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-opencl-icd_25.09.32961.7_amd64.deb && \
+    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.6.0/libigdgmm12_22.6.0_amd64.deb && \
+    dpkg -i *.deb && \
+    rm -rf /tmp/gpu && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Download Ollama binary for AMD64 (since we only have AMD64 nodes with Intel GPUs)
 RUN curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_linux_amd64.tgz | tar -xz -C /tmp && \
@@ -42,13 +44,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Intel GPU runtime libraries in final stage
 RUN apt-get update && apt-get install -y \
     ca-certificates \
-    intel-opencl-icd \
-    intel-media-va-driver \
-    level-zero \
-    intel-igc-opencl \
-    intel-igc-core \
-    libigdgmm12 \
-    && rm -rf /var/lib/apt/lists/*
+    wget \
+    && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /tmp/gpu && \
+    cd /tmp/gpu && \
+    wget https://github.com/oneapi-src/level-zero/releases/download/v1.21.9/level-zero_1.21.9+u24.04_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-core_2.8.3+18762_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.8.3/intel-igc-opencl_2.8.3+18762_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-level-zero-gpu_1.6.32961.7_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/25.09.32961.7/intel-opencl-icd_25.09.32961.7_amd64.deb && \
+    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.6.0/libigdgmm12_22.6.0_amd64.deb && \
+    dpkg -i *.deb && \
+    rm -rf /tmp/gpu && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy Ollama binary
 COPY --from=builder /usr/bin/ollama /usr/bin/ollama
