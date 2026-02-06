@@ -25,7 +25,7 @@ RUN mkdir build && cd build && \
     ninja
 
 ARG VERSION
-FROM ollama/ollama:${VERSION} AS ollama-base
+FROM ollama/ollama:latest AS ollama-base
 
 FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04
 
