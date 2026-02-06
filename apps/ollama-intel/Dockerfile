@@ -5,7 +5,7 @@
 # =========================
 FROM intel/oneapi-basekit:2025.3.1-0-devel-ubuntu22.04 AS builder
 
-ARG VERSION=v0.15.4
+ARG VERSION
 WORKDIR /build
 
 # Minimal build deps
@@ -33,12 +33,6 @@ RUN mkdir build && cd build && \
     ninja -j$(nproc)
 
 # =========================
-# Ollama stage
-# =========================
-FROM ollama/ollama:latest AS ollama-base
-# This grabs the Ollama binary from the official container
-
-# =========================
 # Runtime stage
 # =========================
 FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04 AS runtime
@@ -53,10 +47,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-# Copy Ollama binary
-COPY --from=ollama-base /usr/local/bin/ollama /usr/local/bin/ollama
-RUN chmod +x /usr/local/bin/ollama
 
 # Copy llama.cpp binaries
 COPY --from=builder /build/llama.cpp/build/bin/llama-cli /usr/bin/llama-cli
