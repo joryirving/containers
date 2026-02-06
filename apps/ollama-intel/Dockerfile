@@ -23,6 +23,10 @@ RUN \
         gnupg \
         lsb-release \
         pciutils \
+        software-properties-common \
+    && \
+    # Enable universe repository (required for level-zero / libze1) \
+    add-apt-repository universe \
     && \
     # Add Intel GPU repositories \
     mkdir -p /etc/apt/keyrings && \
