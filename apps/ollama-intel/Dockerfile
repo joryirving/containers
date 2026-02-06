@@ -14,13 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -L --retry 5 --retry-delay 5 \
-        "https://github.com/ollama/ollama/releases/download/${VERSION}/ollama-linux-amd64.tar.zst" \
-        -o /tmp/ollama.tar.zst && \
-    zstd -d /tmp/ollama.tar.zst -o /usr/local/bin/ollama && \
-    chmod +x /usr/local/bin/ollama
-
-
 RUN git clone --recursive https://github.com/ggml-org/llama.cpp.git /build/llama.cpp
 WORKDIR /build/llama.cpp
 RUN mkdir build && cd build && \
@@ -32,11 +25,14 @@ RUN mkdir build && cd build && \
       -DCMAKE_CXX_COMPILER=icpx && \
     ninja
 
+FROM ollama/ollama:${VERSION} AS ollama-base
+
 FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04
 
 WORKDIR /app
 
-COPY --from=builder /usr/local/bin/ollama /usr/bin/ollama
+COPY --from=ollama-base /usr/local/bin/ollama /usr/local/bin/ollama
+RUN chmod +x /usr/local/bin/ollama
 COPY --from=builder /build/llama.cpp/build/bin/llama-cli /usr/bin/llama-cli
 COPY --from=builder /build/llama.cpp/build/bin/llama-server /usr/bin/llama-server
 
