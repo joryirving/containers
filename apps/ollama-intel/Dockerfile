@@ -14,20 +14,22 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Add Intel GPU repositories and install packages
-RUN apt-get update && \
-    apt-get install -y wget gpg && \
-    wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
-    echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu jammy flex' | tee /etc/apt/sources.list.d/intel.gpu.jammy.list && \
+# Download and install Intel GPU runtime libraries directly from Intel releases
+RUN mkdir -p /tmp/gpu && \
+    cd /tmp/gpu && \
     apt-get update && \
-    apt-get install -y \
-        intel-opencl-icd \
-        intel-level-zero-gpu \
-        intel-media-va-driver \
-        level-zero \
-        intel-igc-core \
-        intel-igc-opencl \
-        libigdgmm12 && \
+    apt-get install -y wget && \
+    # Install packages in dependency order to avoid conflicts \
+    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
+    apt-get install -y ./libigdgmm12_22.3.0_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    apt-get install -y ./intel-igc-core_2.0.0+ubuntu22.04_amd64.deb ./intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    apt-get install -y ./libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
+    apt-get install -y ./intel-opencl-icd_23.20.26949.10_amd64.deb && \
+    rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -46,19 +48,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     wget \
-    gpg \
     && rm -rf /var/lib/apt/lists/* && \
-    wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
-    echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu jammy flex' | tee /etc/apt/sources.list.d/intel.gpu.jammy.list && \
-    apt-get update && \
-    apt-get install -y \
-        intel-opencl-icd \
-        intel-level-zero-gpu \
-        intel-media-va-driver \
-        level-zero \
-        intel-igc-core \
-        intel-igc-opencl \
-        libigdgmm12 && \
+    mkdir -p /tmp/gpu && \
+    cd /tmp/gpu && \
+    # Install packages in dependency order to avoid conflicts \
+    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
+    apt-get install -y ./libigdgmm12_22.3.0_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
+    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    apt-get install -y ./intel-igc-core_2.0.0+ubuntu22.04_amd64.deb ./intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    apt-get install -y ./libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
+    apt-get install -y ./intel-opencl-icd_23.20.26949.10_amd64.deb && \
+    rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
