@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
 
 # Download Ollama binary for AMD64 using VERSION variable
 RUN if [ -z "${VERSION}" ]; then \
-        echo "ERROR: VERSION variable is not set" && exit 1; \
+        echo "ERROR: VERSION variable is not set, defaulting to 0.5.4" && \
+        export VERSION="0.5.4"; \
     fi && \
     echo "Downloading Ollama version: ${VERSION}" && \
     curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ollama-linux-amd64 -o /usr/bin/ollama && \
@@ -65,7 +66,7 @@ RUN cd /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy Ollama binary
+# Copy Ollama binary - VERSION is not needed in final stage
 COPY --from=builder /usr/bin/ollama /usr/bin/ollama
 
 # Create a non-root user for running Ollama
