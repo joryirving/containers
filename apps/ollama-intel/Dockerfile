@@ -18,25 +18,23 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and install Intel GPU runtime libraries directly from Intel releases
-RUN mkdir -p /tmp/gpu && \
-    cd /tmp/gpu && \
-    apt-get update && \
-    apt-get install -y wget && \
+RUN apt-get update && \
     # Install opencl-icd-dev which provides OpenCL support \
     apt-get install -y opencl-icd-dev opencl-icd-libopencl1 || true && \
-    # If the specific package isn't available, continue with installation \
+    mkdir -p /tmp/gpu && \
+    cd /tmp/gpu && \
+    # Download Intel GPU packages \
+    wget -q https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
     # Install packages in dependency order to avoid conflicts \
-    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
     apt-get install -y ./libigdgmm12_22.3.0_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
     apt-get install -y ./intel-igc-core_2.0.0+ubuntu22.04_amd64.deb ./intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
     apt-get install -y ./libze-intel-gpu_23.20.26949.10_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
     apt-get install -y ./intel-opencl-icd_23.20.26949.10_amd64.deb || true && \
-    # If intel-opencl-icd fails to install due to missing dependencies, try installing without it \
-    # and just rely on the other Intel GPU components \
+    # If intel-opencl-icd fails to install due to missing dependencies, continue anyway \
     rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -65,17 +63,18 @@ RUN apt-get update && apt-get install -y \
     apt-get install -y opencl-icd-dev opencl-icd-libopencl1 || true && \
     mkdir -p /tmp/gpu && \
     cd /tmp/gpu && \
+    # Download Intel GPU packages \
+    wget -q https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
     # Install packages in dependency order to avoid conflicts \
-    wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
     apt-get install -y ./libigdgmm12_22.3.0_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
     apt-get install -y ./intel-igc-core_2.0.0+ubuntu22.04_amd64.deb ./intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
     apt-get install -y ./libze-intel-gpu_23.20.26949.10_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb && \
     apt-get install -y ./intel-opencl-icd_23.20.26949.10_amd64.deb || true && \
-    # If intel-opencl-icd fails to install due to missing dependencies, try installing without it \
+    # If intel-opencl-icd fails to install due to missing dependencies, continue anyway \
     rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
