@@ -31,7 +31,7 @@ FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04
 
 WORKDIR /app
 
-COPY --from=ollama-base /usr/local/bin/ollama /usr/local/bin/ollama
+COPY --from=ollama-base /usr/lib/ollama /usr/local/bin/ollama
 RUN chmod +x /usr/local/bin/ollama
 COPY --from=builder /build/llama.cpp/build/bin/llama-cli /usr/bin/llama-cli
 COPY --from=builder /build/llama.cpp/build/bin/llama-server /usr/bin/llama-server
