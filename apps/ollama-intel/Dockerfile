@@ -14,10 +14,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zstd \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -L \
-    "https://github.com/ollama/ollama/releases/download/${VERSION}/ollama-linux-amd64.tar.zst" \
-    -o /tmp/ollama.tar.zst && \
-    zstd -d /tmp/ollama.tar.zst | tar -xf - -C /usr/local/bin
+RUN curl -L --retry 5 --retry-delay 5 \
+        "https://github.com/ollama/ollama/releases/download/${VERSION}/ollama-linux-amd64.tar.zst" \
+        -o /tmp/ollama.tar.zst && \
+    zstd -d /tmp/ollama.tar.zst -o /usr/local/bin/ollama && \
+    chmod +x /usr/local/bin/ollama
+
 
 RUN git clone --recursive https://github.com/ggml-org/llama.cpp.git /build/llama.cpp
 WORKDIR /build/llama.cpp
