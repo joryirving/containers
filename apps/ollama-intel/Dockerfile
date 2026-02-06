@@ -23,7 +23,6 @@ RUN \
         gnupg \
         lsb-release \
         pciutils \
-        clinfo \
     && \
     # Add Intel GPU repositories \
     mkdir -p /etc/apt/keyrings && \
@@ -36,10 +35,11 @@ RUN \
     apt-get update \
     && \
     apt-get install -y --no-install-recommends --no-install-suggests \
+        level-zero \
+        libze1 \
         intel-opencl-icd \
-        intel-level-zero-gpu \
         intel-media-va-driver-non-free \
-        libze-loader1 \
+        clinfo \
     && \
     # Install Ollama using the official installer \
     curl -fsSL https://ollama.com/install.sh | sh \
