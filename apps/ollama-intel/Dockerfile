@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1
 
+# Define VERSION argument early
+ARG VERSION
+
 # Use Ubuntu base image to support Intel GPU libraries
 FROM ubuntu:24.04 AS builder
 
