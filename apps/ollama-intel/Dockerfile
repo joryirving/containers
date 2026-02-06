@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     cmake \
     ninja-build \
+    zstd \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Ollama binary
