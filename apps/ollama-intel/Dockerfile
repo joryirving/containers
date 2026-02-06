@@ -24,8 +24,7 @@ RUN mkdir -p /tmp/gpu && \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
-    apt-get install -y ./intel-igc-core-2_2.27.10+20617_amd64.deb ./intel-igc-opencl-2_2.27.10+20617_amd64.deb ./libigdgmm12_22.9.0_amd64.deb ./libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
-    dpkg -i intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
+    apt-get install -y ./*.deb && \
     rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -53,8 +52,7 @@ RUN apt-get update && apt-get install -y \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
     wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
-    apt-get install -y ./intel-igc-core-2_2.27.10+20617_amd64.deb ./intel-igc-opencl-2_2.27.10+20617_amd64.deb ./libigdgmm12_22.9.0_amd64.deb ./libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
-    dpkg -i intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
+    apt-get install -y ./*.deb && \
     rm -rf /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
