@@ -19,6 +19,8 @@ RUN mkdir -p /tmp/gpu && \
     cd /tmp/gpu && \
     apt-get update && \
     apt-get install -y wget && \
+    # Install ocl-icd-libopencl1 which is required by intel-opencl-icd \
+    apt-get install -y ocl-icd-libopencl1 && \
     # Install packages in dependency order to avoid conflicts \
     wget https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
     apt-get install -y ./libigdgmm12_22.3.0_amd64.deb && \
@@ -49,6 +51,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     wget \
     && rm -rf /var/lib/apt/lists/* && \
+    # Install ocl-icd-libopencl1 which is required by intel-opencl-icd \
+    apt-get install -y ocl-icd-libopencl1 && \
     mkdir -p /tmp/gpu && \
     cd /tmp/gpu && \
     # Install packages in dependency order to avoid conflicts \
