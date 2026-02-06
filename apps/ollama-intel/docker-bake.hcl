@@ -10,7 +10,7 @@ variable "VERSION" {
 }
 
 variable "SOURCE" {
-  default = "https://github.com/joryirving/containers"
+  default = "https://github.com/ollama/ollama"
 }
 
 group "default" {
@@ -30,7 +30,7 @@ target "image" {
 target "image-local" {
   inherits = ["image"]
   output = ["type=docker"]
-  tags = ["${APP}:${VERSION}", "${APP}:latest"]
+  tags = ["${APP}:${VERSION}"]
 }
 
 target "image-all" {
