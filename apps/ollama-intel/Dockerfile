@@ -22,7 +22,7 @@ RUN curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ol
 # =========================
 # Runtime stage
 # =========================
-FROM intel/oneapi-runtime:2025.3.1-0-runtime-ubuntu22.04
+FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04
 
 # Set environment variables for Intel GPU
 ENV ZE_ENABLE_PCI_ID_DEVICE_ORDER=1
