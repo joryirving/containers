@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
 FROM intel/oneapi-basekit:2025.3.1-0-devel-ubuntu22.04 AS builder
-ARG VERSION
 
 WORKDIR /build
 
@@ -25,6 +24,7 @@ RUN mkdir build && cd build && \
       -DCMAKE_CXX_COMPILER=icpx && \
     ninja
 
+ARG VERSION
 FROM ollama/ollama:${VERSION} AS ollama-base
 
 FROM intel/oneapi-runtime:2025.3.1-0-devel-ubuntu22.04
