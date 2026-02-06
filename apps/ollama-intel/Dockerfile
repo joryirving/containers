@@ -14,18 +14,20 @@ RUN apt-get update && apt-get install -y \
     gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and install Intel GPU runtime libraries directly from Intel releases
-RUN mkdir -p /tmp/gpu && \
-    cd /tmp/gpu && \
+# Add Intel GPU repositories and install packages
+RUN apt-get update && \
+    apt-get install -y wget gpg && \
+    wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
+    echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu jammy flex' | tee /etc/apt/sources.list.d/intel.gpu.jammy.list && \
     apt-get update && \
-    apt-get install -y wget && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-core-2_2.27.10+20617_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-opencl-2_2.27.10+20617_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
-    apt-get install -y ./*.deb && \
-    rm -rf /tmp/gpu && \
+    apt-get install -y \
+        intel-opencl-icd \
+        intel-level-zero-gpu \
+        intel-media-va-driver \
+        level-zero \
+        intel-igc-core \
+        intel-igc-opencl \
+        libigdgmm12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -44,16 +46,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     wget \
+    gpg \
     && rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /tmp/gpu && \
-    cd /tmp/gpu && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-core-2_2.27.10+20617_amd64.deb && \
-    wget https://github.com/intel/intel-graphics-compiler/releases/download/v2.27.10/intel-igc-opencl-2_2.27.10+20617_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libigdgmm12_22.9.0_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/libze-intel-gpu1_26.01.36711.4-0_amd64.deb && \
-    wget https://github.com/intel/compute-runtime/releases/download/26.01.36711.4/intel-opencl-icd_26.01.36711.4-0_amd64.deb && \
-    apt-get install -y ./*.deb && \
-    rm -rf /tmp/gpu && \
+    wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
+    echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu jammy flex' | tee /etc/apt/sources.list.d/intel.gpu.jammy.list && \
+    apt-get update && \
+    apt-get install -y \
+        intel-opencl-icd \
+        intel-level-zero-gpu \
+        intel-media-va-driver \
+        level-zero \
+        intel-igc-core \
+        intel-igc-opencl \
+        libigdgmm12 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
