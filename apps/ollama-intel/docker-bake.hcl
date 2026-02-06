@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=ollama/ollama
-  default = "v0.15.5"
+  default = "v0.15.4"
 }
 
 variable "SOURCE" {
