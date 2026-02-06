@@ -9,11 +9,12 @@ FROM ubuntu:24.04 AS builder
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal dependencies
+# Install dependencies needed for Intel GPU support
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
     ca-certificates \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Ollama binary for AMD64 using VERSION variable
@@ -24,18 +25,45 @@ RUN if [ -z "${VERSION}" ]; then \
     curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ollama-linux-amd64 -o /usr/bin/ollama && \
     chmod +x /usr/bin/ollama
 
+# Download Intel GPU runtime libraries
+RUN mkdir -p /opt/intel-gpu && \
+    cd /opt/intel-gpu && \
+    # Download Intel GPU packages to be installed in final stage \
+    wget -q https://github.com/intel/gmmlib/releases/download/intel-gmmlib-22.3.0/libigdgmm12_22.3.0_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-core_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/intel-graphics-compiler/releases/download/v2.0.0/intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    wget -q https://github.com/intel/compute-runtime/releases/download/23.20.26949.10/intel-opencl-icd_23.20.26949.10_amd64.deb
+
 # Final stage - use Ubuntu 24.04
 FROM ubuntu:24.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal runtime dependencies
+# Install Intel GPU runtime libraries in final stage
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     wget \
     pciutils \
     && rm -rf /var/lib/apt/lists/*
+
+# Copy Intel GPU packages from builder
+COPY --from=builder /opt/intel-gpu /tmp/gpu
+
+# Install Intel GPU runtime libraries
+RUN cd /tmp/gpu && \
+    # Install opencl-icd-dev which provides OpenCL support \
+    apt-get update && apt-get install -y --no-install-recommends opencl-icd-opencl-dev ocl-icd-libopencl1 || true && \
+    # Install packages in dependency order to avoid conflicts \
+    apt-get install -y --no-install-recommends ./libigdgmm12_22.3.0_amd64.deb && \
+    apt-get install -y --no-install-recommends ./intel-igc-core_2.0.0+ubuntu22.04_amd64.deb ./intel-igc-opencl_2.0.0+ubuntu22.04_amd64.deb && \
+    apt-get install -y --no-install-recommends ./libze-intel-gpu_23.20.26949.10_amd64.deb && \
+    apt-get install -y --no-install-recommends ./intel-opencl-icd_23.20.26949.10_amd64.deb || true && \
+    # Clean up downloaded packages \
+    rm -rf /tmp/gpu && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy Ollama binary
 COPY --from=builder /usr/bin/ollama /usr/bin/ollama
