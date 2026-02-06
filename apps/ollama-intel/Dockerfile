@@ -38,10 +38,10 @@ RUN mkdir -p /tmp/gpu && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Download Ollama binary for AMD64 (since we only have AMD64 nodes with Intel GPUs)
-RUN curl -fsSL https://github.com/ollama/ollama/releases/latest/download/ollama_linux_amd64.tgz | tar -xz -C /tmp && \
-    mv /tmp/ollama /usr/bin/ollama && \
-    chmod +x /usr/bin/ollama
+# Download Ollama binary for AMD64 using VERSION variable (since we only have AMD64 nodes with Intel GPUs)
+RUN curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ollama-linux-amd64 -o /tmp/ollama && \
+    chmod +x /tmp/ollama && \
+    mv /tmp/ollama /usr/bin/ollama
 
 # Final stage - use Ubuntu 24.04
 FROM ubuntu:24.04
