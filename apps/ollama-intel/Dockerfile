@@ -42,7 +42,11 @@ RUN mkdir -p /tmp/gpu && \
     rm -rf /var/lib/apt/lists/*
 
 # Download Ollama binary for AMD64 using VERSION variable (since we only have AMD64 nodes with Intel GPUs)
-RUN curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ollama-linux-amd64 -o /tmp/ollama && \
+RUN if [ -z "${VERSION}" ]; then \
+        echo "ERROR: VERSION variable is not set" && exit 1; \
+    fi && \
+    echo "Downloading Ollama version: ${VERSION}" && \
+    curl -fsSL https://github.com/ollama/ollama/releases/download/v${VERSION}/ollama-linux-amd64 -o /tmp/ollama && \
     chmod +x /tmp/ollama && \
     mv /tmp/ollama /usr/bin/ollama
 
