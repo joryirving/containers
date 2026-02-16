@@ -39,6 +39,7 @@ RUN \
         openssl-dev \
     && pip install uv \
     && uv pip install \
+        setuptools \
         --requirement "https://raw.githubusercontent.com/Tautulli/tautulli-baseimage/python3/requirements.txt" \
     && mkdir -p /app \
     && curl -fsSL "https://github.com/Tautulli/Tautulli/archive/v${VERSION}.tar.gz" \
