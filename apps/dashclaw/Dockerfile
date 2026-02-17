@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# Stage 1: Dependencies
+# Dependencies
 FROM node:20-alpine AS deps
 
 ARG VERSION
@@ -14,7 +14,7 @@ RUN apk add --no-cache git && \
 WORKDIR /build/source
 RUN npm install
 
-# Stage 2: Builder
+# Builder
 FROM node:20-alpine AS builder
 
 ARG VERSION
@@ -26,7 +26,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /build/source /app
 RUN npm run build
 
-# Stage 3: Runner
+# Runner
 FROM node:20-alpine AS runner
 
 WORKDIR /app
@@ -39,7 +39,7 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 dashclaw
 
-COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./
 
