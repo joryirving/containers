@@ -5,39 +5,31 @@ FROM node:20-alpine AS deps
 ARG VERSION
 ARG SOURCE
 
-ENV VERSION=${VERSION}
-ENV SOURCE=${SOURCE}
-
 WORKDIR /tmp/source
 
 # Download source and extract package files
 RUN apk add --no-cache curl tar && \
     curl -fsSL "${SOURCE}/archive/refs/tags/${VERSION}.tar.gz" -o source.tar.gz && \
     tar xzf source.tar.gz --strip-components=1 && \
-    cp package.json package-lock.json /app/ || true
+    ls -la
 
 WORKDIR /app
-RUN npm ci
+COPY package.json package-lock.json* ./
+RUN npm install
 
 # Builder stage
 FROM node:20-alpine AS builder
 
 ARG VERSION
 ARG SOURCE
-ENV VERSION=${VERSION}
-ENV SOURCE=${SOURCE}
 
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy node_modules from deps
+# Copy node_modules and source from deps
 COPY --from=deps /app/node_modules ./node_modules
-
-# Get source
-RUN apk add --no-cache git && \
-    git clone --depth 1 --branch ${VERSION} ${SOURCE} /tmp/source && \
-    cp -r /tmp/source/* . || true
+COPY --from=deps /tmp/source/ .
 
 RUN npm run build || echo "Build may need adjustments"
 
