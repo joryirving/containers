@@ -4,25 +4,24 @@ FROM node:20-alpine AS deps
 
 ARG VERSION
 ARG SOURCE
-
 WORKDIR /tmp/source
 
 # Download source and extract package files
 RUN apk add --no-cache curl tar && \
-    curl -fsSL "${SOURCE}/archive/refs/tags/${VERSION}.tar.gz" | tar xz --strip-components=1 && \
+    curl -fsSL "${SOURCE}/archive/refs/tags/${VERSION}.tar.gz" -o source.tar.gz && \
+    tar xzf source.tar.gz --strip-components=1 && \
     cp package.json package-lock.json /app/ || true
 
 WORKDIR /app
-
 RUN npm ci
 
 # Builder stage
 FROM node:20-alpine AS builder
 
-WORKDIR /app
-
 ARG VERSION
 ARG SOURCE
+WORKDIR /app
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy node_modules from deps
