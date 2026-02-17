@@ -4,6 +4,10 @@ FROM node:20-alpine AS deps
 
 ARG VERSION
 ARG SOURCE
+
+ENV VERSION=${VERSION}
+ENV SOURCE=${SOURCE}
+
 WORKDIR /tmp/source
 
 # Download source and extract package files
@@ -20,6 +24,9 @@ FROM node:20-alpine AS builder
 
 ARG VERSION
 ARG SOURCE
+ENV VERSION=${VERSION}
+ENV SOURCE=${SOURCE}
+
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
