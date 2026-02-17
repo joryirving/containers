@@ -1,27 +1,37 @@
 # syntax=docker/dockerfile:1
 
 FROM node:20-alpine AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Copy package files from source download
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# Builder stage
-FROM node:20-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 
 ARG VERSION
 ARG SOURCE
 
-# Clone source during build
-RUN git clone --depth 1 --branch ${VERSION} ${SOURCE} /tmp/source && \
-    cp -r /tmp/source/* . || true
+WORKDIR /tmp/source
 
-# Disable Next.js telemetry during build
+# Download source and extract package files
+RUN apk add --no-cache curl tar && \
+    curl -fsSL "${SOURCE}/archive/refs/tags/${VERSION}.tar.gz" | tar xz --strip-components=1 && \
+    cp package.json package-lock.json /app/ || true
+
+WORKDIR /app
+
+RUN npm ci
+
+# Builder stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+ARG VERSION
+ARG SOURCE
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy node_modules from deps
+COPY --from=deps /app/node_modules ./node_modules
+
+# Get source
+RUN apk add --no-cache git && \
+    git clone --depth 1 --branch ${VERSION} ${SOURCE} /tmp/source && \
+    cp -r /tmp/source/* . || true
 
 RUN npm run build || echo "Build may need adjustments"
 
