@@ -1,23 +1,21 @@
 # syntax=docker/dockerfile:1
 
+# Stage 1: Dependencies - download source here
 FROM node:20-alpine AS deps
 
 ARG VERSION
 ARG SOURCE
 
-WORKDIR /tmp/source
+WORKDIR /build
 
-# Download source and extract package files
-RUN apk add --no-cache curl tar && \
-    curl -fsSL "${SOURCE}/archive/refs/tags/${VERSION}.tar.gz" -o source.tar.gz && \
-    tar xzf source.tar.gz --strip-components=1 && \
-    ls -la
+# Download and extract full source
+RUN apk add --no-cache git && \
+    git clone --depth 1 --branch ${VERSION} ${SOURCE} /build/source
 
-WORKDIR /app
-COPY package.json package-lock.json* ./
+WORKDIR /build/source
 RUN npm install
 
-# Builder stage
+# Stage 2: Builder
 FROM node:20-alpine AS builder
 
 ARG VERSION
@@ -27,13 +25,12 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy node_modules and source from deps
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /tmp/source/ .
+# Copy from deps stage
+COPY --from=deps /build/source /app
 
-RUN npm run build || echo "Build may need adjustments"
+RUN npm run build
 
-# Runner stage
+# Stage 3: Runner  
 FROM node:20-alpine AS runner
 
 WORKDIR /app
