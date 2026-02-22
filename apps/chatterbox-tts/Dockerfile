@@ -17,7 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # Install Python dependencies
-RUN pip install --no-cache-dir pip==25.1.1
+RUN pip install --no-cache-dir --upgrade pip
+
+# Install PyTorch CPU-only first (lighter weight)
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # Install Chatterbox TTS (the core package, not the server)
 RUN pip install --no-cache-dir chatterbox-tts==0.1.6
