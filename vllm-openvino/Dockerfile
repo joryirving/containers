@@ -1,7 +1,7 @@
 # vllm-openvino - vLLM with OpenVINO backend
 # Supports Intel CPUs and GPUs (including integrated graphics)
 
-FROM ubuntu:22.04 AS dev
+FROM ubuntu:24.04 AS dev
 
 RUN apt-get update -y && \
     apt-get install -y git python3-pip
