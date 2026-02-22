@@ -19,11 +19,11 @@ WORKDIR /app
 # Install Python dependencies
 RUN pip install --no-cache-dir pip==25.1.1
 
-# Clone and install Chatterbox TTS Server
-RUN pip install --no-cache-dir \
-    chatterbox-tts-server==0.1.2 \
-    || pip install --no-cache-dir \
-        git+https://github.com/devnen/Chatterbox-TTS-Server.git@main#egg=chatterbox-tts-server
+# Install Chatterbox TTS (the core package, not the server)
+RUN pip install --no-cache-dir chatterbox-tts==0.1.6
+
+# Install the server from GitHub
+RUN pip install --no-cache-dir git+https://github.com/devnen/Chatterbox-TTS-Server.git@main
 
 # Create directories for voices and outputs
 RUN mkdir -p /app/voices /app/outputs /app/reference_audio /app/logs
