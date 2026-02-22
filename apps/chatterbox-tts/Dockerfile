@@ -12,13 +12,14 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install just the core package - it includes a simple TTS CLI
+# Install chatterbox-tts and server
 RUN pip install --no-cache-dir chatterbox-tts==0.1.6
+RUN pip install --no-cache-dir git+https://github.com/devnen/Chatterbox-TTS-Server.git@main
 
-RUN mkdir -p /app/outputs
+RUN mkdir -p /app/voices /app/outputs /app/reference_audio /app/logs
 
 EXPOSE 8004
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 HF_HUB_ENABLE_HF_TRANSFER=1
 
-CMD ["python", "-c", "from chatterbox_tts import ChatterboxTTS; print('ChatterboxTTS loaded successfully')"]
+CMD ["python", "-m", "chatterbox_tts"]
