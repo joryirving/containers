@@ -1,0 +1,22 @@
+name: vllm-openvino
+description: vLLM with OpenVINO backend for Intel CPU/GPU inference
+maintainer: Jory Irving
+summary: OpenAI-compatible LLM server with OpenVINO acceleration
+vendor: Intel
+license: Apache 2.0
+website: https://github.com/vllm-project/vllm-openvino
+source: https://github.com/vllm-project/vllm-openvino
+base: ubuntu:22.04
+architectures:
+  - amd64
+categories:
+  - machine-learning
+  - ai
+  - llm
+tags:
+  - llm
+  - vllm
+  - openvino
+  - intel
+  - ai
+  - machine-learning
