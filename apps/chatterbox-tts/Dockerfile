@@ -17,14 +17,16 @@ WORKDIR /app
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip
 
-# Copy requirements from upstream
-COPY --from=ghcr.io/devnen/chatterbox-tts-server:cpu /app/requirements.txt /tmp/requirements.txt || \
-    echo "torch>=2.0.0\ntorchaudio>=2.0.0\nchatterbox-tts>=0.1.6\nfastapi>=0.100.0\nuvicorn>=0.23.0\npydantic>=2.0.0" > /tmp/requirements.txt
+# Install dependencies directly
+RUN pip install --no-cache-dir \
+    torch==2.5.1 \
+    torchaudio==2.5.1 \
+    --index-url https://download.pytorch.org/whl/cpu
 
-# Install dependencies
-RUN pip install --no-cache-dir -r /tmp/requirements.txt || true
+# Install chatterbox-tts
+RUN pip install --no-cache-dir chatterbox-tts==0.1.6
 
-# Install the server
+# Install the server from GitHub
 RUN pip install --no-cache-dir git+https://github.com/devnen/Chatterbox-TTS-Server.git@main
 
 # Create directories
