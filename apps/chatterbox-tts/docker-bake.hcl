@@ -5,6 +5,7 @@ variable "APP" {
 }
 
 variable "VERSION" {
+  // renovate: datasource=github-releases depName=devnen/Chatterbox-TTS-Server
   default = "v0.1.0"
 }
 
