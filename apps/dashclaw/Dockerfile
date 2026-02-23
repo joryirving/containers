@@ -13,10 +13,11 @@ RUN apk add --no-cache git && \
 WORKDIR /build/source
 
 # Apply OIDC fix for Authentik compatibility
-# Replace the OIDC provider section to support explicit endpoints
-RUN sed -i     -e 's/authorization: { params: { scope: 'openid email profile' } },/authorization: { url: process.env.OIDC_AUTHORIZATION_URL, params: { scope: 'openid email profile' } },/'     -e 's/clientSecret: process.env.OIDC_CLIENT_SECRET,/clientSecret: process.env.OIDC_CLIENT_SECRET,
-    token: process.env.OIDC_TOKEN_URL,
-    userinfo: process.env.OIDC_USERINFO_URL,/'     app/lib/auth.js
+# Create a modified auth.js with explicit OIDC endpoints
+RUN cat app/lib/auth.js | \
+    sed "s/authorization: { params: { scope: 'openid email profile' } },/authorization: { url: process.env.OIDC_AUTHORIZATION_URL, params: { scope: 'openid email profile' } },/" | \
+    sed "s/clientSecret: process.env.OIDC_CLIENT_SECRET,$/clientSecret: process.env.OIDC_CLIENT_SECRET,\n    token: process.env.OIDC_TOKEN_URL,\n    userinfo: process.env.OIDC_USERINFO_URL,/" > app/lib/auth.js.new && \
+    mv app/lib/auth.js.new app/lib/auth.js
 
 RUN npm install
 
