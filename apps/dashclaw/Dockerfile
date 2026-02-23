@@ -12,6 +12,10 @@ RUN apk add --no-cache git && \
 
 WORKDIR /build/source
 
+# Apply OIDC patch for Authentik compatibility
+COPY auth-js-oidc.patch /tmp/
+RUN git apply /tmp/auth-js-oidc.patch || echo "Patch may already be applied or failed"
+
 RUN npm install
 
 # Builder
