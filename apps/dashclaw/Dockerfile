@@ -48,10 +48,9 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy scripts, drizzle config AND generated drizzle folder for setup/migrations
+# Copy scripts and drizzle config for setup/migrations
 COPY --from=deps /build/source/scripts ./scripts
 COPY --from=deps /build/source/drizzle.config.js ./
-COPY --from=deps /build/source/drizzle ./drizzle
 
 # Fix permissions for nextjs user to write to cache
 RUN chown -R nextjs:nodejs /app/.next
