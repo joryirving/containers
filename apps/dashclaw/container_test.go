@@ -11,11 +11,10 @@ func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/dashclaw:rolling")
 	
-	// Check critical files exist
-	testhelpers.TestFileExists(t, ctx, image, "/app/package.json", nil)
-	testhelpers.TestFileExists(t, ctx, image, "/app/.env", nil)
-	testhelpers.TestFileExists(t, ctx, image, "/app/next.config.js", nil)
+	// Check built files exist (these are copied to final image)
+	testhelpers.TestFileExists(t, ctx, image, "/app/.next/BUILD_ID", nil)
+	testhelpers.TestFileExists(t, ctx, image, "/app/public", nil)
 	
-	// Verify container runs
-	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "echo", "container started")
+	// Verify container can start
+	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "ls", "/app/.next")
 }
