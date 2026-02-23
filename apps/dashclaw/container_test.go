@@ -10,6 +10,8 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/dashclaw:rolling")
-	// Just verify container can start - don't check HTTP response
-	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "echo", "container started")
+	
+	// These files SHOULD exist in the final image
+	testhelpers.TestFileExists(t, ctx, image, "/app/package.json", nil)
+	testhelpers.TestFileExists(t, ctx, image, "/app/next.config.js", nil)
 }
