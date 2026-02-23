@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Dependencies
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 
 ARG VERSION
 ARG SOURCE
@@ -15,7 +15,7 @@ WORKDIR /build/source
 RUN npm install
 
 # Builder
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 ARG VERSION
 ARG SOURCE
@@ -28,7 +28,7 @@ COPY --from=deps /build/source /app
 RUN npm run build
 
 # Runner
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 
