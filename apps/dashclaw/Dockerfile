@@ -12,39 +12,12 @@ RUN apk add --no-cache git && \
 
 WORKDIR /build/source
 
-# Apply OIDC patch for Authentik compatibility
-# Patch auth.js to support explicit OIDC endpoints
-RUN cat > /tmp/oidc.patch << 'PATCH_EOF'
---- a/app/lib/auth.js
-+++ b/app/lib/auth.js
-@@ -32,11 +32,23 @@ if (hasGoogle) {
- }
- 
- if (hasOIDC) {
-+  // Support explicit OIDC endpoints for providers like Authentik
-+  // that use global endpoints different from the issuer path
-+  const authorizationUrl = process.env.OIDC_AUTHORIZATION_URL;
-+  const tokenUrl = process.env.OIDC_TOKEN_URL;
-+  const userinfoUrl = process.env.OIDC_USERINFO_URL;
-+  
-   providers.push({
-     id: 'oidc',
-     name: process.env.OIDC_DISPLAY_NAME || 'OIDC',
-     type: 'oidc',
-     issuer: process.env.OIDC_ISSUER_URL,
-     clientId: process.env.OIDC_CLIENT_ID,
-     clientSecret: process.env.OIDC_CLIENT_SECRET,
--    authorization: { params: { scope: 'openid email profile' } },
-+    authorization: { 
-+      url: authorizationUrl,
-+      params: { scope: 'openid email profile' }
-+    },
-+    token: tokenUrl,
-+    userinfo: userinfoUrl,
-   });
- }
-PATCH_EOF
-RUN git apply /tmp/oidc.patch || echo "Patch already applied or not needed"
+# Apply OIDC fix for Authentik compatibility
+# Create a modified auth.js with explicit OIDC endpoints
+RUN cat app/lib/auth.js | \
+    sed "s/authorization: { params: { scope: 'openid email profile' } },/authorization: { url: process.env.OIDC_AUTHORIZATION_URL, params: { scope: 'openid email profile' } },/" | \
+    sed "s/clientSecret: process.env.OIDC_CLIENT_SECRET,$/clientSecret: process.env.OIDC_CLIENT_SECRET,\n    token: process.env.OIDC_TOKEN_URL,\n    userinfo: process.env.OIDC_USERINFO_URL,/" > app/lib/auth.js.new && \
+    mv app/lib/auth.js.new app/lib/auth.js
 
 RUN npm install
 
