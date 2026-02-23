@@ -12,10 +12,6 @@ RUN apk add --no-cache git && \
 
 WORKDIR /build/source
 
-# Apply OIDC fix for Authentik compatibility
-# Copy modified auth.js with explicit OIDC endpoint support
-COPY auth.js /build/source/app/lib/auth.js
-
 RUN npm install
 
 # Builder
@@ -43,6 +39,10 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
+
+# Apply OIDC fix for Authentik compatibility
+# Copy modified auth.js with explicit OIDC endpoint support
+COPY . /build/source/app/lib/
 
 # Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
