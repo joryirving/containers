@@ -40,15 +40,17 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Apply OIDC fix for Authentik compatibility
-# Copy modified auth.js with explicit OIDC endpoint support
-
 # Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules ./node_modules
+
+# Copy scripts for setup/migrations
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/drizzle.config.* ./
+COPY --from=builder /app/drizzle ./drizzle
 
 # Fix permissions for nextjs user to write to cache
 RUN chown -R nextjs:nodejs /app/.next
