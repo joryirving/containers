@@ -47,6 +47,9 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules ./node_modules
 
+# Fix permissions for nextjs user to write to cache
+RUN chown -R nextjs:nodejs /app/.next
+
 USER nextjs
 EXPOSE 3000
 
