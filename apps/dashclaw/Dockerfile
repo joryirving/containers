@@ -13,6 +13,7 @@ RUN apk add --no-cache git && \
 WORKDIR /build/source
 
 RUN npm install
+RUN npx drizzle-kit generate
 
 # Builder
 FROM node:24-alpine AS builder
@@ -40,15 +41,16 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Apply OIDC fix for Authentik compatibility
-# Copy modified auth.js with explicit OIDC endpoint support
-
 # Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules ./node_modules
+
+# Copy scripts and drizzle config for setup/migrations
+COPY --from=deps /build/source/scripts ./scripts
+COPY --from=deps /build/source/drizzle.config.js ./
 
 # Fix permissions for nextjs user to write to cache
 RUN chown -R nextjs:nodejs /app/.next
