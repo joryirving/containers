@@ -1,7 +1,7 @@
 FROM nginx:1.29.5-alpine
 
-COPY . /usr/share/nginx/html/
+COPY defaults/index.html /usr/share/nginx/html/index.html
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
