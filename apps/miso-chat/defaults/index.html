@@ -387,8 +387,8 @@
 
     <script>
         // Configuration
-        const GATEWAY_HOST = window.location.hostname || '10.69.1.50';
-        const GATEWAY_PORT = '80';
+        const GATEWAY_HOST = window.location.hostname;
+        const GATEWAY_PORT = window.location.port || '80';
         const SESSION_KEY = 'main';
         
         let ws = null;
