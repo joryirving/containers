@@ -9,7 +9,7 @@ import (
 
 func Test(t *testing.T) {
 	ctx := context.Background()
-	image := testhelpers.GetTestImage("ghcr.io/joryirving/dashclaw:2.0.0")
+	image := testhelpers.GetTestImage("ghcr.io/joryirving/dashclaw:rolling")
 	
 	// Check critical files exist
 	testhelpers.TestFileExists(t, ctx, image, "/app/package.json", nil)
