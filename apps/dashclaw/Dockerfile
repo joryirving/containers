@@ -23,8 +23,8 @@ ARG VENDOR
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
-
 COPY --from=deps /build/source /app
+COPY . /build/source/app/lib/
 RUN npm run build
 
 # Runner
@@ -42,7 +42,6 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Apply OIDC fix for Authentik compatibility
 # Copy modified auth.js with explicit OIDC endpoint support
-COPY . /build/source/app/lib/
 
 # Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
