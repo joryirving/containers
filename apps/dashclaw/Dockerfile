@@ -41,10 +41,10 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy built app AND required files for npm start
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/next.config.js ./next.config.js
+COPY --from=builder /build/source/app/.next ./.next
+COPY --from=builder /build/source/app/public ./public
+COPY --from=builder /build/source/app/package.json ./package.json
+COPY --from=builder /build/source/app/next.config.js ./next.config.js
 
 USER nextjs
 EXPOSE 3000
