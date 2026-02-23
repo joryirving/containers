@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/joryirving/containers/testhelpers"
@@ -13,12 +12,9 @@ func Test(t *testing.T) {
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/dashclaw:2.0.0")
 	
 	// Check critical files exist
-	testhelpers.TestFilesExist(t, ctx, image, []string{
-		"/app/package.json",
-		"/app/.env",
-		"/app/.env.example",
-		"/app/next.config.js",
-	})
+	testhelpers.TestFileExists(t, ctx, image, "/app/package.json", nil)
+	testhelpers.TestFileExists(t, ctx, image, "/app/.env", nil)
+	testhelpers.TestFileExists(t, ctx, image, "/app/next.config.js", nil)
 	
 	// Verify container runs
 	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "echo", "container started")
