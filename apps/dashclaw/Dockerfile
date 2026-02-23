@@ -12,13 +12,6 @@ RUN apk add --no-cache git && \
 
 WORKDIR /build/source
 
-# Apply OIDC fix for Authentik compatibility
-# Create a modified auth.js with explicit OIDC endpoints
-RUN cat app/lib/auth.js | \
-    sed "s/authorization: { params: { scope: 'openid email profile' } },/authorization: { url: process.env.OIDC_AUTHORIZATION_URL, params: { scope: 'openid email profile' } },/" | \
-    sed "s/clientSecret: process.env.OIDC_CLIENT_SECRET,$/clientSecret: process.env.OIDC_CLIENT_SECRET,\n    token: process.env.OIDC_TOKEN_URL,\n    userinfo: process.env.OIDC_USERINFO_URL,/" > app/lib/auth.js.new && \
-    mv app/lib/auth.js.new app/lib/auth.js
-
 RUN npm install
 
 # Builder
@@ -30,8 +23,8 @@ ARG VENDOR
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
-
 COPY --from=deps /build/source /app
+COPY . /build/source/app/lib/
 RUN npm run build
 
 # Runner
@@ -46,6 +39,9 @@ ENV HOSTNAME=0.0.0.0
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
+
+# Apply OIDC fix for Authentik compatibility
+# Copy modified auth.js with explicit OIDC endpoint support
 
 # Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
