@@ -41,18 +41,16 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy built app, required files, AND node_modules for npm start
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy scripts and drizzle config for setup/migrations
 COPY --from=deps /build/source/scripts ./scripts
 COPY --from=deps /build/source/drizzle.config.js ./
+COPY --from=deps /build/source/drizzle ./
 
-# Fix permissions for nextjs user to write to cache
 RUN chown -R nextjs:nodejs /app/.next
 
 USER nextjs
