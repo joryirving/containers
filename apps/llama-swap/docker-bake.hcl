@@ -1,7 +1,7 @@
 target "docker-metadata-action" {}
 
 variable "APP" {
-  default = "llama-swap-rocm"
+  default = "llama-swap"
 }
 
 variable "VERSION" {
