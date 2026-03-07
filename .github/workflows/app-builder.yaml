@@ -123,7 +123,7 @@ jobs:
         id: bake
         with:
           files: |
-            ./docker-bake.hcl
+            apps/${{ inputs.app }}/docker-bake.hcl
             cwd://${{ runner.temp }}/docker-metadata-action-bake.json
           set: |
             *.args.VENDOR=${{ github.repository_owner }}
@@ -139,7 +139,6 @@ jobs:
             *.tags=
           source: .
           targets: image
-          workdir: ./apps/${{ inputs.app }}
 
       - name: Export Digest
         run: |-
