@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=mostlygeek/llama-swap
-  default = "0.0.26"
+  default = "v0.1.5"
 }
 
 variable "SOURCE" {
