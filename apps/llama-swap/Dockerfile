@@ -5,8 +5,7 @@ ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
 
-# Install curl if not present
-RUN command -v curl >/dev/null 2>&1 || apk add --no-cache curl
+RUN apk add --no-cache curl
 
 RUN curl -L "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap-linux-${TARGETARCH == "arm64" ? "arm64" : "amd64"}" \
     -o /usr/local/bin/llama-swap \
