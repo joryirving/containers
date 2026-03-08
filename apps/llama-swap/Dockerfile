@@ -7,7 +7,7 @@ ARG TARGETARCH
 
 RUN dnf install -y curl && dnf clean all
 
-RUN curl -L "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap-linux-${TARGETARCH == "arm64" ? "arm64" : "amd64"}" \
+RUN curl -L "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap-linux-${TARGETARCH}" \
     -o /usr/local/bin/llama-swap \
     && chmod +x /usr/local/bin/llama-swap
 
