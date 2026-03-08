@@ -5,12 +5,12 @@ ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
 
-RUN dnf install -y curl && dnf clean all
+RUN dnf install -y curl tar && dnf clean all
 
-RUN curl -L "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap-linux-${TARGETARCH}" \
-    -o /usr/local/bin/llama-swap \
-    && chmod +x /usr/local/bin/llama-swap
-
-USER 1001
+RUN curl -fL "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap_${VERSION}_linux_${TARGETARCH}.tar.gz" \
+    -o /tmp/llama-swap.tar.gz \
+    && tar xzf /tmp/llama-swap.tar.gz -C /usr/local/bin llama-swap \
+    && chmod +x /usr/local/bin/llama-swap \
+    && rm /tmp/llama-swap.tar.gz
 
 ENTRYPOINT ["/usr/local/bin/llama-swap"]
