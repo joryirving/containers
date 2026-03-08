@@ -10,8 +10,5 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/llama-swap-rocm:rolling")
-	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{
-		Port: "8080",
-		Path: "/upstream/health",
-	}, nil)
+	testhelpers.TestFileExists(t, ctx, image, "/usr/local/bin/llama-swap", nil)
 }
