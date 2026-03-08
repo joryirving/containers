@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2
+ARG VERSION
+ARG TARGETOS
 ARG TARGETARCH
 
-FROM docker.io/library/alpine:3.20
-
-ARG VERSION
-
-RUN apk add --no-cache curl
+# Install curl if not present
+RUN command -v curl >/dev/null 2>&1 || apk add --no-cache curl
 
 RUN curl -L "https://github.com/mostlygeek/llama-swap/releases/download/v${VERSION}/llama-swap-linux-${TARGETARCH == "arm64" ? "arm64" : "amd64"}" \
     -o /usr/local/bin/llama-swap \
