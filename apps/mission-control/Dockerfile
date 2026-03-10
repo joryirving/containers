@@ -35,9 +35,6 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN addgroup --system --gid 65534 nogroup \
-    && adduser --system --uid 65534 --ingroup nogroup nobody
-
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/src/lib/schema.sql ./src/lib/schema.sql
