@@ -8,7 +8,7 @@ ARG VERSION
 ARG SOURCE
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git python3 make g++ \
+    && apt-get install -y --no-install-recommends ca-certificates git python3 make g++ \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 --branch ${VERSION} ${SOURCE} /build/source
