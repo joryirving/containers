@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:54c9953a84e811bd3a086c2b117d5bce6e3b02bac622e620ebc83c85b5fae9d6
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:d2122cf1d5d0149e663755eaff41b61164f54cef164411c2a0b8a433396e2ce8
 ARG VERSION
 ARG TARGETOS
 ARG TARGETARCH
