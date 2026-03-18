@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=builderz-labs/mission-control
-  default = "v2.0.0"
+  default = "v2.0.1"
 }
 
 variable "SOURCE" {
