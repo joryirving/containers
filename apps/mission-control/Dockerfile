@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-slim AS base
+FROM node:24-slim AS base
 WORKDIR /app
 
 FROM base AS deps
@@ -23,7 +23,7 @@ RUN corepack enable \
     && corepack prepare pnpm@10.23.0 --activate \
     && pnpm build
 
-FROM node:22-slim AS runner
+FROM node:24-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
