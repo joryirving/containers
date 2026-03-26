@@ -5,8 +5,8 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // renovate: datasource=docker depName=ghcr.io/boof-pack/token-enhancer
-  default = "latest"
+  // renovate: datasource=git-commit depName=https://github.com/Boof-Pack/token-enhancer
+  default = "79a3f9251eafa4b83f5aa1aaf9be9664941e223e"
 }
 
 variable "SOURCE" {
