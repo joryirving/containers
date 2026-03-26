@@ -6,12 +6,13 @@ FROM docker.io/library/python:3.12-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Clone upstream repo
+RUN git clone --depth 1 https://github.com/Boof-Pack/token-enhancer.git /src
 
-# Copy application code
-COPY proxy.py data_proxy.py mcp_server.py optimizer.py test_all.py .
+WORKDIR /src
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose port
 EXPOSE 8080
