@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=git-commit depName=https://github.com/Boof-Pack/token-enhancer
-  default = "v1.0.0
+  default = "v1.0.0"
 }
 
 variable "SOURCE" {
