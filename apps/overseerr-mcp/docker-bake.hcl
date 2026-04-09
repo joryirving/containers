@@ -5,7 +5,7 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  default = "rolling"
+  default = "v2.1.2"
 }
 
 variable "SOURCE" {
