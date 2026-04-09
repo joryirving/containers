@@ -13,4 +13,4 @@ RUN npm install -g mcp-arr-server@${VERSION}
 
 USER nobody
 
-CMD ["node", "/usr/local/bin/mcp-arr-server"]
+CMD ["node", "/usr/local/bin/mcp-arr"]
