@@ -3,14 +3,13 @@
 FROM docker.io/library/node:22-alpine
 
 ARG TARGETARCH
-ARG VERSION=rolling
+ARG VERSION
 
-ENV NODE_ENV=production \
-    NPM_CONFIG_UPDATE=@jhomen368/overseerr-mcp@latest
+ENV NODE_ENV=production
 
 WORKDIR /app
 
-RUN npm install -g @jhomen368/overseerr-mcp
+RUN npm install -g @jhomen368/overseerr-mcp@${VERSION}
 
 USER nobody
 EXPOSE 8085

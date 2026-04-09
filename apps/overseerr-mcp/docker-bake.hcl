@@ -5,6 +5,7 @@ variable "APP" {
 }
 
 variable "VERSION" {
+  // renovate: datasource=npm depName=@jhomen368/overseerr-mcp
   default = "v2.1.2"
 }
 
