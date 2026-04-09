@@ -12,6 +12,5 @@ WORKDIR /app
 RUN npm install -g mcp-arr-server@${VERSION}
 
 USER nobody
-EXPOSE 3000
 
 CMD ["node", "/usr/local/bin/mcp-arr-server"]

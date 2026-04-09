@@ -10,5 +10,5 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/memory-mcp:rolling")
-	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{Port: "3000"}, nil)
+	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "node", "--version")
 }

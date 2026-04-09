@@ -12,6 +12,5 @@ WORKDIR /app
 RUN npm install -g @modelcontextprotocol/server-memory@${VERSION}
 
 USER nobody
-EXPOSE 3000
 
 CMD ["node", "/usr/local/bin/mcp-server-memory"]
