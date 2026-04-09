@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=npm depName=@modelcontextprotocol/server-memory
-  default = "0.6.3"
+  default = "2026.1.26"
 }
 
 variable "SOURCE" {
