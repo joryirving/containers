@@ -1,0 +1,47 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+
+    env:
+      AI_BASE_URL: ${{ vars.AI_BASE_URL || 'https://api.minimax.io/v1' }}
+      AI_MODEL: ${{ vars.AI_MODEL || 'MiniMax-M2.7' }}
+      AI_PRIMARY_RETRIES: ${{ vars.AI_PRIMARY_RETRIES || '4' }}
+      AI_PRIMARY_RETRY_DELAY_SEC: ${{ vars.AI_PRIMARY_RETRY_DELAY_SEC || '10' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Review PR with reusable AI reviewer
+        if: github.event_name == 'pull_request'
+        id: review
+        uses: joryirving/pr-reviewer-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          ai_base_url: ${{ env.AI_BASE_URL }}
+          ai_model: ${{ env.AI_MODEL }}
+          ai_api_key: ${{ secrets.OPENAI_COMPATIBLE_API_KEY }}
+          ai_primary_retries: ${{ env.AI_PRIMARY_RETRIES }}
+          ai_primary_retry_delay_sec: ${{ env.AI_PRIMARY_RETRY_DELAY_SEC }}
+          standards_file: ""
+          context_limit_mode: minimal
+          publish_review_comment: 'true'
