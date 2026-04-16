@@ -20,7 +20,7 @@ jobs:
 
     env:
       AI_BASE_URL: ${{ vars.AI_BASE_URL || 'https://api.minimax.io/v1' }}
-      AI_MODEL: ${{ vars.AI_MODEL || 'MiniMax-M1' }}
+      AI_MODEL: ${{ vars.AI_MODEL || 'MiniMax-M2.7' }}
       AI_PRIMARY_RETRIES: ${{ vars.AI_PRIMARY_RETRIES || '4' }}
       AI_PRIMARY_RETRY_DELAY_SEC: ${{ vars.AI_PRIMARY_RETRY_DELAY_SEC || '10' }}
 
