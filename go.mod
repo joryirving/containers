@@ -1,4 +1,4 @@
-module github.com/home-operations/containers
+module github.com/joryirving/containers
 
 go 1.26.2
 
