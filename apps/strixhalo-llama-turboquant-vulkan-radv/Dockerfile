@@ -9,7 +9,9 @@ ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
 
 RUN dnf install -y --setopt=install_weak_deps=False gcc-c++ binutils procps-ng && \
-    dnf clean all
+    dnf clean all && \
+    ln -sf /usr/bin/ld.bfd /etc/alternatives/ld && \
+    ln -sf /etc/alternatives/ld /usr/bin/ld
 
 WORKDIR /build
 
