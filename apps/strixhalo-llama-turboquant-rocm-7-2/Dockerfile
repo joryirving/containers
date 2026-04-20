@@ -1,12 +1,15 @@
 # syntax=docker/dockerfile:1
 
 ARG TURBOQUANT_SOURCE=unixsysdev/llama-turboquant
-ARG TURBOQUANT_REF=main
+ARG TURBOQUANT_REF=03fa8abc4708dfc13858de0a74695075702c8e26
 
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d1375111160f43fbaa8519d9bf7e3308a87edc76f2d740fabf7c AS builder
 
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
+
+RUN dnf install -y --setopt=install_weak_deps=False git cmake make gcc-c++ binutils procps-ng && \
+    dnf clean all
 
 WORKDIR /build
 

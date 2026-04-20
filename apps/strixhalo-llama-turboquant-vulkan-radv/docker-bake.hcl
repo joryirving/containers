@@ -17,7 +17,7 @@ variable "TURBOQUANT_SOURCE" {
 }
 
 variable "TURBOQUANT_REF" {
-  default = "tq-surgical"
+  default = "b8eda0cc7033dc62ad876dc29c965844928aaf36"
 }
 
 group "default" {

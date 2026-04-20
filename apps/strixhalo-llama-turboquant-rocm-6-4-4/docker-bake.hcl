@@ -17,7 +17,7 @@ variable "TURBOQUANT_SOURCE" {
 }
 
 variable "TURBOQUANT_REF" {
-  default = "main"
+  default = "03fa8abc4708dfc13858de0a74695075702c8e26"
 }
 
 group "default" {
