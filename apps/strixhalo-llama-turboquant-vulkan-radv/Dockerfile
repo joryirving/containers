@@ -29,6 +29,8 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:e8d01f28649b8f1
 
 COPY --from=builder /out/llama-server /usr/local/bin/llama-server
 
+RUN getent group nogroup || groupadd -g 65534 nogroup
+
 USER nobody:nogroup
 
 EXPOSE 8080

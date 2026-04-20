@@ -26,6 +26,8 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:957974b729f458ab
 
 COPY --from=builder /out/llama-server /usr/local/bin/llama-server
 
+RUN getent group nogroup || groupadd -g 65534 nogroup
+
 USER nobody:nogroup
 
 EXPOSE 8080

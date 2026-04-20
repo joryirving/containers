@@ -8,7 +8,7 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d13751
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
 
-RUN dnf install -y --setopt=install_weak_deps=False git cmake make gcc-c++ binutils procps-ng rocm-llvm hipcc && \
+RUN dnf install -y --setopt=install_weak_deps=False git cmake make gcc-c++ binutils procps-ng rocm-llvm hip-devel && \
     dnf clean all
 
 ENV PATH="/opt/rocm-7.2.0/bin:${PATH}"
@@ -29,6 +29,8 @@ RUN cmake -B build -DGGML_HIP=ON -DGGML_HIP_ROCWMMA=ON -DCMAKE_BUILD_TYPE=Releas
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d1375111160f43fbaa8519d9bf7e3308a87edc76f2d740fabf7c
 
 COPY --from=builder /out/llama-server /usr/local/bin/llama-server
+
+RUN getent group nogroup || groupadd -g 65534 nogroup
 
 USER nobody:nogroup
 
