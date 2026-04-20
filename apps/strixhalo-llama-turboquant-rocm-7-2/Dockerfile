@@ -20,7 +20,7 @@ RUN git clone https://github.com/${TURBOQUANT_SOURCE}.git . && \
     git fetch origin "${TURBOQUANT_REF}" && \
     git checkout "${TURBOQUANT_REF}"
 
-RUN cmake -B build -DGGML_HIP=ON -DGGML_HIP_ROCWMMA=ON -DCMAKE_BUILD_TYPE=Release \
+RUN cmake -B build -DGGML_HIP=ON -DGGML_HIP_ROCWMMA=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_HIP_ARCHITECTURES=gfx1102 \
     && cmake --build build --config Release --target llama-server -j "$(nproc)" \
     && mkdir -p /out \
     && cp build/bin/llama-server /out/ \
@@ -30,9 +30,7 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d13751
 
 COPY --from=builder /out/llama-server /usr/local/bin/llama-server
 
-RUN getent group nogroup || groupadd -g 65534 nogroup
-
-USER nobody:nogroup
+USER nobody:nobody
 
 EXPOSE 8080
 
