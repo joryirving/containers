@@ -8,7 +8,7 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d13751
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
 
-RUN dnf install -y --setopt=install_weak_deps=False git cmake make gcc-c++ binutils procps-ng rocm-llvm hip-devel rocm-device-libs hipblas-devel && \
+RUN dnf install -y --setopt=install_weak_deps=False git cmake make gcc-c++ binutils procps-ng rocm-llvm hip-devel rocm-device-libs hipblas-devel rocblas-devel hipblaslt-devel && \
     dnf clean all
 
 ENV PATH="/opt/rocm-7.2.0/bin:${PATH}"
