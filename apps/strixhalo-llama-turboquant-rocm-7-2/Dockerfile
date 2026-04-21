@@ -44,7 +44,7 @@ RUN git clean -xdf \
         -DLLAMA_BUILD_EXAMPLES=ON \
         -DLLAMA_BUILD_SERVER=ON \
     && cmake --build build --config Release --target llama-server \
-    && strings build/bin/llama-server | grep -q turbo4 \
+    && grep -q "GGML_TYPE_TURBO4_0" common/arg.cpp ggml/include/ggml.h \
     && mkdir -p /out/bin /out/lib \
     && cp build/bin/llama-server /out/bin/ \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
