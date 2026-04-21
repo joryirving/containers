@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-ARG TURBOQUANT_SOURCE=unixsysdev/llama-turboquant
-ARG TURBOQUANT_REF=03fa8abc4708dfc13858de0a74695075702c8e26
+ARG TURBOQUANT_SOURCE=TheTom/llama-cpp-turboquant
+ARG TURBOQUANT_REF=8ba9f128822b4cef73f5555ca5fcccfbfadbcd20
 
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2@sha256:c246a5557e42d1375111160f43fbaa8519d9bf7e3308a87edc76f2d740fabf7c AS builder
 
