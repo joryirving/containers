@@ -10,5 +10,5 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/strixhalo-llama-turboquant-rocm-7-2:rolling")
-	testhelpers.TestFileExists(t, ctx, image, "/usr/local/bin/llama-server", nil)
+	testhelpers.TestFileExists(t, ctx, image, "/usr/bin/llama-server", nil)
 }
