@@ -9,15 +9,15 @@ variable "VERSION" {
 }
 
 variable "SOURCE" {
-  default = "https://github.com/unixsysdev/llama-turboquant"
+  default = "https://github.com/TheTom/llama-cpp-turboquant"
 }
 
 variable "TURBOQUANT_SOURCE" {
-  default = "unixsysdev/llama-turboquant"
+  default = "TheTom/llama-cpp-turboquant"
 }
 
 variable "TURBOQUANT_REF" {
-  default = "03fa8abc4708dfc13858de0a74695075702c8e26"
+  default = "8ba9f128822b4cef73f5555ca5fcccfbfadbcd20"
 }
 
 group "default" {

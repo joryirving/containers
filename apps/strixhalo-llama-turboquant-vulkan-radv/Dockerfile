@@ -8,32 +8,40 @@ FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:780dccdc1ef753e
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
 
-RUN dnf install -y --setopt=install_weak_deps=False gcc-c++ binutils procps-ng && \
+RUN dnf install -y --setopt=install_weak_deps=False \
+    git cmake make ninja-build gcc-c++ binutils lld clang clang-devel compiler-rt libcurl-devel \
+    vulkan-loader-devel vulkan-tools mesa-vulkan-drivers spirv-headers-devel radeontop glslc patch procps-ng && \
     dnf clean all && \
     ln -sf /usr/bin/ld.bfd /etc/alternatives/ld && \
     ln -sf /etc/alternatives/ld /usr/bin/ld
 
-WORKDIR /build
+WORKDIR /opt/llama.cpp
 
 RUN git clone https://github.com/${TURBOQUANT_SOURCE}.git . && \
     git fetch origin "${TURBOQUANT_REF}" && \
     git checkout "${TURBOQUANT_REF}"
 
-RUN cmake -B build -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release \
-    && cmake --build build --config Release --target llama-server -j "$(nproc)" \
-    && mkdir -p /out/lib \
-    && cp build/bin/llama-server /out/ \
+RUN git clean -xdf \
+    && git submodule update --recursive \
+    && cmake -S . -B build -G Ninja \
+        -DGGML_VULKAN=ON \
+        -DGGML_RPC=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLLAMA_BUILD_TESTS=OFF \
+        -DLLAMA_BUILD_EXAMPLES=ON \
+        -DLLAMA_BUILD_SERVER=ON \
+    && cmake --build build --config Release --target llama-server \
+    && mkdir -p /out/bin /out/lib \
+    && cp build/bin/llama-server /out/bin/ \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
-    && find /out -type f -exec strip {} \; 2>/dev/null || true
+    && (find /out -type f -exec strip {} \; 2>/dev/null || true)
 
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:780dccdc1ef753ea1903616b364671445ae79bac2c3975515c7ab43fe37fd4eb
 
-COPY --from=builder /out/llama-server /usr/local/bin/llama-server
-COPY --from=builder /out/lib /usr/local/lib
+COPY --from=builder /out/bin/llama-server /usr/bin/llama-server
+COPY --from=builder /out/lib /usr/lib64
 
-ENV LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
-
-USER nobody:nobody
+USER 65534:65534
 
 EXPOSE 8080
 
