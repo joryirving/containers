@@ -25,6 +25,7 @@ RUN git clean -xdf \
             -DAMDGPU_TARGETS=gfx1151 \
             -DLLAMA_HIP_UMA=ON \
             -DGGML_CUDA_ENABLE_UNIFIED_MEMORY=ON \
+            -DGGML_CUDA_FA_ALL_QUANTS=ON \
             -DCMAKE_BUILD_TYPE=Release \
             -DLLAMA_BUILD_TESTS=OFF \
             -DLLAMA_BUILD_EXAMPLES=ON \

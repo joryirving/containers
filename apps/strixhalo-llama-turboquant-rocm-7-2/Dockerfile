@@ -34,6 +34,7 @@ RUN git clean -xdf \
         -DAMDGPU_TARGETS=gfx1151 \
         -DLLAMA_HIP_UMA=ON \
         -DGGML_CUDA_ENABLE_UNIFIED_MEMORY=ON \
+        -DGGML_CUDA_FA_ALL_QUANTS=ON \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_HIP_FLAGS="--rocm-path=/opt/rocm -mllvm --amdgpu-unroll-threshold-local=600" \
         -DROCM_PATH=/opt/rocm \
