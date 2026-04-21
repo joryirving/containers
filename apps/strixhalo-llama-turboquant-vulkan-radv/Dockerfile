@@ -30,11 +30,11 @@ RUN git clean -xdf \
         -DLLAMA_BUILD_TESTS=OFF \
         -DLLAMA_BUILD_EXAMPLES=ON \
         -DLLAMA_BUILD_SERVER=ON \
-    && cmake --build build --config Release \
+    && cmake --build build --config Release --target llama-server \
     && mkdir -p /out/bin /out/lib \
     && cp build/bin/llama-server /out/bin/ \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
-    && find /out -type f -exec strip {} \; 2>/dev/null || true
+    && (find /out -type f -exec strip {} \; 2>/dev/null || true)
 
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:780dccdc1ef753ea1903616b364671445ae79bac2c3975515c7ab43fe37fd4eb
 

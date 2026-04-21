@@ -29,12 +29,12 @@ RUN git clean -xdf \
             -DLLAMA_BUILD_TESTS=OFF \
             -DLLAMA_BUILD_EXAMPLES=ON \
             -DLLAMA_BUILD_SERVER=ON \
-    && cmake --build build --config Release -- -j"$(nproc)" \
+    && cmake --build build --config Release --target llama-server -- -j"$(nproc)" \
     && strings build/bin/llama-server | grep -q turbo4 \
     && mkdir -p /out/bin /out/lib \
     && cp build/bin/llama-server /out/bin/ \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
-    && find /out -type f -exec strip {} \; 2>/dev/null || true
+    && (find /out -type f -exec strip {} \; 2>/dev/null || true)
 
 FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:957974b729f458ab34f33104e795216a79b347803aff18247355c5a1d61efe43
 
