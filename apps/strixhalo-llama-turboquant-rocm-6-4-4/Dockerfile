@@ -3,7 +3,7 @@
 ARG TURBOQUANT_SOURCE=TheTom/llama-cpp-turboquant
 ARG TURBOQUANT_REF=8ba9f128822b4cef73f5555ca5fcccfbfadbcd20
 
-FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:6d43b8846ea661fc540812cd5085bd53d4fc9ea3e340d53ffd31ac0d6c3c7c88 AS builder
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:d3bce6cc0017daf23b5869f045f46509f0bb9364fe8136324bb4da083422d00d AS builder
 
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
@@ -37,7 +37,7 @@ RUN git clean -xdf \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
     && (find /out -type f -exec strip {} \; 2>/dev/null || true)
 
-FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:6d43b8846ea661fc540812cd5085bd53d4fc9ea3e340d53ffd31ac0d6c3c7c88
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-6.4.4@sha256:d3bce6cc0017daf23b5869f045f46509f0bb9364fe8136324bb4da083422d00d
 
 COPY --from=builder /out/bin/llama-server /usr/bin/llama-server
 COPY --from=builder /out/lib /usr/lib64
