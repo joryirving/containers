@@ -1,2 +1,2 @@
 hoymiles_modbus==0.10.0
-prometheus_client==0.23.1
+prometheus_client==0.25.0
