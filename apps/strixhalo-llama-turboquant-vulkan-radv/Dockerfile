@@ -3,7 +3,7 @@
 ARG TURBOQUANT_SOURCE=paudley/llama.cpp
 ARG TURBOQUANT_REF=b8eda0cc7033dc62ad876dc29c965844928aaf36
 
-FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:780dccdc1ef753ea1903616b364671445ae79bac2c3975515c7ab43fe37fd4eb AS builder
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:d68792bab64734e966d94c88f859551dfdea8836a209c28d8ff123bfa17257e8 AS builder
 
 ARG TURBOQUANT_SOURCE
 ARG TURBOQUANT_REF
@@ -36,7 +36,7 @@ RUN git clean -xdf \
     && cp build/bin/libllama.so* build/bin/libggml*.so* /out/lib/ \
     && (find /out -type f -exec strip {} \; 2>/dev/null || true)
 
-FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:780dccdc1ef753ea1903616b364671445ae79bac2c3975515c7ab43fe37fd4eb
+FROM docker.io/kyuz0/amd-strix-halo-toolboxes:vulkan-radv@sha256:d68792bab64734e966d94c88f859551dfdea8836a209c28d8ff123bfa17257e8
 
 COPY --from=builder /out/bin/llama-server /usr/bin/llama-server
 COPY --from=builder /out/lib /usr/lib64
