@@ -19,10 +19,10 @@ Digest-pinned. Do not use mutable tags.
 
 ## Build Args
 
-| Arg | Default | Description |
-|-----|---------|-------------|
-| `TURBOQUANT_SOURCE` | `paudley/llama.cpp` | TurboQuant upstream source |
-| `TURBOQUANT_REF` | `b8eda0cc7033dc62ad876dc29c965844928aaf36` | TurboQuant commit |
+| Arg                 | Default                                    | Description                |
+|---------------------|--------------------------------------------|----------------------------|
+| `TURBOQUANT_SOURCE` | `paudley/llama.cpp`                        | TurboQuant upstream source |
+| `TURBOQUANT_REF`    | `b8eda0cc7033dc62ad876dc29c965844928aaf36` | TurboQuant commit          |
 
 ## Runtime
 
@@ -32,12 +32,12 @@ Exposes only `llama-server`. Runs as `65534:65534`.
 
 - `f32`, `f16`, `bf16`
 - `q8_0`, `q4_0`, `q4_1`, `iq4_nl`, `q5_0`, `q5_1`
-- `tq3_0`, `tq4_0`
+- `tbq3_0`, `tbq4_0`, `pq3_0`, `pq4_0`
 
 ## Recommended Launch Flags
 
 ```bash
-llama-server -m /model.gguf -ngl 999 -fa 1 --no-mmap --device vulkan --cache-type-k tq4_0 --cache-type-v tq4_0
+llama-server -m /model.gguf -ngl 999 -fa 1 --no-mmap --device vulkan --cache-type-k tbq4_0 --cache-type-v tbq4_0
 ```
 
 ## Validation
