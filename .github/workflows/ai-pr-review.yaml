@@ -34,7 +34,7 @@ jobs:
 
       - name: Analyze PR with reusable AI reviewer
         id: analyze
-        uses: misospace/pr-reviewer-action@4c88a3a9b7f01f5102049a340eda489b77eb9e07
+        uses: misospace/pr-reviewer-action@b9c805517f8b467598102f8ec8a0e8a426788dc3
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           ai_primary_retries: '8'
