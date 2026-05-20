@@ -3,7 +3,7 @@
 ARG TARGETARCH
 ARG VERSION
 
-FROM docker.io/library/python:3.13-slim@sha256:dc1546eefcbe8caaa1f004f16ab76b204b5e1dbd58ff81b899f21cd40541232f
+FROM docker.io/library/python:3.13-slim@sha256:0bce18a835a2d7975cb8765dad3bf4d2f0cc7aadb7d3414ce2cba8ef4004bb93
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
