@@ -10,5 +10,9 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/agentmemory:rolling")
-	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "test", "-f", "/usr/bin/catatonit")
+	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{
+		Port:       "3111",
+		Path:       "/agentmemory/health",
+		StatusCode: 200,
+	}, nil)
 }
