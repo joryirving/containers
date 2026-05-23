@@ -10,5 +10,5 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/agentmemory:rolling")
-	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{Port: "3111"}, nil)
+	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{Port: "3111", Path: "/agentmemory/health"}, nil)
 }
