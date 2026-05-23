@@ -12,7 +12,7 @@ func Test(t *testing.T) {
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/agentmemory:rolling")
 	testhelpers.TestHTTPEndpoint(t, ctx, image, testhelpers.HTTPTestConfig{
 		Port:       "3111",
-		Path:       "/agentmemory/health",
+		Path:       "/agentmemory/livez",
 		StatusCode: 200,
 	}, nil)
 }
