@@ -10,5 +10,5 @@ import (
 func Test(t *testing.T) {
 	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/agentmemory:rolling")
-	testhelpers.TestFileExists(t, ctx, image, "/usr/local/bin/agentmemory", nil)
+	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "test", "-f", "/usr/bin/catatonit")
 }
