@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 
 ARG VERSION
-ARG III_VERSION=0.11.2
+ARG III_VERSION
 
-FROM docker.io/library/node:22-slim
+FROM docker.io/library/node:24-slim
 
 ARG TARGETARCH
 ARG VERSION
@@ -53,4 +53,4 @@ USER node:node
 
 EXPOSE 3111 3112 3113
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
