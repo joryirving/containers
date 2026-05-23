@@ -6,8 +6,8 @@ HMAC_FILE="${AGENTMEMORY_HMAC_FILE:-/data/.hmac}"
 RUN_AS="nobody:nogroup"
 III_CONFIG="/opt/agentmemory/node_modules/@agentmemory/agentmemory/dist/iii-config.yaml"
 
-mkdir -p "$DATA_DIR"
-chown -R "$RUN_AS" "$DATA_DIR"
+mkdir -p "$DATA_DIR" || :
+chown -R "$RUN_AS" "$DATA_DIR" || :
 
 cat > "$III_CONFIG" <<'EOF'
 workers:
