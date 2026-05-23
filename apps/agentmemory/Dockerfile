@@ -14,7 +14,7 @@ ARG III_VERSION
 ARG AGENTMEMORY_VERSION
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends openssl ca-certificates gosu curl && \
+    apt-get install -y --no-install-recommends openssl ca-certificates catatonit gosu curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=iii-image /app/iii /usr/local/bin/iii
