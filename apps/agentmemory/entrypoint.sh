@@ -4,10 +4,17 @@ set -eu
 DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
 HMAC_FILE="${AGENTMEMORY_HMAC_FILE:-/data/.hmac}"
 RUN_AS="nobody:nogroup"
-III_CONFIG="/opt/agentmemory/node_modules/@agentmemory/agentmemory/dist/iii-config.yaml"
 
-mkdir -p "$DATA_DIR" || :
-chown -R "$RUN_AS" "$DATA_DIR" || :
+if [ -w "$DATA_DIR" ]; then
+    mkdir -p "$DATA_DIR"
+    chown -R "$RUN_AS" "$DATA_DIR"
+    III_CONFIG_DIR="$DATA_DIR"
+else
+    III_CONFIG_DIR="/tmp/agentmemory"
+    mkdir -p "$III_CONFIG_DIR"
+    chown -R nobody:nogroup "$III_CONFIG_DIR" 2>/dev/null || true
+fi
+III_CONFIG="$III_CONFIG_DIR/iii-config.yaml"
 
 cat > "$III_CONFIG" <<'EOF'
 workers:
