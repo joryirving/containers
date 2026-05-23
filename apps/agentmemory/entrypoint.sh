@@ -2,17 +2,18 @@
 set -eu
 
 DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
-HMAC_FILE="${AGENTMEMORY_HMAC_FILE:-/data/.hmac}"
 RUN_AS="nobody:nogroup"
 
 if [ -w "$DATA_DIR" ]; then
     mkdir -p "$DATA_DIR"
     chown -R "$RUN_AS" "$DATA_DIR"
     III_CONFIG_DIR="$DATA_DIR"
+    HMAC_FILE="$DATA_DIR/.hmac"
 else
     III_CONFIG_DIR="/tmp/agentmemory"
     mkdir -p "$III_CONFIG_DIR"
     chown -R nobody:nogroup "$III_CONFIG_DIR" 2>/dev/null || true
+    HMAC_FILE="$III_CONFIG_DIR/.hmac"
 fi
 III_CONFIG="$III_CONFIG_DIR/iii-config.yaml"
 
