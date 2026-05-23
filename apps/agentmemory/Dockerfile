@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ARG VERSION
-ARG III_VERSION=0.11.2
+ARG III_VERSION
 ARG AGENTMEMORY_VERSION
 
 FROM docker.io/iiidev/iii:${III_VERSION} AS iii-image
