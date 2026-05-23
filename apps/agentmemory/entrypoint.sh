@@ -1,84 +1,47 @@
 #!/bin/sh
+# agentmemory entrypoint.
+#
+# Three modes:
+#
+# 1. Pre-provided secret (preferred): AGENTMEMORY_SECRET is set in the
+#    environment (typically from a K8s Secret backed by 1Password / Vault).
+#    Use it as-is, skip the HMAC file entirely.
+#
+# 2. Auto-generated secret (fallback for first boot when env is unset):
+#    generate 256-bit HMAC with openssl rand, write to
+#    ${AGENTMEMORY_HMAC_FILE} (default /data/.hmac, chmod 600), print
+#    to stdout once so the operator can capture it from pod logs
+#    (kubectl logs deploy/agentmemory -n ai). On subsequent boots load
+#    the existing file. Rotate by deleting the file and restarting.
+#
+# 3. MCP shim mode (first arg is "mcp"): skip the entire secret dance.
+#    AGENTMEMORY_SECRET must come via env from the deployed server's
+#    secret; the shim proxies to the server via AGENTMEMORY_URL.
+
 set -eu
 
-DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
-HMAC_FILE="${AGENTMEMORY_HMAC_FILE:-/data/.hmac}"
-RUN_AS="nobody:nogroup"
-III_CONFIG="/opt/agentmemory/node_modules/@agentmemory/agentmemory/dist/iii-config.yaml"
+if [ "${1:-}" != "mcp" ] && [ -z "${AGENTMEMORY_SECRET:-}" ]; then
+    HMAC_FILE="${AGENTMEMORY_HMAC_FILE:-/data/.hmac}"
+    DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
 
-mkdir -p "$DATA_DIR"
-chown -R "$RUN_AS" "$DATA_DIR"
+    mkdir -p "${DATA_DIR}"
 
-cat > "$III_CONFIG" <<'EOF'
-workers:
-  - name: iii-http
-    config:
-      port: 3111
-      host: 0.0.0.0
-      default_timeout: 180000
-      cors:
-        allowed_origins:
-          - "http://localhost:3111"
-          - "http://localhost:3113"
-          - "http://127.0.0.1:3111"
-          - "http://127.0.0.1:3113"
-        allowed_methods: [GET, POST, PUT, DELETE, OPTIONS]
-  - name: iii-state
-    config:
-      adapter:
-        name: kv
-        config:
-          store_method: file_based
-          file_path: /data/state_store.db
-  - name: iii-queue
-    config:
-      adapter:
-        name: builtin
-  - name: iii-pubsub
-    config:
-      adapter:
-        name: local
-  - name: iii-cron
-    config:
-      adapter:
-        name: kv
-  - name: iii-stream
-    config:
-      port: 3112
-      host: 0.0.0.0
-      adapter:
-        name: kv
-        config:
-          store_method: file_based
-          file_path: /data/stream_store
-  - name: iii-observability
-    config:
-      enabled: true
-      service_name: agentmemory
-      exporter: memory
-      sampling_ratio: 1.0
-      metrics_enabled: true
-      logs_enabled: true
-      logs_console_output: true
-EOF
-chown "$RUN_AS" "$III_CONFIG"
+    if [ ! -s "${HMAC_FILE}" ]; then
+      SECRET="$(openssl rand -hex 32)"
+      umask 077
+      printf '%s\n' "${SECRET}" > "${HMAC_FILE}"
+      chmod 600 "${HMAC_FILE}"
+      echo "================================================================"
+      echo "agentmemory: generated HMAC secret on first boot"
+      echo "AGENTMEMORY_SECRET=${SECRET}"
+      echo "Copy this value now. It will not be printed again."
+      echo "Stored at: ${HMAC_FILE} (chmod 600)"
+      echo "To rotate: delete ${HMAC_FILE} on the persistent volume and restart."
+      echo "================================================================"
+    fi
 
-if [ ! -s "$HMAC_FILE" ]; then
-  SECRET="$(openssl rand -hex 32)"
-  umask 077
-  printf '%s\n' "$SECRET" > "$HMAC_FILE"
-  chmod 600 "$HMAC_FILE"
-  chown "$RUN_AS" "$HMAC_FILE"
-  echo "================================================================"
-  echo "agentmemory: generated HMAC secret on first boot"
-  echo "AGENTMEMORY_SECRET=$SECRET"
-  echo "Copy this value now. It will not be printed again."
-  echo "Stored at: $HMAC_FILE (chmod 600)"
-  echo "To rotate: delete $HMAC_FILE on the persistent volume and restart."
-  echo "================================================================"
+    AGENTMEMORY_SECRET="$(cat "${HMAC_FILE}")"
+    export AGENTMEMORY_SECRET
 fi
 
-AGENTMEMORY_SECRET="$(cat "$HMAC_FILE")"
-export AGENTMEMORY_SECRET
-
-exec gosu "$RUN_AS" agentmemory "$@"
+exec agentmemory "$@"
