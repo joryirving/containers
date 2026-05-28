@@ -61,4 +61,5 @@ jobs:
           tool_min_successful_requests: '1'
           tool_enable_for_forks: 'false'
           standards_file_candidates: 'AGENTS.md,.agents/*'
-          publish_mode: native_review
+          publish_mode: review_verdict
+          allow_approve: 'true'
