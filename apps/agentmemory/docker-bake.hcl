@@ -14,7 +14,7 @@ variable "SOURCE" {
 
 variable "III_VERSION" {
   // renovate: datasource=docker depName=docker.io/iiidev/iii
-  default = "0.16.0"
+  default = "0.16.1"
 }
 
 group "default" {
