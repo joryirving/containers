@@ -36,9 +36,10 @@ RUN apt-get update && \
     iii --version && \
     npm install -g --omit=optional --no-fund --no-audit \
         "@agentmemory/agentmemory@${VERSION}" && \
-    find /usr/local/lib/node_modules/@agentmemory/agentmemory \
-        -name 'iii-config.yaml' -print0 \
-        | xargs -0 -r sed -i 's/host: 127\.0\.0\.1/host: 0.0.0.0/g' && \
+    am_dist="/usr/local/lib/node_modules/@agentmemory/agentmemory/dist" && \
+    cp "${am_dist}/iii-config.docker.yaml" "${am_dist}/iii-config.yaml" && \
+    grep -q 'file_path: /data/state_store.db' "${am_dist}/iii-config.yaml" || \
+        { echo "ERROR: iii-config.yaml is not using absolute /data paths; the engine would persist to the ephemeral overlay (/app/data) and lose all memory on restart" >&2; exit 1; } && \
     find /usr/local/lib/node_modules/@agentmemory/agentmemory \
         -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 \
         | xargs -0 -r sed -i -E 's/\.listen\(([A-Za-z_$][A-Za-z0-9_$]*), ?"127\.0\.0\.1"/.listen(\1, "0.0.0.0"/g' && \

@@ -14,7 +14,11 @@ variable "SOURCE" {
 
 variable "III_VERSION" {
   // renovate: datasource=docker depName=docker.io/iiidev/iii
-  default = "0.16.1"
+  // Pinned: agentmemory 0.9.21 ships a docker-compose pinning iii 0.11.2.
+  // iii >=0.11.6 changes the worker model agentmemory hasn't adopted -> EPIPE
+  // reconnect loops and empty search after save. Renovate is constrained to
+  // <0.11.6 in .renovaterc.json5; bump only when agentmemory itself moves.
+  default = "0.11.2"
 }
 
 group "default" {
