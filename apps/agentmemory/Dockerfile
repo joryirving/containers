@@ -41,7 +41,12 @@ RUN apt-get update && \
         | xargs -0 -r sed -i 's/host: 127\.0\.0\.1/host: 0.0.0.0/g' && \
     find /usr/local/lib/node_modules/@agentmemory/agentmemory \
         -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 \
-        | xargs -0 -r sed -i 's/\.listen(port, "127\.0\.0\.1"/.listen(port, "0.0.0.0"/g' && \
+        | xargs -0 -r sed -i -E 's/\.listen\(([A-Za-z_$][A-Za-z0-9_$]*), ?"127\.0\.0\.1"/.listen(\1, "0.0.0.0"/g' && \
+    if find /usr/local/lib/node_modules/@agentmemory/agentmemory \
+        -type f \( -name '*.js' -o -name '*.mjs' -o -name '*.cjs' \) -print0 \
+        | xargs -0 -r grep -lE '\.listen\([A-Za-z_$][A-Za-z0-9_$]*, ?"127\.0\.0\.1"' | grep -q .; then \
+        echo "ERROR: a 127.0.0.1 .listen() survived the rebind patch; the upstream code changed" >&2; exit 1; \
+    fi && \
     mkdir -p /data && \
     chown -R node:node /data /app && \
     apt-get clean && \
