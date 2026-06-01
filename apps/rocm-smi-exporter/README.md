@@ -10,10 +10,10 @@ The exporter reads Linux AMDGPU sysfs and hwmon files directly. It does not requ
 
 ## Configuration
 
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `LISTEN_ADDR` | no | `:9494` | HTTP listen address |
-| `SYSFS_ROOT` | no | `/sys` | Root of the sysfs tree to scrape |
+| Variable      | Required | Default | Description                      |
+| ------------- | -------- | ------- | -------------------------------- |
+| `LISTEN_ADDR` | no       | `:9494` | HTTP listen address              |
+| `SYSFS_ROOT`  | no       | `/sys`  | Root of the sysfs tree to scrape |
 
 For Kubernetes, mount the host `/sys` read-only and set `SYSFS_ROOT=/host/sys`.
 
@@ -57,51 +57,51 @@ For bottleneck work on llama.cpp and ComfyUI, start with GPU busy, memory busy, 
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: rocm-smi-exporter
-  namespace: monitoring
+    name: rocm-smi-exporter
+    namespace: monitoring
 spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: rocm-smi-exporter
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: rocm-smi-exporter
-    spec:
-      nodeSelector:
-        node-role.kubernetes.io/rocm-worker: "true"
-      tolerations:
-        - key: llm-workload
-          operator: Equal
-          value: "true"
-          effect: NoSchedule
-      containers:
-        - name: exporter
-          image: ghcr.io/joryirving/rocm-smi-exporter:rolling
-          env:
-            - name: SYSFS_ROOT
-              value: /host/sys
-          ports:
-            - name: metrics
-              containerPort: 9494
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-            runAsGroup: 65534
-            runAsNonRoot: true
-            runAsUser: 65534
-          volumeMounts:
-            - name: sys
-              mountPath: /host/sys
-              readOnly: true
-      volumes:
-        - name: sys
-          hostPath:
-            path: /sys
-            type: Directory
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: rocm-smi-exporter
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: rocm-smi-exporter
+        spec:
+            nodeSelector:
+                node-role.kubernetes.io/rocm-worker: "true"
+            tolerations:
+                - key: llm-workload
+                  operator: Equal
+                  value: "true"
+                  effect: NoSchedule
+            containers:
+                - name: exporter
+                  image: ghcr.io/joryirving/rocm-smi-exporter:rolling
+                  env:
+                      - name: SYSFS_ROOT
+                        value: /host/sys
+                  ports:
+                      - name: metrics
+                        containerPort: 9494
+                  securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                          drop:
+                              - ALL
+                      readOnlyRootFilesystem: true
+                      runAsGroup: 65534
+                      runAsNonRoot: true
+                      runAsUser: 65534
+                  volumeMounts:
+                      - name: sys
+                        mountPath: /host/sys
+                        readOnly: true
+            volumes:
+                - name: sys
+                  hostPath:
+                      path: /sys
+                      type: Directory
 ```
 
 ## Local Build

@@ -24,6 +24,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
 
       - name: Generate bot token
         id: app-token
@@ -31,14 +32,16 @@ jobs:
         with:
           client-id: ${{ secrets.SAFFRON_APP_ID }}
           private-key: ${{ secrets.SAFFRON_APP_PRIVATE_KEY }}
+          permission-contents: read
+          permission-pull-requests: write
 
       - name: Analyze PR with reusable AI reviewer
         id: analyze
         uses: misospace/pr-reviewer-action@f838c5b49d72d11dd33cfee6e29b85a28b5aa8df # v1.0.18
         with:
           github_token: ${{ steps.app-token.outputs.token }}
-          ai_primary_retries: '8'
-          ai_primary_retry_delay_sec: '15'
+          ai_primary_retries: "8"
+          ai_primary_retry_delay_sec: "15"
           ai_base_url: ${{ vars.LITELLM_URL }}
           ai_api_format: ${{ vars.PRIMARY_FORMAT }}
           ai_model: ${{ vars.PRIMARY_MODEL }}
@@ -47,19 +50,19 @@ jobs:
           ai_fallback_api_format: ${{ vars.FALLBACK_FORMAT }}
           ai_fallback_model: ${{ vars.FALLBACK_MODEL }}
           ai_fallback_api_key: ${{ secrets.LITELLM_API_KEY }}
-          allowed_source_hosts: '*'
+          allowed_source_hosts: "*"
           context_limit_mode: normal
           tool_mode: plan_execute_once
-          tool_max_requests: '4'
-          tool_planning_timeout_sec: '45'
-          tool_planning_max_context_bytes: '15000'
-          tool_planning_max_tokens: '300'
-          tool_max_response_bytes: '12000'
-          tool_allowed_gh_api_repos: '*'
-          tool_request_timeout_sec: '15'
-          tool_failure_enforcement: 'true'
-          tool_min_successful_requests: '1'
-          tool_enable_for_forks: 'false'
-          standards_file_candidates: 'AGENTS.md,.agents/*'
+          tool_max_requests: "4"
+          tool_planning_timeout_sec: "45"
+          tool_planning_max_context_bytes: "15000"
+          tool_planning_max_tokens: "300"
+          tool_max_response_bytes: "12000"
+          tool_allowed_gh_api_repos: "*"
+          tool_request_timeout_sec: "15"
+          tool_failure_enforcement: "true"
+          tool_min_successful_requests: "1"
+          tool_enable_for_forks: "false"
+          standards_file_candidates: "AGENTS.md,.agents/*"
           publish_mode: review_verdict
-          allow_approve: 'true'
+          allow_approve: "true"

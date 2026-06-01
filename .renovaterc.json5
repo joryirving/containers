@@ -47,9 +47,7 @@
     plex: {
       defaultRegistryUrlTemplate: "https://plex.tv/api/downloads/5.json",
       format: "json",
-      transformTemplates: [
-        '{"releases":[{"version": computer.Linux.version}]}',
-      ],
+      transformTemplates: ['{"releases":[{"version": computer.Linux.version}]}'],
     },
   },
   packageRules: [

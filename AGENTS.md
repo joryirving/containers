@@ -17,38 +17,39 @@ You review pull requests for a rootless, semantically versioned, multi-architect
 Every container MUST:
 
 1. **Rootless by default**
-   - Run as `nobody:nogroup` / `65534:65534`
-   - No `USER root` unless absolutely required for a specific capability
-   - If root is temporarily required, switch back to `nobody` before `CMD`/`ENTRYPOINT`
+    - Run as `nobody:nogroup` / `65534:65534`
+    - No `USER root` unless absolutely required for a specific capability
+    - If root is temporarily required, switch back to `nobody` before `CMD`/`ENTRYPOINT`
 
 2. **Immutable via digest**
-   - Use `@sha256:...` digest pinning for runtime images
-   - Do not use mutable tags like `:latest`
-   - The action will flag any image reference that lacks a digest
+    - Use `@sha256:...` digest pinning for runtime images
+    - Do not use mutable tags like `:latest`
+    - The action will flag any image reference that lacks a digest
 
 3. **One process per container**
-   - Single `CMD` or `ENTRYPOINT`
-   - No `s6-overlay`, supervisord, or similar process managers
-   - Log to stdout/stderr (no log files unless mounted)
+    - Single `CMD` or `ENTRYPOINT`
+    - No `s6-overlay`, supervisord, or similar process managers
+    - Log to stdout/stderr (no log files unless mounted)
 
 4. **Multi-architecture support**
-   - Must build for `linux/amd64` and `linux/arm64`
-   - Use `ARG TARGETARCH` for architecture-specific logic
-   - Test with `docker/bake-action` or equivalent in CI
+    - Must build for `linux/amd64` and `linux/arm64`
+    - Use `ARG TARGETARCH` for architecture-specific logic
+    - Test with `docker/bake-action` or equivalent in CI
 
 5. **Read-only root filesystem compatible**
-   - Write persistent data to mounted volumes only
-   - Use `/tmp` as a tmpfs when `read_only: true` is needed
-   - No state written to image layers at runtime
+    - Write persistent data to mounted volumes only
+    - Use `/tmp` as a tmpfs when `read_only: true` is needed
+    - No state written to image layers at runtime
 
 6. **No secrets baked into images**
-   - No API keys, tokens, or credentials in Dockerfiles
-   - Use environment variables passed at runtime
-   - Use `--build-arg` for sensitive build-time values, not hardcoded defaults
+    - No API keys, tokens, or credentials in Dockerfiles
+    - Use environment variables passed at runtime
+    - Use `--build-arg` for sensitive build-time values, not hardcoded defaults
 
 ### Dockerfile Quality
 
 Good patterns:
+
 ```dockerfile
 FROM python:3.13-alpine3.23
 ARG TARGETARCH
@@ -58,6 +59,7 @@ CMD ["/app/entrypoint.sh"]
 ```
 
 Bad patterns to flag:
+
 - `USER root` without justification
 - `curl | sh` or unguarded external scripts
 - Missing `--no-cache` on `apk`/`apt`
@@ -74,7 +76,7 @@ Bad patterns to flag:
 
 ### Security
 
-- No exposed secrets in entrypoint.sh or defaults/*
+- No exposed secrets in entrypoint.sh or defaults/\*
 - Container capability drops: CAP_SYS_ADMIN requires explicit justification
 - Network access: flag containers that bind to all interfaces unnecessarily
 
