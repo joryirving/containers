@@ -20,10 +20,15 @@ on:
         required: false
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   prepare:
     name: Prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     outputs:
       changed-files: ${{ steps.changed-files.outputs.changed_files }}
     steps:
@@ -40,7 +45,9 @@ jobs:
     name: Get Changed Apps
     needs:
       - prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     outputs:
       apps: ${{ steps.apps.outputs.apps }}
     steps:
@@ -50,7 +57,7 @@ jobs:
         env:
           APPS: ${{ github.event_name == 'workflow_dispatch' && inputs.app || join(fromJSON(needs.prepare.outputs.changed-files), ' ') }}
         with:
-          script: |-
+          script: |
             const { APPS } = process.env;
             const appsToBuild = APPS.split(' ').filter(Boolean);
             core.setOutput('apps', JSON.stringify(appsToBuild));
@@ -70,7 +77,10 @@ jobs:
       id-token: write
       packages: write
       security-events: write
-    secrets: inherit
+    secrets:
+      BOT_CLIENT_ID: ${{ secrets.BOT_CLIENT_ID }}
+      BOT_APP_PRIVATE_KEY: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
     strategy:
       matrix:
         app: ${{ fromJSON(needs.changed.outputs.apps) }}
@@ -85,11 +95,12 @@ jobs:
     name: Build Success
     needs:
       - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    permissions: {}
     steps:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}
-        run: |-
+        run: |
           exit 1
 
       - name: All jobs passed or skipped?
