@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=ucsandman/DashClaw
-  default = "v2.1.0"
+  default = "v4.20.1"
 }
 
 variable "SOURCE" {
