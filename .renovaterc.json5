@@ -95,6 +95,20 @@
       allowedVersions: "/3\\.14-alpine3\\.23/",
     },
     {
+      description: ["Allowed Python Version for Home Assistant Base Image"],
+      matchDatasources: ["docker"],
+      matchFileNames: ["apps/home-assistant/Dockerfile"],
+      matchPackageNames: ["/python/"],
+      allowedVersions: "/3\\.14-alpine3\\.22/",
+    },
+    {
+      description: ["Allowed Python Version for Tautulli Base Image"],
+      matchDatasources: ["docker"],
+      matchFileNames: ["apps/tautulli/Dockerfile"],
+      matchPackageNames: ["/python/"],
+      allowedVersions: "/3\\.13-alpine3\\.22/",
+    },
+    {
       description: ["Allowed Python Version for Debian Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],

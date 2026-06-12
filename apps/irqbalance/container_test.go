@@ -1,14 +1,12 @@
 package main
 
 import (
-        "context"
-        "testing"
+	"testing"
 
-        "github.com/joryirving/containers/testhelpers"
+	"github.com/joryirving/containers/testhelpers"
 )
 
 func Test(t *testing.T) {
-        ctx := context.Background()
-        image := testhelpers.GetTestImage("ghcr.io/joryirving/irqbalance:rolling")
-        testhelpers.TestFileExists(t, ctx, image, "/usr/sbin/irqbalance", nil)
+	image := testhelpers.GetTestImage("ghcr.io/joryirving/irqbalance:rolling")
+	testhelpers.TestFileExists(t, image, "/usr/sbin/irqbalance", nil)
 }
