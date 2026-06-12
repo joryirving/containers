@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
 	"testing"
 
 	"github.com/joryirving/containers/testhelpers"
 )
 
 func Test(t *testing.T) {
-	ctx := context.Background()
 	image := testhelpers.GetTestImage("ghcr.io/joryirving/kopia:rolling")
-	testhelpers.TestCommandSucceeds(t, ctx, image, nil, "/usr/local/bin/kopia", "--version")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/local/bin/kopia", "--version")
 }

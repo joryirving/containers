@@ -72,7 +72,7 @@
       description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
-      allowedVersions: "/24\\.04/",
+      allowedVersions: "/26\\.04/",
     },
     {
       description: ["Allowed Alpine Version for Base Images"],
@@ -82,11 +82,24 @@
       allowedVersions: "/3\\.23/",
     },
     {
-      description: ["Allowed Python Version for Base Images"],
+      description: ["Allowed Alpine Version for Postgres Base Images"],
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/postgres/"],
+      allowedVersions: "/alpine3\\.23/",
+    },
+    {
+      description: ["Allowed Python Version for Alpine Base Images"],
       matchDatasources: ["docker"],
       matchFileNames: ["**/Dockerfile"],
       matchPackageNames: ["/python/"],
-      allowedVersions: "/3\\.13-alpine3\\.23/",
+      allowedVersions: "/3\\.14-alpine3\\.23/",
+    },
+    {
+      description: ["Allowed Python Version for Home Assistant Base Image"],
+      matchDatasources: ["docker"],
+      matchFileNames: ["apps/home-assistant/Dockerfile"],
+      matchPackageNames: ["/python/"],
+      allowedVersions: "/3\\.14-alpine3\\.22/",
     },
     {
       description: ["Allowed Python Version for Tautulli Base Image"],
@@ -96,14 +109,11 @@
       allowedVersions: "/3\\.13-alpine3\\.22/",
     },
     {
-      // agentmemory 0.9.21 requires iii 0.11.2; >=0.11.6 breaks its worker
-      // model (EPIPE loops, empty search after save). Constrain + never
-      // auto-merge engine bumps so a future drift can't silently break memory.
-      description: ["Pin iii engine to agentmemory-compatible range"],
+      description: ["Allowed Python Version for Debian Base Images"],
       matchDatasources: ["docker"],
-      matchPackageNames: ["docker.io/iiidev/iii"],
-      allowedVersions: "<0.11.6",
-      automerge: false,
+      matchFileNames: ["**/Dockerfile"],
+      matchPackageNames: ["/python/"],
+      allowedVersions: "/3\\.14-slim/",
     },
   ],
 }
