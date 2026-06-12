@@ -5,6 +5,7 @@ variable "APP" {
 }
 
 variable "VERSION" {
+  // renovate: datasource=github-releases depName=rohitg00/agentmemory
   default = "0.9.21"
 }
 
