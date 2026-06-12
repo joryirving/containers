@@ -58,6 +58,8 @@ jobs:
           ai_smart_api_key: ${{ secrets.LITELLM_API_KEY }}
           allowed_source_hosts: "*"
           context_limit_mode: normal
+          ci_status_check: "true"
+          ci_timeout_sec: "1200"
           tool_mode: plan_execute_loop
           tool_max_rounds: "2"
           tool_max_requests: "4"
