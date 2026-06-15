@@ -52,6 +52,7 @@ jobs:
           ai_model: ${{ vars.PRIMARY_MODEL }}
           ai_api_key: ${{ secrets.LITELLM_API_KEY }}
           ai_response_format: json_object
+          ai_max_tokens: ${{ vars.AI_MAX_TOKENS || '16000' }}
           ai_fallback_base_url: ${{ vars.LITELLM_URL }}
           ai_fallback_api_format: ${{ vars.FALLBACK_FORMAT }}
           ai_fallback_model: ${{ vars.FALLBACK_MODEL }}
@@ -65,12 +66,13 @@ jobs:
           context_limit_mode: normal
           ci_status_check: "true"
           ci_timeout_sec: "1200"
-          tool_mode: plan_execute_loop
+          tool_mode: native_loop
           tool_max_rounds: "2"
           tool_max_requests: "4"
-          tool_planning_timeout_sec: "45"
+          tool_loop_wall_clock_sec: "300"
+          tool_planning_timeout_sec: "300"
           tool_planning_max_context_bytes: "15000"
-          tool_planning_max_tokens: "1500"
+          tool_planning_max_tokens: "16000"
           tool_max_response_bytes: "12000"
           tool_allowed_gh_api_repos: "*"
           tool_request_timeout_sec: "15"
