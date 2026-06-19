@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+#
+# STOPGAP: Renovate bumps tool versions in .mise/config.toml but cannot
+# regenerate .mise/mise.lock for npm-backed tools (e.g. oxfmt = npm:oxfmt).
+# The renovate-operator container only has `mise` installed, not node, so
+# `mise lock` fails to resolve npm packages and the lock drifts from config.
+# That drift makes `mise install --locked` (Labeler) fail on every PR.
+#
+# This workflow regenerates the lockfile on a runner that has node available
+# and commits it back to the renovate branch. Remove once the lock is updated
+# at the source (node in the operator runtime, or oxfmt off the npm backend).
+name: Mise Lock
+
+on:
+  pull_request:
+    paths:
+      - .mise/config.toml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  mise-lock:
+    if: ${{ github.actor == 'smurf-bot[bot]' && startsWith(github.head_ref, 'renovate/') }}
+    name: Mise Lock
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Generate Token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: app-token
+        with:
+          client-id: ${{ secrets.BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Setup Mise
+        uses: jdx/mise-action@dba19683ed58901619b14f395a24841710cb4925 # v4.1.0
+        with:
+          experimental: true
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+
+      - name: Update Lockfile
+        id: lock
+        run: |
+          mise lock
+          if git diff --quiet -- .mise/mise.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit Lockfile
+        if: ${{ steps.lock.outputs.changed == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/.mise/mise.lock" \
+            -f message="fix(mise): update lockfile" \
+            -f branch="${HEAD_REF}" \
+            -f sha="$(git rev-parse HEAD:.mise/mise.lock)" \
+            -f content="$(base64 -w0 .mise/mise.lock)"
