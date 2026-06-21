@@ -250,36 +250,36 @@ checksum = "sha256:e279bc506a452eeafcdf364f91a025455e402a8001169083caf01f4b64a54
 url = "https://github.com/mikefarah/yq/releases/download/v4.53.3/yq_windows_amd64.exe"
 
 [[tools.zizmor]]
-version = "1.25.2"
+version = "1.26.0"
 backend = "aqua:zizmorcore/zizmor"
 
 [tools.zizmor."platforms.linux-arm64"]
-checksum = "sha256:4b4b9491112c2a09b318101c0d3349b73af1c4f532e097dd6d0164f2abda760d"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.25.2/zizmor-aarch64-unknown-linux-gnu.tar.gz"
+checksum = "sha256:d6863a718c34ab7f3abe8006b892671271727a95937457828b911191334c66f1"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.26.0/zizmor-aarch64-unknown-linux-gnu.tar.gz"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-arm64-musl"]
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-x64"]
-checksum = "sha256:aa1facd105f0d83fe5c55b1adcd9d7417de5d83aa27471f91dc0b66cf3803577"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.25.2/zizmor-x86_64-unknown-linux-gnu.tar.gz"
+checksum = "sha256:b9dfe966a613ef7b7f06f06271cb4bd138021d59685a5eb9ed03d44c6cf50f8f"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.26.0/zizmor-x86_64-unknown-linux-gnu.tar.gz"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.linux-x64-musl"]
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.macos-arm64"]
-checksum = "sha256:624ef0e09521aecd862126be0f6d7754669af2646750d68ac48a114be33c3146"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.25.2/zizmor-aarch64-apple-darwin.tar.gz"
+checksum = "sha256:934d5f934975a84bca84963712aa9e326893bd394912339f39e4050e1d5a4634"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.26.0/zizmor-aarch64-apple-darwin.tar.gz"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.macos-x64"]
-checksum = "sha256:353271b9ec301dd4ba158af481323c831c6e9b494d5ac3f5aa58cf4b207699cc"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.25.2/zizmor-x86_64-apple-darwin.tar.gz"
+checksum = "sha256:8791552007ed6d60d464c1041016609028537fc58b4d05affd04aceddfc83e4b"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.26.0/zizmor-x86_64-apple-darwin.tar.gz"
 provenance = "github-attestations"
 
 [tools.zizmor."platforms.windows-x64"]
-checksum = "sha256:65d46a8144f701200621b580f632076d80d082d60856de9f88793a95fb5882d7"
-url = "https://github.com/zizmorcore/zizmor/releases/download/v1.25.2/zizmor-x86_64-pc-windows-msvc.zip"
+checksum = "sha256:eb523e90a50a82ba3efbd79e8c1c53068fbcc504eaa81e9338b678eba8c3bf46"
+url = "https://github.com/zizmorcore/zizmor/releases/download/v1.26.0/zizmor-x86_64-pc-windows-msvc.zip"
 provenance = "github-attestations"
