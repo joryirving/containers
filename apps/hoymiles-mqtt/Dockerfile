@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.13-alpine3.23@sha256:a37ad3b3e8b3e8800789340442fdb99a5a63b85355cac52cc8e6daad7ff1f5fa
+FROM docker.io/library/python:3.13-alpine3.23@sha256:9fdbf2e3e82628351513560b121e2ee6ce31cac212be9e070c5a5e2769fb5e76
 ARG TARGETARCH
 ARG VERSION
 
