@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=jacksontj/promxy
-  default = "v0.0.94"
+  default = "v0.0.95"
 }
 
 variable "SOURCE" {
