@@ -7,7 +7,7 @@ ARG QBARCH=${QBARCH/amd64/x86_64}
 ARG VERSION
 
 # renovate: datasource=github-releases depName=ludviglundgren/qbittorrent-cli
-ARG QBITORRENT_CLI_VERSION=v2.2.0
+ARG QBITORRENT_CLI_VERSION=v2.3.0
 
 ENV QBT_CONFIRM_LEGAL_NOTICE=1 \
     HOME="/config" \
