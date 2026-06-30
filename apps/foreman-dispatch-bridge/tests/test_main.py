@@ -31,3 +31,15 @@ def test_creates_workload_when_item_present_in_window():
                    create_workload=created.append, now=NIGHT, window=WIN, namespace="foreman-system")
     assert res == "created:wl-a-b-3"
     assert created[0]["spec"]["coderAgentRef"]["name"] == "coder-escalated"
+
+
+def test_authoritative_lane_overrides_response_lane():
+    # Window gate + claim are escalated, but the dispatch response said "normal".
+    # The claimed-from lane must win so the escalated coder is selected.
+    created = []
+    stale = ClaimedItem(repo="a/b", issue_number=9, intent="fix", lane="normal")
+    res = run_once("escalated", claim_one=lambda l: stale,
+                   create_workload=created.append, now=NIGHT, window=WIN, namespace="foreman-system")
+    assert res == "created:wl-a-b-9"
+    assert created[0]["spec"]["coderAgentRef"]["name"] == "coder-escalated"
+    assert created[0]["metadata"]["labels"]["lane"] == "escalated"

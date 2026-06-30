@@ -1,4 +1,5 @@
 import os
+from dataclasses import replace
 from datetime import datetime, time
 from typing import Callable, Optional
 from bridge.models import ClaimedItem
@@ -19,6 +20,11 @@ def run_once(
     item = claim_one(lane)
     if item is None:
         return "empty-queue"
+    # The lane we claimed from is authoritative for routing; the dispatch response's
+    # lane is advisory and may be absent (defaults to "normal" in parse_claim_response).
+    # Reconcile so an omitted/mismatched response lane can't silently route an
+    # escalated claim to the normal coder.
+    item = replace(item, lane=lane)
     manifest = build_workload(item, namespace)
     create_workload(manifest)
     return f"created:{manifest['metadata']['name']}"
