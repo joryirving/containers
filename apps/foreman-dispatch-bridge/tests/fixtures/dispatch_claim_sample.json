@@ -1,0 +1,8 @@
+{
+  "issue": {
+    "repo": "defilantech/LLMKube",
+    "number": 510,
+    "title": "Fix the lint-all docs gap"
+  },
+  "lane": "escalated"
+}

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+tests/
+pytest.ini
+requirements-dev.txt
+container_test.go
+docker-bake.hcl
+README.md
