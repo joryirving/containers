@@ -31,6 +31,21 @@ pytest -v
 - `DISPATCH_URL` (default `http://dispatch.llm:3000`), `DISPATCH_AGENT_TOKEN`
 - `DISPATCH_AGENT_NAME` (default `foreman/coder`), `DISPATCH_LANES` (default `local,cloud,frontier`)
 - `FOREMAN_NAMESPACE` (default `llm`)
+- `GATEPROFILE_MAP` (optional, JSON): maps `owner/repo` → a Foreman
+  [`GateProfile`](https://llmkube.com/docs/foreman/language-gates), stamped on
+  each Workload's `spec.gateProfile` so non-Go repos run their own language
+  gate (needs Foreman ≥ 0.8.23, which propagates it to the decomposed tasks).
+  Absent → no `gateProfile` → Foreman's Go default. A `"*"` key is the
+  fallback for repos without their own entry. Preset images are minimal, so
+  set `commands` (install-in-command) for repos with real toolchains:
+
+  ```json
+  {
+    "misospace/dispatch":   {"language": "node",   "commands": {"test": "corepack pnpm i && corepack pnpm test"}},
+    "misospace/miso-gallery": {"language": "python", "commands": {"test": "pip install -q -e . && pytest -q"}},
+    "*": {"language": "generic"}
+  }
+  ```
 
 ## Status
 
