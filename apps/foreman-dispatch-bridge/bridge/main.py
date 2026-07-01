@@ -1,58 +1,55 @@
 import os
-from dataclasses import replace
-from datetime import datetime, time
 from typing import Callable, Optional
 from bridge.models import ClaimedItem
-from bridge.window import NightWindow, should_dispatch
 from bridge.workload import build_workload
+
+ClaimOne = Callable[[str, str], Optional[ClaimedItem]]  # (agent_name, lane) -> item | None
 
 
 def run_once(
-    lane: str,
-    claim_one: Callable[[str], Optional[ClaimedItem]],
+    lanes: list,
+    agent_name: str,
+    claim_one: ClaimOne,
     create_workload: Callable[[dict], None],
-    now: datetime,
-    window: NightWindow,
     namespace: str,
-) -> str:
-    if not should_dispatch(lane, now, window):
-        return "skipped-window"
-    item = claim_one(lane)
-    if item is None:
-        return "empty-queue"
-    # The lane we claimed from is authoritative for routing; the dispatch response's
-    # lane is advisory and may be absent (defaults to "normal" in parse_claim_response).
-    # Reconcile so an omitted/mismatched response lane can't silently route an
-    # escalated claim to the normal coder.
-    item = replace(item, lane=lane)
-    manifest = build_workload(item, namespace)
-    create_workload(manifest)
-    return f"created:{manifest['metadata']['name']}"
+) -> list:
+    """Claim one ready issue per lane and materialize a Workload for each. Returns per-lane outcomes."""
+    results = []
+    for lane in lanes:
+        item = claim_one(agent_name, lane)
+        if item is None:
+            results.append(f"{lane}:empty")
+            continue
+        manifest = build_workload(item, namespace)
+        create_workload(manifest)
+        results.append(f"{lane}:created:{manifest['metadata']['name']}")
+    return results
 
 
-def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in cluster runbook
+def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cluster
     import requests
     from kubernetes import client, config
     from bridge.claim import DispatchClient
 
-    lane = os.environ["BRIDGE_LANE"]
-    namespace = os.environ.get("FOREMAN_NAMESPACE", "foreman-system")
-    window = NightWindow(
-        start=time.fromisoformat(os.environ.get("WINDOW_START", "22:00")),
-        end=time.fromisoformat(os.environ.get("WINDOW_END", "06:00")),
-    )
+    base_url = os.environ.get("DISPATCH_URL", "http://dispatch.llm:3000")
+    token = os.environ["DISPATCH_AGENT_TOKEN"]
+    agent_name = os.environ.get("DISPATCH_AGENT_NAME", "foreman/coder")
+    lanes = [l.strip() for l in os.environ.get("DISPATCH_LANES", "local,cloud,frontier").split(",") if l.strip()]
+    namespace = os.environ.get("FOREMAN_NAMESPACE", "llm")
 
-    def http_post(url, headers, params):
-        r = requests.post(url, headers=headers, params=params, timeout=30)
+    def http_get(url, headers):
+        r = requests.get(url, headers=headers, timeout=20)
         r.raise_for_status()
         return r.json()
 
-    dispatch = DispatchClient(
-        base_url=os.environ["DISPATCH_URL"],
-        token=os.environ["DISPATCH_AGENT_TOKEN"],
-        agent_name=os.environ["DISPATCH_AGENT_NAME"],
-        http_post=http_post,
-    )
+    def http_post(url, headers, payload):
+        r = requests.post(url, headers=headers, json=payload, timeout=30)
+        if r.status_code == 409:  # already claimed by another agent
+            return None
+        r.raise_for_status()
+        return r.json()
+
+    dispatch = DispatchClient(base_url, token, http_get, http_post)
 
     config.load_incluster_config()
     api = client.CustomObjectsApi()
@@ -64,11 +61,11 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in cluste
                 namespace=namespace, plural="workloads", body=manifest,
             )
         except client.exceptions.ApiException as e:
-            if e.status != 409:  # 409 = already exists -> idempotent no-op
+            if e.status != 409:  # 409 = Workload already exists -> idempotent no-op
                 raise
 
-    result = run_once(lane, dispatch.claim_one, create_workload, datetime.now(), window, namespace)
-    print(result)
+    for line in run_once(lanes, agent_name, dispatch.claim_one, create_workload, namespace):
+        print(line)
 
 
 if __name__ == "__main__":
