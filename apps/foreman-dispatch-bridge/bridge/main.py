@@ -1,7 +1,7 @@
 import os
 from typing import Callable, Optional
 from bridge.models import ClaimedItem
-from bridge.workload import build_workload, gate_profile_for
+from bridge.workload import build_workload, gate_profile_for, parse_gate_profiles
 
 ClaimOne = Callable[[str, str], Optional[ClaimedItem]]  # (agent_name, lane) -> item | None
 
@@ -37,7 +37,6 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cl
     import requests
     from kubernetes import client, config
     from bridge.claim import DispatchClient
-    from bridge.workload import parse_gate_profiles
 
     base_url = os.environ.get("DISPATCH_URL", "http://dispatch.llm:3000")
     token = os.environ["DISPATCH_AGENT_TOKEN"]
