@@ -31,6 +31,12 @@ pytest -v
 - `DISPATCH_URL` (default `http://dispatch.llm:3000`), `DISPATCH_AGENT_TOKEN`
 - `DISPATCH_AGENT_NAME` (default `foreman/coder`), `DISPATCH_LANES` (default `local,cloud,frontier`)
 - `FOREMAN_NAMESPACE` (default `llm`)
+- `RETRY_MAX_ATTEMPTS` (default `3`): each run, before claiming new work, the
+  bridge retries `Failed` Workloads it created — delete + recreate at the next
+  attempt (so the re-run picks up the current config, e.g. `gateProfile`), up to
+  this many total attempts. At the cap it leaves the Workload as a `Failed`
+  tombstone (the issue stays claimed, so the groomer won't re-serve it into a
+  loop) for human triage. Needs `list`/`get`/`delete` RBAC on `workloads`.
 - `GATEPROFILE_MAP` (optional, JSON): maps `owner/repo` → a Foreman
   [`GateProfile`](https://llmkube.com/docs/foreman/language-gates), stamped on
   each Workload's `spec.gateProfile` so non-Go repos run their own language
