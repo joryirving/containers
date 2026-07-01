@@ -12,6 +12,12 @@ REVIEWER_AGENTS = ["reviewer"]
 # no entry of its own.
 GATE_PROFILE_WILDCARD = "*"
 
+# Annotation keys the bridge stamps on each Workload so the failed-workload
+# retry loop can read attempt count + the dispatch identity needed to unclaim.
+ATTEMPT_ANNOTATION = "foreman.llmkube.dev/attempt"
+ISSUE_ID_ANNOTATION = "foreman.llmkube.dev/issue-id"
+AGENT_NAME_ANNOTATION = "foreman.llmkube.dev/agent-name"
+
 
 def parse_gate_profiles(raw: Optional[str]) -> dict:
     """Parse the GATEPROFILE_MAP env var (JSON object: repo -> GateProfile).
@@ -51,7 +57,13 @@ def workload_name(item: ClaimedItem) -> str:
     return f"wl-{owner_repo}-{item.issue_number}"
 
 
-def build_workload(item: ClaimedItem, namespace: str, gate_profile: Optional[dict] = None) -> dict:
+def build_workload(
+    item: ClaimedItem,
+    namespace: str,
+    gate_profile: Optional[dict] = None,
+    agent_name: str = "",
+    attempt: int = 1,
+) -> dict:
     spec = {
         "intent": item.intent,
         "repo": item.repo,
@@ -72,6 +84,13 @@ def build_workload(item: ClaimedItem, namespace: str, gate_profile: Optional[dic
             "name": workload_name(item),
             "namespace": namespace,
             "labels": {"created-by": "dispatch-bridge", "lane": item.lane},
+            # attempt drives the retry cap; issue-id + agent-name let the retry
+            # loop unclaim the dispatch issue when retries are exhausted.
+            "annotations": {
+                ATTEMPT_ANNOTATION: str(attempt),
+                ISSUE_ID_ANNOTATION: item.issue_id,
+                AGENT_NAME_ANNOTATION: agent_name,
+            },
         },
         "spec": spec,
     }

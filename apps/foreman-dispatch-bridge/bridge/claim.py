@@ -49,6 +49,7 @@ def to_claimed_item(item: dict, lane: str) -> ClaimedItem:
         issue_number=int(_number(item)),
         intent=str(item.get("title") or ""),
         lane=_lane(item) or lane,
+        issue_id=str(item.get("issueId") or item.get("id") or ""),
     )
 
 

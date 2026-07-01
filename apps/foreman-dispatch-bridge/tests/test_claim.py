@@ -26,6 +26,7 @@ def test_to_claimed_item_maps_dispatch_fields():
     assert item == ClaimedItem(
         repo="joryirving/home-ops", issue_number=42,
         intent="Fix the flaky reconcile test", lane="local",
+        issue_id="iss_abc123",
     )
 
 
@@ -45,6 +46,7 @@ def test_claim_one_queue_then_claim():
     assert item == ClaimedItem(
         repo="joryirving/home-ops", issue_number=42,
         intent="Fix the flaky reconcile test", lane="local",
+        issue_id="iss_abc123",
     )
     assert captured["get_url"] == "http://d/api/agents/foreman/coder/queue?lane=local&includeClaimed=true"
     assert captured["claim_payload"] == {
