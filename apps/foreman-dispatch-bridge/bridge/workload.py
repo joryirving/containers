@@ -1,7 +1,9 @@
 from bridge.models import ClaimedItem
 
-AGENT_BY_LANE = {"normal": "coder-normal", "escalated": "coder-escalated"}
-VERIFIER_AGENT = "verifier-gate"
+# Single coder for the MVP (all lanes route to it); Ornith reviews, deterministic gate verifies.
+CODER_AGENT = "coder"
+VERIFIER_AGENT = "gate"
+REVIEWER_AGENTS = ["reviewer"]
 
 
 def workload_name(item: ClaimedItem) -> str:
@@ -22,7 +24,8 @@ def build_workload(item: ClaimedItem, namespace: str) -> dict:
             "intent": item.intent,
             "repo": item.repo,
             "issues": [item.issue_number],
-            "coderAgentRef": {"name": AGENT_BY_LANE[item.lane]},
+            "coderAgentRef": {"name": CODER_AGENT},
             "verifierAgentRef": {"name": VERIFIER_AGENT},
+            "reviewerAgentRefs": [{"name": name} for name in REVIEWER_AGENTS],
         },
     }

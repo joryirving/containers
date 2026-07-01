@@ -7,14 +7,15 @@ It runs as a Kubernetes CronJob (manifests live in home-ops, not here) with a
 ServiceAccount scoped to **create-only** on `workloads.foreman.llmkube.dev`. It has
 **no LLM calls** — pure plumbing, matching dispatch's "no judgment in scripts" discipline.
 
-Per run it: claims one item from dispatch for a lane, applies overnight-window gating
-for the `escalated` lane, maps the item to a `Workload` manifest, and creates it.
-Foreman's capability-aware scheduler then dispatches the coder (Strix Halo for escalated,
-nvidia for normal) and the verifier gate.
+Per run it walks the dispatch lanes (`local`, `cloud`, `frontier`), and for each:
+`GET`s the lane queue, selects a ready + claimable non-renovate item, `POST`s a claim,
+and maps the claimed issue to a `Workload` that references the `coder`, `gate`, and
+`reviewer` Agents. Foreman then runs coder (nvidia) → gate (deterministic) → reviewer
+(Ornith on the Strix Halo).
 
 ## Layout
 
-- `bridge/` — Python package: `models`, `window`, `claim`, `workload`, `main`.
+- `bridge/` — Python package: `models`, `claim`, `workload`, `main`.
 - `tests/` — pytest unit tests (run logic-level TDD; the image is boot-tested via `container_test.go`).
 - `requirements.txt` — runtime deps. `requirements-dev.txt` — adds pytest.
 
@@ -25,11 +26,14 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
+## Config (env)
+
+- `DISPATCH_URL` (default `http://dispatch.llm:3000`), `DISPATCH_AGENT_TOKEN`
+- `DISPATCH_AGENT_NAME` (default `foreman/coder`), `DISPATCH_LANES` (default `local,cloud,frontier`)
+- `FOREMAN_NAMESPACE` (default `llm`)
+
 ## Status
 
-Phase 1 (escalated/overnight lane). Design + plan:
-`docs/superpowers/specs/2026-06-30-foreman-dispatch-integration-design.md` and
-`docs/superpowers/plans/2026-06-30-foreman-escalated-lane-phase1.md` (in the personal docs tree).
-
-> The dispatch claim-response shape in `tests/fixtures/dispatch_claim_sample.json` is a
-> stand-in until plan Task 1 captures the real response; reconcile key names then.
+MVP: single coder, all lanes, no window gating. The claim protocol matches
+`itsmiso-ai/dispatch-workflow` (`GET /api/agents/{agent}/queue?lane=…` → select →
+`POST /api/issues/claim`). Longer term this logic may move into a dispatch plugin.

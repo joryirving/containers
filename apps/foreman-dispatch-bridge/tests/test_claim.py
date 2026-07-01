@@ -1,30 +1,67 @@
 import json
 from pathlib import Path
 from bridge.models import ClaimedItem
-from bridge.claim import parse_claim_response, DispatchClient
+from bridge.claim import select_item, to_claimed_item, DispatchClient
+
+SAMPLE = json.loads(Path("tests/fixtures/dispatch_claim_sample.json").read_text())
 
 
-def test_parse_empty_queue_returns_none():
-    assert parse_claim_response({}) is None
-    assert parse_claim_response({"issue": None}) is None
+def test_select_item_picks_first_ready_claimable_non_renovate():
+    item = select_item(SAMPLE, "local")
+    # #42 is ready+claimable; #7 is renovate; #99 is backlog.
+    assert item["number"] == 42
 
 
-def test_parse_real_sample_yields_claimeditem():
-    sample = json.loads(Path("tests/fixtures/dispatch_claim_sample.json").read_text())
-    item = parse_claim_response(sample)
-    assert isinstance(item, ClaimedItem)
-    assert "/" in item.repo
-    assert item.issue_number > 0
-    assert item.lane in ("normal", "escalated")
+def test_select_item_skips_renovate_and_non_ready():
+    only_bad = [i for i in SAMPLE if i["number"] in (7, 99)]
+    assert select_item(only_bad, "local") is None
 
 
-def test_client_claim_one_uses_injected_transport():
+def test_select_item_respects_lane():
+    assert select_item(SAMPLE, "frontier") is None
+
+
+def test_to_claimed_item_maps_dispatch_fields():
+    item = to_claimed_item(SAMPLE[0], "local")
+    assert item == ClaimedItem(
+        repo="joryirving/home-ops", issue_number=42,
+        intent="Fix the flaky reconcile test", lane="local",
+    )
+
+
+def test_claim_one_queue_then_claim():
     captured = {}
-    def fake_post(url, headers, params):
-        captured["url"] = url
-        captured["params"] = params
-        return {"issue": {"repo": "a/b", "number": 3, "title": "fix"}, "lane": "escalated"}
-    client = DispatchClient("http://d", "tok", "saffron-escalated", http_post=fake_post)
-    item = client.claim_one("escalated")
-    assert item == ClaimedItem(repo="a/b", issue_number=3, intent="fix", lane="escalated")
-    assert captured["params"]["lane"] == "escalated"
+
+    def fake_get(url, headers):
+        captured["get_url"] = url
+        return SAMPLE
+
+    def fake_post(url, headers, payload):
+        captured["claim_payload"] = payload
+        return {"ok": True}
+
+    client = DispatchClient("http://d/", "tok", http_get=fake_get, http_post=fake_post)
+    item = client.claim_one("foreman/coder", "local")
+    assert item == ClaimedItem(
+        repo="joryirving/home-ops", issue_number=42,
+        intent="Fix the flaky reconcile test", lane="local",
+    )
+    assert captured["get_url"] == "http://d/api/agents/foreman/coder/queue?lane=local&includeClaimed=true"
+    assert captured["claim_payload"] == {
+        "issueId": "iss_abc123", "repoFullName": "joryirving/home-ops",
+        "issueNumber": 42, "agentName": "foreman/coder",
+    }
+
+
+def test_claim_one_returns_none_on_409_conflict():
+    client = DispatchClient("http://d", "tok",
+                            http_get=lambda u, h: SAMPLE,
+                            http_post=lambda u, h, p: None)  # None == 409 already claimed
+    assert client.claim_one("foreman/coder", "local") is None
+
+
+def test_claim_one_empty_queue():
+    client = DispatchClient("http://d", "tok",
+                            http_get=lambda u, h: [],
+                            http_post=lambda u, h, p: {"ok": True})
+    assert client.claim_one("foreman/coder", "local") is None
