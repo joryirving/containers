@@ -80,3 +80,54 @@ def test_reconcile_empty_is_noop():
     r = _Recorder([])
     assert reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
                               namespace="llm", gate_profiles={}, max_attempts=3) == []
+
+
+def test_reconcile_escalates_at_max_when_hook_wired():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3, lane="local", issue_id="id-7")])
+    escalated = []
+
+    def escalate(item):
+        escalated.append(item)
+        return True
+
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=escalate, escalation_lane="frontier")
+    assert out == ["wl-a-b-7:escalated:local->frontier"]
+    assert [i.issue_id for i in escalated] == ["id-7"]
+    assert r.deleted == ["wl-a-b-7"]   # tombstone removed after successful escalation
+    assert r.created == []             # the next tick's claim builds the frontier Workload
+
+
+def test_reconcile_keeps_tombstone_when_escalate_fails():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3)])
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=lambda item: False, escalation_lane="frontier")
+    assert out == ["wl-a-b-7:giveup:3/3"]
+    assert r.deleted == []             # keep the tombstone; next tick retries escalation
+
+
+def test_reconcile_never_escalates_out_of_the_escalation_lane():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3, lane="frontier")])
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=lambda item: True, escalation_lane="frontier")
+    assert out == ["wl-a-b-7:giveup:3/3"]
+    assert r.deleted == []
+
+
+def test_reconcile_requires_issue_id_to_escalate():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3, issue_id="")])
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=lambda item: True, escalation_lane="frontier")
+    assert out == ["wl-a-b-7:giveup:3/3"]
+
+
+def test_reconcile_retry_uses_lane_coder_agent():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=1, lane="frontier")])
+    reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                       "llm", {}, max_attempts=3,
+                       lane_coder_agents={"*": "coder", "frontier": "coder-frontier"})
+    assert r.created[0]["spec"]["coderAgentRef"] == {"name": "coder-frontier"}

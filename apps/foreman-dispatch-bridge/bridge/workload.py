@@ -3,10 +3,14 @@ from typing import Optional
 
 from bridge.models import ClaimedItem
 
-# Single coder for the MVP (all lanes route to it); Ornith reviews, deterministic gate verifies.
+# Default coder when a lane has no explicit mapping; Ornith reviews, deterministic gate verifies.
 CODER_AGENT = "coder"
 VERIFIER_AGENT = "gate"
 REVIEWER_AGENTS = ["reviewer"]
+
+# Fallback key in a lane->coder-agent map: its agent applies to any lane that
+# has no entry of its own.
+LANE_CODER_WILDCARD = "*"
 
 # Fallback key in a gate-profile map: its profile applies to any repo that has
 # no entry of its own.
@@ -52,6 +56,28 @@ def gate_profile_for(repo: str, gate_profiles: dict) -> Optional[dict]:
     return gate_profiles.get(repo) or gate_profiles.get(GATE_PROFILE_WILDCARD)
 
 
+def parse_lane_coder_agents(raw: Optional[str]) -> dict:
+    """Parse the LANE_CODER_AGENTS env var (JSON object: lane -> coder Agent name).
+
+    Empty or absent -> {}, so every lane routes to the default coder Agent
+    (unchanged behavior). Example wiring the escalation tier to a cloud-proxy
+    coder:
+
+        {"*": "coder", "frontier": "coder-frontier"}
+    """
+    raw = (raw or "").strip()
+    if not raw:
+        return {}
+    return json.loads(raw)
+
+
+def coder_agent_for(lane: str, lane_coder_agents: dict) -> str:
+    """Resolve a lane's coder Agent: exact match, then "*", else the default coder."""
+    if not lane_coder_agents:
+        return CODER_AGENT
+    return lane_coder_agents.get(lane) or lane_coder_agents.get(LANE_CODER_WILDCARD) or CODER_AGENT
+
+
 def workload_name(item: ClaimedItem) -> str:
     owner_repo = item.repo.replace("/", "-").lower()
     return f"wl-{owner_repo}-{item.issue_number}"
@@ -63,12 +89,13 @@ def build_workload(
     gate_profile: Optional[dict] = None,
     agent_name: str = "",
     attempt: int = 1,
+    coder_agent: str = CODER_AGENT,
 ) -> dict:
     spec = {
         "intent": item.intent,
         "repo": item.repo,
         "issues": [item.issue_number],
-        "coderAgentRef": {"name": CODER_AGENT},
+        "coderAgentRef": {"name": coder_agent},
         "verifierAgentRef": {"name": VERIFIER_AGENT},
         "reviewerAgentRefs": [{"name": name} for name in REVIEWER_AGENTS],
     }

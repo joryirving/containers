@@ -67,3 +67,55 @@ def test_claim_one_empty_queue():
                             http_get=lambda u, h: [],
                             http_post=lambda u, h, p: {"ok": True})
     assert client.claim_one("foreman/coder", "local") is None
+
+
+def _client_recording_posts(responses=None):
+    from bridge.claim import DispatchClient
+    posts = []
+    resp = list(responses or [])
+
+    def http_post(url, headers, payload):
+        posts.append((url, payload))
+        return resp.pop(0) if resp else {}
+
+    return DispatchClient("http://d", "tok", lambda u, h: [], http_post), posts
+
+
+def test_set_lane_posts_manual_classification():
+    from bridge.models import ClaimedItem
+    c, posts = _client_recording_posts()
+    item = ClaimedItem(repo="a/b", issue_number=7, intent="t", lane="local", issue_id="id-7")
+    assert c.set_lane(item, "frontier", "3 failed attempts") is True
+    url, payload = posts[0]
+    assert url == "http://d/api/issues/id-7/lane"
+    assert payload["model"] == "bridge-escalation"
+    assert payload["classification"] == {"lane": "frontier", "confidence": "high",
+                                         "reason": "3 failed attempts"}
+
+
+def test_unclaim_posts_release():
+    from bridge.models import ClaimedItem
+    c, posts = _client_recording_posts()
+    item = ClaimedItem(repo="a/b", issue_number=7, intent="t", lane="local", issue_id="id-7")
+    assert c.unclaim(item, "foreman-coder") is True
+    url, payload = posts[0]
+    assert url == "http://d/api/issues/unclaim"
+    assert payload == {"issueId": "id-7", "repoFullName": "a/b", "issueNumber": 7,
+                       "agentName": "foreman-coder"}
+
+
+def test_escalate_stops_after_failed_lane_move():
+    from bridge.models import ClaimedItem
+    # First POST (lane) -> None (failure); unclaim must NOT run.
+    c, posts = _client_recording_posts(responses=[None])
+    item = ClaimedItem(repo="a/b", issue_number=7, intent="t", lane="local", issue_id="id-7")
+    assert c.escalate(item, "frontier", "r", "foreman-coder") is False
+    assert len(posts) == 1
+
+
+def test_escalate_lane_then_unclaim():
+    from bridge.models import ClaimedItem
+    c, posts = _client_recording_posts(responses=[{}, {}])
+    item = ClaimedItem(repo="a/b", issue_number=7, intent="t", lane="local", issue_id="id-7")
+    assert c.escalate(item, "frontier", "r", "foreman-coder") is True
+    assert [u for u, _ in posts] == ["http://d/api/issues/id-7/lane", "http://d/api/issues/unclaim"]

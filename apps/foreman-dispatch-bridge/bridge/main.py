@@ -2,7 +2,13 @@ import os
 import time
 from typing import Callable, Optional
 from bridge.models import ClaimedItem
-from bridge.workload import build_workload, gate_profile_for, parse_gate_profiles
+from bridge.workload import (
+    build_workload,
+    coder_agent_for,
+    gate_profile_for,
+    parse_gate_profiles,
+    parse_lane_coder_agents,
+)
 from bridge.retry import reconcile_failures, DEFAULT_MAX_ATTEMPTS
 
 ClaimOne = Callable[[str, str], Optional[ClaimedItem]]  # (agent_name, lane) -> item | None
@@ -15,21 +21,33 @@ def run_once(
     create_workload: Callable[[dict], None],
     namespace: str,
     gate_profiles: Optional[dict] = None,
+    lane_coder_agents: Optional[dict] = None,
 ) -> list:
     """Claim one ready issue per lane and materialize a Workload for each. Returns per-lane outcomes.
 
     gate_profiles maps "owner/repo" -> a Foreman GateProfile dict; the matching
     profile (or the "*" wildcard) is stamped on each Workload so non-Go repos
     run their own language gate. None/empty leaves gateProfile off (Go default).
+
+    lane_coder_agents maps a lane -> a coder Agent name (with "*" wildcard), so
+    an escalation lane can route to a stronger (e.g. cloud-proxy) coder.
+    None/empty routes every lane to the default coder.
     """
     gate_profiles = gate_profiles or {}
+    lane_coder_agents = lane_coder_agents or {}
     results = []
     for lane in lanes:
         item = claim_one(agent_name, lane)
         if item is None:
             results.append(f"{lane}:empty")
             continue
-        manifest = build_workload(item, namespace, gate_profile_for(item.repo, gate_profiles))
+        manifest = build_workload(
+            item,
+            namespace,
+            gate_profile_for(item.repo, gate_profiles),
+            agent_name,
+            coder_agent=coder_agent_for(item.lane, lane_coder_agents),
+        )
         create_workload(manifest)
         results.append(f"{lane}:created:{manifest['metadata']['name']}")
     return results
@@ -47,6 +65,11 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cl
     namespace = os.environ.get("FOREMAN_NAMESPACE", "llm")
     gate_profiles = parse_gate_profiles(os.environ.get("GATEPROFILE_MAP"))
     max_attempts = int(os.environ.get("RETRY_MAX_ATTEMPTS", str(DEFAULT_MAX_ATTEMPTS)))
+    # Lane -> coder Agent map, e.g. '{"*": "coder", "frontier": "coder-frontier"}'.
+    lane_coder_agents = parse_lane_coder_agents(os.environ.get("LANE_CODER_AGENTS"))
+    # When set, exhausted Workloads outside this lane escalate into it (re-lane +
+    # unclaim) instead of tombstoning. Empty disables escalation.
+    escalation_lane = os.environ.get("ESCALATION_LANE", "").strip()
 
     def http_get(url, headers):
         r = requests.get(url, headers=headers, timeout=20)
@@ -112,15 +135,28 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cl
             time.sleep(1)
         raise TimeoutError(f"workload {name} still terminating after 60s")
 
+    def escalate(item: ClaimedItem) -> bool:
+        reason = (
+            f"bridge escalation: {max_attempts} failed attempts in lane "
+            f"'{item.lane or '?'}' for {item.repo}#{item.issue_number}"
+        )
+        return dispatch.escalate(item, escalation_lane, reason, agent_name)
+
     # Retry failed workloads first (so a re-run this tick uses the current config),
     # then claim new work.
     for line in reconcile_failures(
         agent_name, list_failed_workloads, create_workload, delete_workload,
         namespace, gate_profiles, max_attempts,
+        escalate=escalate if escalation_lane else None,
+        escalation_lane=escalation_lane,
+        lane_coder_agents=lane_coder_agents,
     ):
         print(line)
 
-    for line in run_once(lanes, agent_name, dispatch.claim_one, create_workload, namespace, gate_profiles):
+    for line in run_once(
+        lanes, agent_name, dispatch.claim_one, create_workload, namespace,
+        gate_profiles, lane_coder_agents,
+    ):
         print(line)
 
 

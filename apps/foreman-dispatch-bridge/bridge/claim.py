@@ -87,3 +87,31 @@ class DispatchClient:
         if not self.claim(item, agent_name):
             return None
         return to_claimed_item(item, lane)
+
+    def set_lane(self, item: ClaimedItem, lane: str, reason: str) -> bool:
+        """Record an explicit lane classification for the issue (manual override)."""
+        payload = {
+            "model": "bridge-escalation",
+            "classification": {"lane": lane, "confidence": "high", "reason": reason},
+        }
+        url = f"{self._base}/api/issues/{item.issue_id}/lane"
+        return self._post(url, self._headers(), payload) is not None
+
+    def unclaim(self, item: ClaimedItem, agent_name: str) -> bool:
+        """Release the bridge's claim so the issue is claimable again."""
+        payload = {
+            "issueId": item.issue_id,
+            "repoFullName": item.repo,
+            "issueNumber": item.issue_number,
+            "agentName": agent_name,
+        }
+        return self._post(f"{self._base}/api/issues/unclaim", self._headers(), payload) is not None
+
+    def escalate(self, item: ClaimedItem, lane: str, reason: str, agent_name: str) -> bool:
+        """Move a given-up issue to the escalation lane and release the claim.
+
+        Lane first, then unclaim: if the unclaim fails the issue stays claimed
+        (so nothing re-serves it into a loop) and the caller keeps the Failed
+        Workload tombstone, so the next tick retries the escalation.
+        """
+        return self.set_lane(item, lane, reason) and self.unclaim(item, agent_name)

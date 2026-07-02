@@ -79,3 +79,24 @@ def test_gate_profile_for_prefers_exact_match_then_wildcard():
 def test_gate_profile_for_returns_none_when_no_match_and_no_wildcard():
     assert gate_profile_for("misospace/miso-chat", {"misospace/dispatch": {"language": "node"}}) is None
     assert gate_profile_for("a/b", {}) is None
+
+
+def test_parse_lane_coder_agents_empty_is_empty_dict():
+    from bridge.workload import parse_lane_coder_agents
+    assert parse_lane_coder_agents(None) == {}
+    assert parse_lane_coder_agents("") == {}
+    assert parse_lane_coder_agents("  ") == {}
+
+
+def test_coder_agent_for_prefers_exact_then_wildcard_then_default():
+    from bridge.workload import coder_agent_for
+    agents = {"*": "coder", "frontier": "coder-frontier"}
+    assert coder_agent_for("frontier", agents) == "coder-frontier"
+    assert coder_agent_for("local", agents) == "coder"
+    assert coder_agent_for("local", {"frontier": "coder-frontier"}) == "coder"  # no wildcard -> default
+    assert coder_agent_for("anything", {}) == "coder"
+
+
+def test_build_workload_uses_explicit_coder_agent():
+    wl = build_workload(ITEM, "llm", coder_agent="coder-frontier")
+    assert wl["spec"]["coderAgentRef"] == {"name": "coder-frontier"}
