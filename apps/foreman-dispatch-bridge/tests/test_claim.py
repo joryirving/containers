@@ -119,3 +119,19 @@ def test_escalate_lane_then_unclaim():
     item = ClaimedItem(repo="a/b", issue_number=7, intent="t", lane="local", issue_id="id-7")
     assert c.escalate(item, "frontier", "r", "foreman-coder") is True
     assert [u for u, _ in posts] == ["http://d/api/issues/id-7/lane", "http://d/api/issues/unclaim"]
+
+
+def test_find_issue_id_scans_lanes_and_matches_repo_number():
+    from bridge.claim import DispatchClient
+    queues = {
+        "local": [{"repoFullName": "a/b", "number": 9, "issueId": "id-9"}],
+        "frontier": [{"repoFullName": "a/b", "number": 7, "issueId": "id-7"}],
+    }
+
+    def http_get(url, headers):
+        lane = url.split("lane=")[1].split("&")[0]
+        return queues.get(lane, [])
+
+    c = DispatchClient("http://d", "tok", http_get, lambda u, h, p: {})
+    assert c.find_issue_id("agent", ["local", "frontier"], "a/b", 7) == "id-7"
+    assert c.find_issue_id("agent", ["local", "frontier"], "a/b", 99) == ""

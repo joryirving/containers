@@ -9,7 +9,7 @@ from bridge.workload import (
     parse_gate_profiles,
     parse_lane_coder_agents,
 )
-from bridge.retry import reconcile_failures, DEFAULT_MAX_ATTEMPTS
+from bridge.retry import reconcile_failures, feedback_from_tasks, DEFAULT_MAX_ATTEMPTS
 
 ClaimOne = Callable[[str, str], Optional[ClaimedItem]]  # (agent_name, lane) -> item | None
 
@@ -135,6 +135,28 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cl
             time.sleep(1)
         raise TimeoutError(f"workload {name} still terminating after 60s")
 
+    def list_workload_tasks(workload_name: str) -> list:
+        resp = api.list_namespaced_custom_object(
+            group="foreman.llmkube.dev", version="v1alpha1",
+            namespace=namespace, plural="agentictasks",
+            label_selector=f"foreman.llmkube.dev/workload={workload_name}",
+        )
+        return resp.get("items", [])
+
+    def feedback_for(workload_name: str) -> str:
+        try:
+            return feedback_from_tasks(list_workload_tasks(workload_name))
+        except Exception as e:  # feedback is best-effort; never block a retry on it
+            print(f"{workload_name}:feedback-lookup-failed:{e}")
+            return ""
+
+    def lookup_issue_id(item: ClaimedItem) -> str:
+        try:
+            return dispatch.find_issue_id(agent_name, lanes, item.repo, item.issue_number)
+        except Exception as e:  # best-effort; missing id just means no escalation
+            print(f"{item.repo}#{item.issue_number}:issue-id-lookup-failed:{e}")
+            return ""
+
     def escalate(item: ClaimedItem) -> bool:
         reason = (
             f"bridge escalation: {max_attempts} failed attempts in lane "
@@ -150,6 +172,8 @@ def _real_main() -> None:  # pragma: no cover - thin wiring, exercised in the cl
         escalate=escalate if escalation_lane else None,
         escalation_lane=escalation_lane,
         lane_coder_agents=lane_coder_agents,
+        lookup_issue_id=lookup_issue_id,
+        feedback_for=feedback_for,
     ):
         print(line)
 

@@ -131,3 +131,86 @@ def test_reconcile_retry_uses_lane_coder_agent():
                        "llm", {}, max_attempts=3,
                        lane_coder_agents={"*": "coder", "frontier": "coder-frontier"})
     assert r.created[0]["spec"]["coderAgentRef"] == {"name": "coder-frontier"}
+
+
+def _no_go_review(findings=None, summary=""):
+    return {
+        "spec": {"kind": "review"},
+        "status": {"verdict": "NO-GO", "phase": "Succeeded",
+                   "result": {"extra": {"modelExtra": {"findings": findings or {}},
+                                        "modelSummary": summary}}},
+    }
+
+
+def test_feedback_from_tasks_distills_review_no_go():
+    from bridge.retry import feedback_from_tasks
+    tasks = [_no_go_review(
+        findings={"missing_tests": True, "scope_creep": True,
+                  "scope_creep_details": "commit reduces token lifetime, unrelated to #141"},
+    )]
+    fb = feedback_from_tasks(tasks)
+    assert "Reviewer rejected the previous attempt" in fb
+    assert "missing_tests" in fb and "scope_creep" in fb
+    assert "unrelated to #141" in fb
+
+
+def test_feedback_from_tasks_includes_coder_errors_and_bounds_length():
+    from bridge.retry import feedback_from_tasks, FEEDBACK_MAX_CHARS
+    tasks = [{
+        "spec": {"kind": "issue-fix"},
+        "status": {"verdict": "INCOMPLETE",
+                   "result": {"extra": {"error": "x" * 5000}}},
+    }]
+    fb = feedback_from_tasks(tasks)
+    assert "Previous coder attempt failed" in fb
+    assert len(fb) <= FEEDBACK_MAX_CHARS
+
+
+def test_feedback_from_tasks_empty_when_nothing_actionable():
+    from bridge.retry import feedback_from_tasks
+    assert feedback_from_tasks([]) == ""
+    assert feedback_from_tasks([{"spec": {"kind": "verify"}, "status": {"verdict": "GATE-PASS"}}]) == ""
+
+
+def test_reconcile_retry_carries_feedback_into_pipeline_prompt():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=1)])
+    reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                       "llm", {}, max_attempts=3,
+                       feedback_for=lambda name: "Reviewer said: add tests")
+    spec = r.created[0]["spec"]
+    assert "pipeline" in spec and "issues" not in spec
+    code_step = spec["pipeline"][0]
+    assert code_step["payload"]["prompt"] == "Reviewer said: add tests"
+    # verify + review steps present and chained
+    assert [st["name"] for st in spec["pipeline"]] == ["code-7", "verify-7", "review-7-0"]
+    assert spec["pipeline"][1]["dependsOn"] == ["code-7"]
+
+
+def test_reconcile_retry_without_feedback_stays_on_issues_path():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=1)])
+    reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                       "llm", {}, max_attempts=3,
+                       feedback_for=lambda name: "")
+    spec = r.created[0]["spec"]
+    assert "issues" in spec and "pipeline" not in spec
+
+
+def test_reconcile_backfills_issue_id_before_escalating():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3, issue_id="")])
+    escalated = []
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=lambda item: escalated.append(item) or True,
+                             escalation_lane="frontier",
+                             lookup_issue_id=lambda item: "recovered-id")
+    assert out == ["wl-a-b-7:escalated:local->frontier"]
+    assert escalated[0].issue_id == "recovered-id"
+
+
+def test_reconcile_still_gives_up_when_backfill_finds_nothing():
+    r = _Recorder([_failed_wl("wl-a-b-7", attempt=3, issue_id="")])
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, r.delete,
+                             "llm", {}, max_attempts=3,
+                             escalate=lambda item: True, escalation_lane="frontier",
+                             lookup_issue_id=lambda item: "")
+    assert out == ["wl-a-b-7:giveup:3/3"]

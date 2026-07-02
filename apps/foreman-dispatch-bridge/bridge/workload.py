@@ -83,6 +83,42 @@ def workload_name(item: ClaimedItem) -> str:
     return f"wl-{owner_repo}-{item.issue_number}"
 
 
+def _pipeline_steps(item: ClaimedItem, name: str, coder_agent: str, feedback: str) -> list:
+    """Explicit spec.pipeline mirroring the operator's issues-path decomposition
+    (code -> verify -> review-*), with the retry feedback injected as the code
+    step's payload.prompt — the only channel that reaches the coder's user
+    prompt ("Issue context"). Branch naming matches the issues path so re-runs
+    keep the same branch. gateProfile still propagates: the operator stamps the
+    Workload default onto every rendered step."""
+    n = item.issue_number
+    branch = f"foreman/{name}/issue-{n}"
+    payload = {"repo": item.repo, "issue": n, "branch": branch}
+    steps = [
+        {
+            "name": f"code-{n}",
+            "kind": "issue-fix",
+            "agentRef": {"name": coder_agent},
+            "payload": {**payload, "prompt": feedback},
+        },
+        {
+            "name": f"verify-{n}",
+            "kind": "verify",
+            "agentRef": {"name": VERIFIER_AGENT},
+            "dependsOn": [f"code-{n}"],
+            "payload": dict(payload),
+        },
+    ]
+    for i, reviewer in enumerate(REVIEWER_AGENTS):
+        steps.append({
+            "name": f"review-{n}-{i}",
+            "kind": "review",
+            "agentRef": {"name": reviewer},
+            "dependsOn": [f"verify-{n}"],
+            "payload": dict(payload),
+        })
+    return steps
+
+
 def build_workload(
     item: ClaimedItem,
     namespace: str,
@@ -90,15 +126,25 @@ def build_workload(
     agent_name: str = "",
     attempt: int = 1,
     coder_agent: str = CODER_AGENT,
+    feedback: str = "",
 ) -> dict:
-    spec = {
-        "intent": item.intent,
-        "repo": item.repo,
-        "issues": [item.issue_number],
-        "coderAgentRef": {"name": coder_agent},
-        "verifierAgentRef": {"name": VERIFIER_AGENT},
-        "reviewerAgentRefs": [{"name": name} for name in REVIEWER_AGENTS],
-    }
+    if feedback:
+        # Retry with context: explicit pipeline so payload.prompt can carry the
+        # previous attempt's review findings / failure to the coder.
+        spec = {
+            "intent": item.intent,
+            "repo": item.repo,
+            "pipeline": _pipeline_steps(item, workload_name(item), coder_agent, feedback),
+        }
+    else:
+        spec = {
+            "intent": item.intent,
+            "repo": item.repo,
+            "issues": [item.issue_number],
+            "coderAgentRef": {"name": coder_agent},
+            "verifierAgentRef": {"name": VERIFIER_AGENT},
+            "reviewerAgentRefs": [{"name": name} for name in REVIEWER_AGENTS],
+        }
     if gate_profile:
         # Passed through verbatim. Foreman >= 0.8.23 copies Workload.spec.gateProfile
         # onto every decomposed AgenticTask (the coder self-gate + verify Job), so a
