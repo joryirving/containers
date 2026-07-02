@@ -1,8 +1,9 @@
-from typing import Callable
+from typing import Callable, Optional
 
 from bridge.models import ClaimedItem
 from bridge.workload import (
     build_workload,
+    coder_agent_for,
     gate_profile_for,
     ATTEMPT_ANNOTATION,
     ISSUE_ID_ANNOTATION,
@@ -14,6 +15,7 @@ DEFAULT_MAX_ATTEMPTS = 3
 
 ListFailed = Callable[[], list]         # () -> list of Failed Workload manifests (dicts)
 DeleteWorkload = Callable[[str], None]  # (name) -> None; blocks until the object is gone
+Escalate = Callable[[ClaimedItem], bool]  # (item) -> True when re-laned + unclaimed
 
 
 def attempt_of(wl: dict) -> int:
@@ -50,6 +52,9 @@ def reconcile_failures(
     namespace: str,
     gate_profiles: dict,
     max_attempts: int = DEFAULT_MAX_ATTEMPTS,
+    escalate: Optional[Escalate] = None,
+    escalation_lane: str = "",
+    lane_coder_agents: Optional[dict] = None,
 ) -> list:
     """Retry Failed bridge Workloads, bounded by max_attempts.
 
@@ -58,18 +63,36 @@ def reconcile_failures(
         so it re-runs with the current config (gateProfile, agent refs). The name
         is deterministic, so delete-then-recreate reuses the same name/branch;
         delete_workload must block until the old object is gone.
-      - attempt >= max_attempts: leave it as a Failed tombstone (no action). The
-        issue stays claimed so the groomer won't re-serve it into a loop; a human
-        triages from the lingering Workload.
+      - attempt >= max_attempts, not yet in the escalation lane, and an escalate
+        hook is wired: move the issue to the escalation lane + release the claim,
+        then delete the Workload. The next tick claims it from the escalation
+        lane and builds a fresh Workload with that lane's coder Agent. If the
+        escalate call fails, keep the tombstone so the next tick retries it.
+      - attempt >= max_attempts otherwise (already escalated, or no hook): leave
+        it as a Failed tombstone (no action). The issue stays claimed so the
+        groomer won't re-serve it into a loop; a human triages from the
+        lingering Workload.
 
     Returns per-Workload outcome strings.
     """
+    lane_coder_agents = lane_coder_agents or {}
     results = []
     for wl in list_failed():
         name = ((wl.get("metadata") or {}).get("name")) or "?"
         attempt = attempt_of(wl)
         if attempt >= max_attempts:
-            results.append(f"{name}:giveup:{attempt}/{max_attempts}")
+            item = item_from_workload(wl)
+            can_escalate = (
+                escalate is not None
+                and escalation_lane
+                and item.lane != escalation_lane
+                and item.issue_id
+            )
+            if can_escalate and escalate(item):
+                delete_workload(name)
+                results.append(f"{name}:escalated:{item.lane or '?'}->{escalation_lane}")
+            else:
+                results.append(f"{name}:giveup:{attempt}/{max_attempts}")
             continue
         item = item_from_workload(wl)
         delete_workload(name)
@@ -79,6 +102,7 @@ def reconcile_failures(
             gate_profile_for(item.repo, gate_profiles),
             agent_name,
             attempt + 1,
+            coder_agent_for(item.lane, lane_coder_agents),
         )
         create_workload(manifest)
         results.append(f"{name}:retry:{attempt + 1}/{max_attempts}")
