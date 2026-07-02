@@ -107,6 +107,18 @@ class DispatchClient:
         }
         return self._post(f"{self._base}/api/issues/unclaim", self._headers(), payload) is not None
 
+    def find_issue_id(self, agent_name: str, lanes: list, repo: str, issue_number: int) -> str:
+        """Recover a dispatch issue id by repo+number from the lane queues
+        (includeClaimed=true, so claimed items are visible). Used to backfill
+        Workloads whose issue-id annotation predates bridge 0.3.0."""
+        for lane in lanes:
+            for item in self.queue(agent_name, lane):
+                if not isinstance(item, dict):
+                    continue
+                if item.get("repoFullName") == repo and int(_number(item) or 0) == issue_number:
+                    return str(item.get("issueId") or item.get("id") or "")
+        return ""
+
     def escalate(self, item: ClaimedItem, lane: str, reason: str, agent_name: str) -> bool:
         """Move a given-up issue to the escalation lane and release the claim.
 
