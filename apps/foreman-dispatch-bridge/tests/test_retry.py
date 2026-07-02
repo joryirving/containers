@@ -214,3 +214,20 @@ def test_reconcile_still_gives_up_when_backfill_finds_nothing():
                              escalate=lambda item: True, escalation_lane="frontier",
                              lookup_issue_id=lambda item: "")
     assert out == ["wl-a-b-7:giveup:3/3"]
+
+
+def test_reconcile_isolates_a_wedged_delete():
+    """A delete that raises (e.g. LLMKube#949's immortal Workload) must not
+    abort the remaining retries."""
+    r = _Recorder([_failed_wl("wl-wedged", attempt=1), _failed_wl("wl-fine", attempt=1)])
+
+    def delete(name):
+        if name == "wl-wedged":
+            raise TimeoutError("workload wl-wedged still terminating after 60s")
+        r.deleted.append(name)
+
+    out = reconcile_failures("foreman-coder", r.list_failed, r.create, delete,
+                             "llm", {}, max_attempts=3)
+    assert out[0].startswith("wl-wedged:retry-error:")
+    assert out[1] == "wl-fine:retry:2/3"
+    assert len(r.created) == 1  # only the healthy one was recreated

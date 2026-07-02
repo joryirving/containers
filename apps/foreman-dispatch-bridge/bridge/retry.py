@@ -154,16 +154,24 @@ def reconcile_failures(
         # delete (the tasks go with the Workload). A retry that knows why it
         # was rejected beats a blind identical re-run.
         feedback = feedback_for(name) if feedback_for else ""
-        delete_workload(name)
-        manifest = build_workload(
-            item,
-            namespace,
-            gate_profile_for(item.repo, gate_profiles),
-            agent_name,
-            attempt + 1,
-            coder_agent_for(item.lane, lane_coder_agents),
-            feedback=feedback,
-        )
-        create_workload(manifest)
+        # Per-workload isolation: a delete that wedges (e.g. a Workload whose
+        # deletion never completes, LLMKube#949) or a create that races must
+        # not abort the rest of the reconcile pass and the claim pass — one
+        # bad Workload previously crashed the whole bridge run every tick.
+        try:
+            delete_workload(name)
+            manifest = build_workload(
+                item,
+                namespace,
+                gate_profile_for(item.repo, gate_profiles),
+                agent_name,
+                attempt + 1,
+                coder_agent_for(item.lane, lane_coder_agents),
+                feedback=feedback,
+            )
+            create_workload(manifest)
+        except Exception as e:
+            results.append(f"{name}:retry-error:{e}")
+            continue
         results.append(f"{name}:retry:{attempt + 1}/{max_attempts}")
     return results
