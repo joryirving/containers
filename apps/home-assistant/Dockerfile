@@ -7,6 +7,10 @@ ARG TARGETARCH
 ARG ARCH=${TARGETARCH/arm64/aarch64}
 ARG VERSION
 
+# Persisted so the entrypoint can reconcile the persisted venv against the
+# exact HA version baked into this image on every boot.
+ENV VERSION=${VERSION}
+
 ENV \
     CRYPTOGRAPHY_DONT_BUILD_RUST=1 \
     PIP_BREAK_SYSTEM_PACKAGES=1 \
