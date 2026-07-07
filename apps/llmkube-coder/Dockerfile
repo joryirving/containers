@@ -25,7 +25,7 @@ RUN mkdir -p /out /tmp/vresolve \
 
 # Node source stage: the official Node 22 image on the same Debian base as the
 # runtime, so the copied binary is ABI-compatible.
-FROM node:24-bookworm-slim@sha256:b31e7a42fdf8b8aa5f5ed477c72d694301273f1069c5a2f71d53c6482e99a2fc AS node
+FROM node:24-bookworm-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5 AS node
 
 # Runtime: Python 3.14 + Node 22 (the languages this fleet's coder self-gate
 # targets) + git + the linters the gate runs. No Go: the target repos are
