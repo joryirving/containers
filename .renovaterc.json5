@@ -118,5 +118,20 @@
       matchPackageNames: ["/python/"],
       allowedVersions: "/3\\.14-slim/",
     },
+    {
+      description: [
+        "LLMKube coder image family — group golang + LLMKube-version bumps into one PR",
+      ],
+      matchFileNames: [
+        "apps/llmkube-coder/**",
+        "apps/llmkube-coder-node/**",
+        "apps/llmkube-coder-python/**",
+      ],
+      groupName: "llmkube-coders",
+      additionalBranchPrefix: "",
+      addLabels: ["app/llmkube-coders"],
+      commitMessageTopic: "{{groupName}}",
+      semanticCommitScope: "llmkube-coders",
+    },
   ],
 }
