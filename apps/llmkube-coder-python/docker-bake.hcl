@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=defilantech/LLMKube
-  default = "0.9.1"
+  default = "0.9.2"
 }
 
 variable "SOURCE" {
