@@ -40,7 +40,7 @@ RUN apt-get update \
 
 # Python self-gate linters.
 # renovate: datasource=pypi depName=ruff
-ARG RUFF_VERSION=0.15.20
+ARG RUFF_VERSION=0.15.21
 # renovate: datasource=pypi depName=black
 ARG BLACK_VERSION=26.5.1
 # renovate: datasource=pypi depName=flake8
