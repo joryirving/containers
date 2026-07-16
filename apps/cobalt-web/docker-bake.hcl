@@ -5,6 +5,10 @@ variable "APP" {
 }
 
 variable "VERSION" {
+  default = "11.7.1"
+}
+
+variable "SOURCE_REF" {
   default = "a636575b09de1fc55d9b8cd98cac88f5f2f16b42"
 }
 
@@ -23,7 +27,7 @@ group "default" {
 target "image" {
   inherits = ["docker-metadata-action"]
   args = {
-    VERSION         = "${VERSION}"
+    SOURCE_REF      = "${SOURCE_REF}"
     WEB_DEFAULT_API = "${WEB_DEFAULT_API}"
   }
   labels = {
