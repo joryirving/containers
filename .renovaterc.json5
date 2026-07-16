@@ -83,6 +83,11 @@
       ignoreTests: false,
     },
     {
+      description: ["Group Cobalt Updates"],
+      matchDepNames: ["ghcr.io/imputnet/cobalt", "imputnet/cobalt"],
+      groupName: "cobalt",
+    },
+    {
       description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
