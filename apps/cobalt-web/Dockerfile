@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM docker.io/library/node:24-alpine@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd AS builder
-ARG VERSION
+ARG SOURCE_REF
 ARG WEB_DEFAULT_API
 ENV WEB_DEFAULT_API=${WEB_DEFAULT_API}
 WORKDIR /app
@@ -10,7 +10,7 @@ RUN corepack enable \
     && apk add --no-cache git python3 alpine-sdk \
     && git init . \
     && git remote add origin https://github.com/imputnet/cobalt.git \
-    && git fetch --depth 1 origin "${VERSION}" \
+    && git fetch --depth 1 origin "${SOURCE_REF}" \
     && git checkout --detach FETCH_HEAD
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
