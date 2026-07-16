@@ -83,11 +83,6 @@
       ignoreTests: false,
     },
     {
-      description: ["Group Cobalt Updates"],
-      matchFileNames: ["apps/cobalt-web/docker-bake.hcl"],
-      groupName: "cobalt",
-    },
-    {
       description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
