@@ -6,10 +6,12 @@ ARG WEB_DEFAULT_API
 ENV WEB_DEFAULT_API=${WEB_DEFAULT_API}
 WORKDIR /app
 
-ADD https://github.com/imputnet/cobalt.git#${VERSION} .
-
 RUN corepack enable \
-    && apk add --no-cache python3 alpine-sdk
+    && apk add --no-cache git python3 alpine-sdk \
+    && git init . \
+    && git remote add origin https://github.com/imputnet/cobalt.git \
+    && git fetch --depth 1 origin "${VERSION}" \
+    && git checkout --detach FETCH_HEAD
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile \
