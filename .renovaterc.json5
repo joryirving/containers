@@ -25,17 +25,6 @@
       datasourceTemplate: "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
       versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
     },
-    {
-      customType: "regex",
-      description: "Process Git Refs in Docker Bake",
-      managerFilePatterns: ["/(^|/)docker-bake\\.hcl$/"],
-      matchStrings: [
-        'git-ref depName=(?<depName>\\S+)\\nvariable "\\S+" \\{\\n  default = "(?<currentDigest>[^"]+)"',
-      ],
-      datasourceTemplate: "git-refs",
-      packageNameTemplate: "https://github.com/{{depName}}",
-      currentValueTemplate: "main",
-    },
   ],
   customDatasources: {
     qbittorrent: {
@@ -81,11 +70,6 @@
       automerge: true,
       automergeType: "pr",
       ignoreTests: false,
-    },
-    {
-      description: ["Group Cobalt Updates"],
-      matchDepNames: ["ghcr.io/imputnet/cobalt", "imputnet/cobalt"],
-      groupName: "cobalt",
     },
     {
       description: ["Allowed Ubuntu Version for Base Images"],
