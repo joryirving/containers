@@ -70,7 +70,11 @@ func main() {
 	})
 
 	log.Printf("listening on %s/metrics with SYSFS_ROOT=%s", cfg.listenAddr, cfg.sysfsRoot)
-	log.Fatal(http.ListenAndServe(cfg.listenAddr, nil))
+	server := &http.Server{
+		Addr:              cfg.listenAddr,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	log.Fatal(server.ListenAndServe())
 }
 
 func envDefault(name, fallback string) string {
@@ -117,7 +121,7 @@ func collect(cfg config) ([]metric, error) {
 		metrics = append(metrics, readSimpleGauge(dev, "mem_info_vis_vram_total", "visible_vram_total_bytes", "Total visible VRAM bytes.", 1)...)
 		metrics = append(metrics, readSimpleGauge(dev, "mem_info_gtt_used", "gtt_used_bytes", "Currently used GTT bytes.", 1)...)
 		metrics = append(metrics, readSimpleGauge(dev, "mem_info_gtt_total", "gtt_total_bytes", "Total GTT bytes.", 1)...)
-		metrics = append(metrics, readSimpleGauge(dev, "pcie_replay_count", "pcie_replay_count", "Total PCIe replay count reported by amdgpu.", 1)...)
+		metrics = append(metrics, readSimpleCounter(dev, "pcie_replay_count", "pcie_replay_total", "Total PCIe replay count reported by amdgpu.", 1)...)
 		metrics = append(metrics, collectHwmon(dev)...)
 	}
 
@@ -186,11 +190,19 @@ func cleanLabel(value string) string {
 }
 
 func readSimpleGauge(dev device, sysfsName, metricName, help string, divisor float64) []metric {
+	return readSimple(dev, sysfsName, metricName, help, divisor, "gauge")
+}
+
+func readSimpleCounter(dev device, sysfsName, metricName, help string, divisor float64) []metric {
+	return readSimple(dev, sysfsName, metricName, help, divisor, "counter")
+}
+
+func readSimple(dev device, sysfsName, metricName, help string, divisor float64, type_ string) []metric {
 	value, ok := readFloatFile(filepath.Join(dev.path, sysfsName), divisor)
 	if !ok {
 		return nil
 	}
-	return []metric{{name: metricName, help: help, type_: "gauge", labels: baseLabels(dev), value: value}}
+	return []metric{{name: metricName, help: help, type_: type_, labels: baseLabels(dev), value: value}}
 }
 
 func collectHwmon(dev device) []metric {
@@ -246,8 +258,10 @@ func hwmonMetric(dev device, hwmonDir, prefix, index, kind string) (string, stri
 	case "temp":
 		return "temperature_celsius", "AMDGPU temperature sensor value in celsius.", labels, 1000, true
 	case "power":
+		// Keep the sensor index label: a device exposing power1_average and
+		// power2_average must emit distinct series, or the duplicate label
+		// sets make the whole exposition invalid.
 		labels["type"] = kind
-		delete(labels, "sensor")
 		return "power_watts", "AMDGPU power sensor value in watts.", labels, 1000000, true
 	case "fan":
 		return "fan_rpm", "AMDGPU fan speed in RPM.", labels, 1, kind == "input"

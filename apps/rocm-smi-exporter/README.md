@@ -37,12 +37,12 @@ AMDGPU device metrics when exposed by the kernel:
 - `rocm_smi_visible_vram_total_bytes`
 - `rocm_smi_gtt_used_bytes`
 - `rocm_smi_gtt_total_bytes`
-- `rocm_smi_pcie_replay_count`
+- `rocm_smi_pcie_replay_total (counter)`
 
 HWMON metrics when exposed by the kernel:
 
 - `rocm_smi_temperature_celsius{sensor=...}`
-- `rocm_smi_power_watts{type=...}`
+- `rocm_smi_power_watts{sensor=...,type=...}`
 - `rocm_smi_fan_rpm{sensor=...}`
 - `rocm_smi_clock_hertz{sensor=...}`
 - `rocm_smi_voltage_volts{sensor=...}`
