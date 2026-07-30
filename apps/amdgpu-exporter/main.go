@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-const namespace = "rocm_smi"
+const namespace = "amdgpu"
 
 var version = "dev"
 
@@ -98,7 +98,7 @@ func collect(cfg config) ([]metric, error) {
 		value: float64(len(devices)),
 	}, {
 		name:   "build_info",
-		help:   "Build information for rocm-smi-exporter. Value is always 1.",
+		help:   "Build information for amdgpu-exporter. Value is always 1.",
 		type_:  "gauge",
 		labels: map[string]string{"version": version},
 		value:  1,

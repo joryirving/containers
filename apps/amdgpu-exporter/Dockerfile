@@ -10,13 +10,13 @@ COPY main.go ./main.go
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -trimpath \
     -ldflags="-s -w -X main.version=${VERSION}" \
-    -o /rocm-smi-exporter ./main.go
+    -o /amdgpu-exporter ./main.go
 
 FROM gcr.io/distroless/static-debian13:nonroot@sha256:f7f8f729987ad0fdf6b05eeeae94b26e6a0f613bdf46feea7fc40f7bd72953e6
 
-COPY --from=builder /rocm-smi-exporter /rocm-smi-exporter
+COPY --from=builder /amdgpu-exporter /amdgpu-exporter
 
 USER 65534:65534
 EXPOSE 9494
 
-ENTRYPOINT ["/rocm-smi-exporter"]
+ENTRYPOINT ["/amdgpu-exporter"]

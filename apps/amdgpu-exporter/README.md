@@ -1,4 +1,4 @@
-# rocm-smi-exporter
+# amdgpu-exporter
 
 Small Prometheus exporter for AMDGPU/ROCm telemetry on Kubernetes nodes.
 
@@ -21,31 +21,31 @@ For Kubernetes, mount the host `/sys` read-only and set `SYSFS_ROOT=/host/sys`.
 
 Device discovery and health:
 
-- `rocm_smi_gpus_discovered`
-- `rocm_smi_gpu_info{card,pci_slot,vendor_id,device_id,...}`
-- `rocm_smi_scrape_success`
-- `rocm_smi_scrape_failures_total`
-- `rocm_smi_last_scrape_duration_seconds`
+- `amdgpu_gpus_discovered`
+- `amdgpu_gpu_info{card,pci_slot,vendor_id,device_id,...}`
+- `amdgpu_scrape_success`
+- `amdgpu_scrape_failures_total`
+- `amdgpu_last_scrape_duration_seconds`
 
 AMDGPU device metrics when exposed by the kernel:
 
-- `rocm_smi_gpu_busy_percent`
-- `rocm_smi_memory_busy_percent`
-- `rocm_smi_vram_used_bytes`
-- `rocm_smi_vram_total_bytes`
-- `rocm_smi_visible_vram_used_bytes`
-- `rocm_smi_visible_vram_total_bytes`
-- `rocm_smi_gtt_used_bytes`
-- `rocm_smi_gtt_total_bytes`
-- `rocm_smi_pcie_replay_total (counter)`
+- `amdgpu_gpu_busy_percent`
+- `amdgpu_memory_busy_percent`
+- `amdgpu_vram_used_bytes`
+- `amdgpu_vram_total_bytes`
+- `amdgpu_visible_vram_used_bytes`
+- `amdgpu_visible_vram_total_bytes`
+- `amdgpu_gtt_used_bytes`
+- `amdgpu_gtt_total_bytes`
+- `amdgpu_pcie_replay_total (counter)`
 
 HWMON metrics when exposed by the kernel:
 
-- `rocm_smi_temperature_celsius{sensor=...}`
-- `rocm_smi_power_watts{sensor=...,type=...}`
-- `rocm_smi_fan_rpm{sensor=...}`
-- `rocm_smi_clock_hertz{sensor=...}`
-- `rocm_smi_voltage_volts{sensor=...}`
+- `amdgpu_temperature_celsius{sensor=...}`
+- `amdgpu_power_watts{sensor=...,type=...}`
+- `amdgpu_fan_rpm{sensor=...}`
+- `amdgpu_clock_hertz{sensor=...}`
+- `amdgpu_voltage_volts{sensor=...}`
 
 ## Strix Halo Notes
 
@@ -57,16 +57,16 @@ For bottleneck work on llama.cpp and ComfyUI, start with GPU busy, memory busy, 
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-    name: rocm-smi-exporter
+    name: amdgpu-exporter
     namespace: monitoring
 spec:
     selector:
         matchLabels:
-            app.kubernetes.io/name: rocm-smi-exporter
+            app.kubernetes.io/name: amdgpu-exporter
     template:
         metadata:
             labels:
-                app.kubernetes.io/name: rocm-smi-exporter
+                app.kubernetes.io/name: amdgpu-exporter
         spec:
             nodeSelector:
                 node-role.kubernetes.io/rocm-worker: "true"
@@ -77,7 +77,7 @@ spec:
                   effect: NoSchedule
             containers:
                 - name: exporter
-                  image: ghcr.io/joryirving/rocm-smi-exporter:rolling
+                  image: ghcr.io/joryirving/amdgpu-exporter:rolling
                   env:
                       - name: SYSFS_ROOT
                         value: /host/sys

@@ -1,11 +1,11 @@
 target "docker-metadata-action" {}
 
 variable "APP" {
-  default = "rocm-smi-exporter"
+  default = "amdgpu-exporter"
 }
 
 variable "VERSION" {
-  default = "0.1.0"
+  default = "0.2.0"
 }
 
 variable "SOURCE" {
