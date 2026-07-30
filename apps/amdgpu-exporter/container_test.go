@@ -7,7 +7,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	image := testhelpers.GetTestImage("ghcr.io/joryirving/rocm-smi-exporter:rolling")
+	image := testhelpers.GetTestImage("ghcr.io/joryirving/amdgpu-exporter:rolling")
 
 	testhelpers.TestHTTPEndpoint(t, image, testhelpers.HTTPTestConfig{
 		Port: "9494",

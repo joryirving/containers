@@ -190,13 +190,13 @@ func TestExpositionOutput(t *testing.T) {
 	}
 	body := renderExposition(t, metrics)
 
-	if !strings.Contains(body, "# TYPE rocm_smi_pcie_replay_total counter") {
+	if !strings.Contains(body, "# TYPE amdgpu_pcie_replay_total counter") {
 		t.Fatalf("pcie replay must be a counter named _total; got:\n%s", body)
 	}
-	if !strings.Contains(body, "rocm_smi_pcie_replay_total{") {
+	if !strings.Contains(body, "amdgpu_pcie_replay_total{") {
 		t.Fatalf("pcie replay sample line missing; got:\n%s", body)
 	}
-	if strings.Count(body, "# TYPE rocm_smi_gpu_info gauge") != 1 {
+	if strings.Count(body, "# TYPE amdgpu_gpu_info gauge") != 1 {
 		t.Fatalf("HELP/TYPE must be emitted exactly once per metric; got:\n%s", body)
 	}
 	assertNoDuplicateSeries(t, body)
