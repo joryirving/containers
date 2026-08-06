@@ -42,7 +42,7 @@ jobs:
       - name: Analyze PR with reusable AI reviewer
         if: github.event_name == 'pull_request'
         id: analyze
-        uses: misospace/pr-reviewer-action@d38d63486d81156724191a438719bdd0431952c4 # v2.1.11
+        uses: misospace/pr-reviewer-action@99e7764a4906f94d99c249231d2016c3cda8997e # v2.2.0
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           ai_primary_retries: "3"
