@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=sst/opencode
-  default = "v1.18.19"
+  default = "v1.18.20"
 }
 
 variable "SOURCE" {
