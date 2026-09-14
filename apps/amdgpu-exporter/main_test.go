@@ -41,6 +41,44 @@ func TestCollectFromSysfsFixture(t *testing.T) {
 	assertMetricValue(t, metrics, "clock_hertz", 2900000000)
 }
 
+func TestCollectDRMClientsDeduplicatesFileDescriptors(t *testing.T) {
+	sysfsRoot := t.TempDir()
+	procRoot := t.TempDir()
+	pidDir := filepath.Join(procRoot, "123")
+	fdinfoDir := filepath.Join(pidDir, "fdinfo")
+	if err := os.MkdirAll(fdinfoDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	writeFixture(t, pidDir, "comm", "python3\n")
+	writeFixture(t, pidDir, "cgroup", "0::/kubepods/burstable/pod18a6342b-b53e-44bb-a30b-a03619232acd/5a3b59fe9ec39a4a92b23fc61ec7c870d7f50692c812d28310fbbf4d5591476b\n")
+	fdinfo := "drm-driver: amdgpu\ndrm-client-id: 657\ndrm-pdev: 0000:c6:00.0\ndrm-total-gtt: 512 KiB\ndrm-resident-gtt: 448 KiB\ndrm-total-vram: 32 KiB\ndrm-resident-vram: 16 KiB\n"
+	writeFixture(t, fdinfoDir, "3", fdinfo)
+	writeFixture(t, fdinfoDir, "4", fdinfo)
+
+	metrics, err := collect(config{procRoot: procRoot, sysfsRoot: sysfsRoot})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var clientMetrics []metric
+	for _, m := range metrics {
+		if m.name == "drm_client_memory_bytes" {
+			clientMetrics = append(clientMetrics, m)
+		}
+	}
+	if len(clientMetrics) != 4 {
+		t.Fatalf("want one total/resident pair for gtt and vram, got %d: %#v", len(clientMetrics), clientMetrics)
+	}
+	assertMetricLabelValue(t, clientMetrics, "region", "gtt", "state", "resident", 448*1024)
+	assertMetricLabelValue(t, clientMetrics, "region", "gtt", "state", "total", 512*1024)
+	for _, m := range clientMetrics {
+		if m.labels["client_id"] != "657" || m.labels["pid"] != "123" || m.labels["pod_uid"] != "18a6342b-b53e-44bb-a30b-a03619232acd" {
+			t.Fatalf("unexpected client labels: %#v", m.labels)
+		}
+	}
+	assertNoDuplicateSeries(t, renderExposition(t, metrics))
+}
+
 func writeFixture(t *testing.T, dir, name, value string) {
 	t.Helper()
 	if err := os.WriteFile(filepath.Join(dir, name), []byte(value), 0o644); err != nil {
@@ -56,6 +94,16 @@ func assertMetricValue(t *testing.T, metrics []metric, name string, value float6
 		}
 	}
 	t.Fatalf("metric %s=%v not found in %#v", name, value, metrics)
+}
+
+func assertMetricLabelValue(t *testing.T, metrics []metric, label, labelValue, secondLabel, secondLabelValue string, value float64) {
+	t.Helper()
+	for _, metric := range metrics {
+		if metric.labels[label] == labelValue && metric.labels[secondLabel] == secondLabelValue && metric.value == value {
+			return
+		}
+	}
+	t.Fatalf("metric {%s=%q,%s=%q}=%v not found in %#v", label, labelValue, secondLabel, secondLabelValue, value, metrics)
 }
 
 // TestPowerSensorsStayDistinct is the regression for the review finding:

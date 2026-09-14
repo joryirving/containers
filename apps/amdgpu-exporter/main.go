@@ -21,12 +21,16 @@ var version = "dev"
 
 var (
 	cardNameRe     = regexp.MustCompile(`^card[0-9]+$`)
+	pidNameRe      = regexp.MustCompile(`^[0-9]+$`)
+	podUIDRe       = regexp.MustCompile(`pod([0-9a-fA-F]{8}-[0-9a-fA-F-]{27,})`)
+	containerIDRe  = regexp.MustCompile(`([0-9a-fA-F]{64})`)
 	hwmonValueRe   = regexp.MustCompile(`^([a-z]+)([0-9]+)(?:_([a-z_]+))?$`)
 	scrapeFailures atomic.Uint64
 )
 
 type config struct {
 	listenAddr string
+	procRoot   string
 	sysfsRoot  string
 }
 
@@ -45,9 +49,20 @@ type device struct {
 	static  map[string]string
 }
 
+type drmClient struct {
+	pdev        string
+	clientID    string
+	pid         string
+	process     string
+	podUID      string
+	containerID string
+	memory      map[string]map[string]float64
+}
+
 func main() {
 	cfg := config{
 		listenAddr: envDefault("LISTEN_ADDR", ":9494"),
+		procRoot:   envDefault("PROC_ROOT", "/proc"),
 		sysfsRoot:  envDefault("SYSFS_ROOT", "/sys"),
 	}
 
@@ -69,7 +84,7 @@ func main() {
 		writeMetrics(w, metrics)
 	})
 
-	log.Printf("listening on %s/metrics with SYSFS_ROOT=%s", cfg.listenAddr, cfg.sysfsRoot)
+	log.Printf("listening on %s/metrics with SYSFS_ROOT=%s PROC_ROOT=%s", cfg.listenAddr, cfg.sysfsRoot, cfg.procRoot)
 	server := &http.Server{
 		Addr:              cfg.listenAddr,
 		ReadHeaderTimeout: 5 * time.Second,
@@ -124,8 +139,217 @@ func collect(cfg config) ([]metric, error) {
 		metrics = append(metrics, readSimpleCounter(dev, "pcie_replay_count", "pcie_replay_total", "Total PCIe replay count reported by amdgpu.", 1)...)
 		metrics = append(metrics, collectHwmon(dev)...)
 	}
+	metrics = append(metrics, collectDRMClients(cfg.procRoot, devices)...)
 
 	return metrics, nil
+}
+
+func collectDRMClients(procRoot string, devices []device) []metric {
+	if strings.TrimSpace(procRoot) == "" {
+		return nil
+	}
+
+	entries, err := os.ReadDir(procRoot)
+	if err != nil {
+		return nil
+	}
+
+	deviceByPCI := make(map[string]device, len(devices))
+	for _, dev := range devices {
+		deviceByPCI[dev.pciSlot] = dev
+	}
+
+	clients := make(map[string]drmClient)
+	for _, entry := range entries {
+		if !entry.IsDir() || !pidNameRe.MatchString(entry.Name()) {
+			continue
+		}
+
+		pid := entry.Name()
+		process := readProcValue(procRoot, pid, "comm")
+		if process == "" {
+			process = "unknown"
+		}
+		podUID, containerID := readCgroupIdentity(procRoot, pid)
+
+		fdEntries, err := os.ReadDir(filepath.Join(procRoot, pid, "fdinfo"))
+		if err != nil {
+			continue
+		}
+		for _, fdEntry := range fdEntries {
+			if fdEntry.IsDir() {
+				continue
+			}
+			client, ok := readDRMClient(filepath.Join(procRoot, pid, "fdinfo", fdEntry.Name()))
+			if !ok {
+				continue
+			}
+			client.pid = pid
+			client.process = process
+			client.podUID = podUID
+			client.containerID = containerID
+
+			// A process can hold several file descriptors for one DRM client.
+			// Deduplicate by device and DRM client ID or the same allocation would
+			// be counted once per descriptor.
+			key := client.pdev + "\x00" + client.clientID
+			if _, exists := clients[key]; !exists {
+				clients[key] = client
+			}
+		}
+	}
+
+	keys := make([]string, 0, len(clients))
+	for key := range clients {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	metrics := make([]metric, 0, len(keys)*3)
+	for _, key := range keys {
+		client := clients[key]
+		card := "unknown"
+		if dev, ok := deviceByPCI[client.pdev]; ok {
+			card = dev.card
+		}
+		labels := map[string]string{
+			"card":         card,
+			"pci_slot":     client.pdev,
+			"client_id":    client.clientID,
+			"pid":          client.pid,
+			"process":      client.process,
+			"pod_uid":      client.podUID,
+			"container_id": client.containerID,
+		}
+		for region, states := range client.memory {
+			for state, value := range states {
+				clientLabels := cloneLabels(labels)
+				clientLabels["region"] = region
+				clientLabels["state"] = state
+				metrics = append(metrics, metric{
+					name:   "drm_client_memory_bytes",
+					help:   "AMDGPU DRM client memory by region and accounting state.",
+					type_:  "gauge",
+					labels: clientLabels,
+					value:  value,
+				})
+			}
+		}
+	}
+	return metrics
+}
+
+func readDRMClient(path string) (drmClient, bool) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return drmClient{}, false
+	}
+
+	client := drmClient{memory: make(map[string]map[string]float64)}
+	driver := ""
+	for _, line := range strings.Split(string(data), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) < 2 {
+			continue
+		}
+		key := strings.TrimSuffix(fields[0], ":")
+		switch key {
+		case "drm-driver":
+			driver = fields[1]
+		case "drm-client-id":
+			client.clientID = fields[1]
+		case "drm-pdev":
+			client.pdev = fields[1]
+		}
+
+		parts := strings.Split(key, "-")
+		if len(parts) != 3 || parts[0] != "drm" {
+			continue
+		}
+		state, region := parts[1], parts[2]
+		if !drmMemoryState(state) || !drmMemoryRegion(region) {
+			continue
+		}
+		value, ok := parseMemoryBytes(fields[1:])
+		if !ok {
+			continue
+		}
+		if client.memory[region] == nil {
+			client.memory[region] = make(map[string]float64)
+		}
+		client.memory[region][state] = value
+	}
+
+	if driver != "amdgpu" || client.clientID == "" || client.pdev == "" || len(client.memory) == 0 {
+		return drmClient{}, false
+	}
+	return client, true
+}
+
+func drmMemoryState(state string) bool {
+	return state == "total" || state == "resident" || state == "purgeable"
+}
+
+func drmMemoryRegion(region string) bool {
+	return region == "cpu" || region == "gtt" || region == "vram"
+}
+
+func parseMemoryBytes(fields []string) (float64, bool) {
+	if len(fields) == 0 {
+		return 0, false
+	}
+	value, err := strconv.ParseFloat(fields[0], 64)
+	if err != nil {
+		return 0, false
+	}
+	if len(fields) == 1 {
+		return value, true
+	}
+	switch strings.ToLower(fields[1]) {
+	case "b", "bytes":
+		return value, true
+	case "kib":
+		return value * 1024, true
+	case "mib":
+		return value * 1024 * 1024, true
+	case "gib":
+		return value * 1024 * 1024 * 1024, true
+	default:
+		return 0, false
+	}
+}
+
+func readProcValue(procRoot, pid, name string) string {
+	value, ok := readTextFile(filepath.Join(procRoot, pid, name))
+	if !ok {
+		return ""
+	}
+	return cleanLabel(value)
+}
+
+func readCgroupIdentity(procRoot, pid string) (string, string) {
+	value, ok := readTextFile(filepath.Join(procRoot, pid, "cgroup"))
+	if !ok {
+		return "", ""
+	}
+	path := strings.TrimSpace(value)
+	podUID := ""
+	if match := podUIDRe.FindStringSubmatch(path); match != nil {
+		podUID = match[1]
+	}
+	containerID := ""
+	if match := containerIDRe.FindStringSubmatch(path); match != nil {
+		containerID = match[1]
+	}
+	return podUID, containerID
+}
+
+func cloneLabels(labels map[string]string) map[string]string {
+	clone := make(map[string]string, len(labels))
+	for key, value := range labels {
+		clone[key] = value
+	}
+	return clone
 }
 
 func discoverDevices(sysfsRoot string) ([]device, error) {
