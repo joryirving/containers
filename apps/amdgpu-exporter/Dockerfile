@@ -16,7 +16,9 @@ FROM gcr.io/distroless/static-debian13:nonroot@sha256:1c2c046bc09ed40fad370b599a
 
 COPY --from=builder /amdgpu-exporter /amdgpu-exporter
 
-USER 65534:65534
+# Reading other containers' /proc/<pid>/fdinfo requires root on the host
+# procfs. The pod drops all capabilities and runs read-only.
+USER 0:0
 EXPOSE 9494
 
 ENTRYPOINT ["/amdgpu-exporter"]

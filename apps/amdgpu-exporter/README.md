@@ -2,7 +2,7 @@
 
 Small Prometheus exporter for AMDGPU/ROCm telemetry on Kubernetes nodes.
 
-The exporter reads Linux AMDGPU sysfs and hwmon files directly. It does not require the ROCm userspace stack inside the image, which keeps the container rootless, multi-architecture, and compatible with Talos nodes that already load the AMDGPU kernel driver.
+The exporter reads Linux AMDGPU sysfs, hwmon, and DRM client fdinfo files directly. It does not require the ROCm userspace stack inside the image, which keeps the image small and compatible with Talos nodes that already load the AMDGPU kernel driver.
 
 ## Endpoint
 
@@ -10,12 +10,13 @@ The exporter reads Linux AMDGPU sysfs and hwmon files directly. It does not requ
 
 ## Configuration
 
-| Variable      | Required | Default | Description                      |
-| ------------- | -------- | ------- | -------------------------------- |
-| `LISTEN_ADDR` | no       | `:9494` | HTTP listen address              |
-| `SYSFS_ROOT`  | no       | `/sys`  | Root of the sysfs tree to scrape |
+| Variable      | Required | Default | Description                       |
+| ------------- | -------- | ------- | --------------------------------- |
+| `LISTEN_ADDR` | no       | `:9494` | HTTP listen address               |
+| `PROC_ROOT`   | no       | `/proc` | Root of the procfs tree to scrape |
+| `SYSFS_ROOT`  | no       | `/sys`  | Root of the sysfs tree to scrape  |
 
-For Kubernetes, mount the host `/sys` read-only and set `SYSFS_ROOT=/host/sys`.
+For Kubernetes, mount the host `/proc` and `/sys` read-only and set `PROC_ROOT=/host/proc` and `SYSFS_ROOT=/host/sys`. The process must run as root to read other containers' `/proc/<pid>/fdinfo` entries; it drops all capabilities and does not need privilege escalation.
 
 ## Metrics
 
@@ -47,9 +48,15 @@ HWMON metrics when exposed by the kernel:
 - `amdgpu_clock_hertz{sensor=...}`
 - `amdgpu_voltage_volts{sensor=...}`
 
+Per-DRM-client metrics:
+
+- `amdgpu_drm_client_memory_bytes{card,pci_slot,client_id,pid,process,pod_uid,container_id,region,state}`
+
+`region` is `cpu`, `gtt`, or `vram`; `state` is `total`, `resident`, or `purgeable` when the kernel reports it. The exporter deduplicates multiple file descriptors for the same `(pci_slot, client_id)`. `pod_uid` can be joined to `kube_pod_info.uid` in PromQL to attribute a client to a Kubernetes pod.
+
 ## Strix Halo Notes
 
-For bottleneck work on llama.cpp and ComfyUI, start with GPU busy, memory busy, VRAM/GTT allocation, clocks, power, and temperature. Linux AMDGPU sysfs exposes memory utilization as a busy percentage, but not always true memory bandwidth in GB/s. If Strix Halo exposes richer values through `gpu_metrics` or AMD SMI CPU metrics, those can be added after validating the files available on the Talos node.
+For bottleneck work on llama.cpp and ComfyUI, start with GPU busy, memory busy, VRAM/GTT allocation, per-client resident GTT, clocks, power, and temperature. Linux AMDGPU sysfs exposes device-wide memory totals; DRM fdinfo provides the per-client breakdown. If Strix Halo exposes richer values through `gpu_metrics` or AMD SMI CPU metrics, those can be added after validating the files available on the Talos node.
 
 ## Kubernetes Example
 
@@ -103,6 +110,8 @@ spec:
                       path: /sys
                       type: Directory
 ```
+
+The example above is device-only. For per-client mode, add `hostPID: true`, a read-only `/proc` hostPath mounted at `/host/proc`, `PROC_ROOT=/host/proc`, and a pod security context of `runAsUser: 0`, `runAsGroup: 0`, and `runAsNonRoot: false`.
 
 ## Local Build
 
