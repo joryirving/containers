@@ -72,6 +72,14 @@
       ignoreTests: false,
     },
     {
+      description: ["Auto-merge Digest Updates"],
+      matchFileNames: ["**/Dockerfile"],
+      matchUpdateTypes: ["digest"],
+      automerge: true,
+      automergeType: "pr",
+      ignoreTests: false,
+    },
+    {
       description: ["Allowed Ubuntu Version for Base Images"],
       matchDatasources: ["docker"],
       matchPackageNames: ["/ubuntu/"],
