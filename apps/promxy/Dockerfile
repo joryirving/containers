@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23@sha256:266819353c6716fd9a64ef6a72eae7a72c05055b3660a30eb89d811c2c1a5c83
+FROM docker.io/library/alpine:3.23@sha256:075c2c1a4068c1e251228ca2b0ea8b163f835ca5d66e758b93c7fc89b1995616
 ARG VERSION
 ARG TARGETARCH
 ARG SOURCE
