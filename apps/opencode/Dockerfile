@@ -24,12 +24,12 @@ RUN \
         yq \
     && \
     case "${TARGETARCH}" in \
-        'amd64') ASSET='opencode-linux-x64-baseline-musl' ;; \
-        'arm64') ASSET='opencode-linux-arm64-musl' ;; \
+        'amd64') TARGET='linux-x64-baseline-musl' ;; \
+        'arm64') TARGET='linux-arm64-musl' ;; \
         *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
     esac \
-    && curl -fsSL "https://github.com/sst/opencode/releases/download/${VERSION}/${ASSET}.tar.gz" \
-        | tar -xz -C /usr/local/bin \
+    && curl -fsSL "https://registry.npmjs.org/@opencode/cli-${TARGET}/-/cli-${TARGET}-${VERSION}.tgz" \
+        | tar -xz -C /usr/local/bin --strip-components=2 package/bin/opencode \
     && chmod +x /usr/local/bin/opencode \
     && \
     adduser -D -u 1000 -h "${HOME}" opencode \

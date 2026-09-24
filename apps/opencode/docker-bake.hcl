@@ -5,12 +5,12 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=sst/opencode
-  default = "v1.18.32"
+  // renovate: datasource=npm depName=@opencode/cli
+  default = "2.0.16"
 }
 
 variable "SOURCE" {
-  default = "https://github.com/sst/opencode"
+  default = "https://github.com/anomalyco/opencode"
 }
 
 group "default" {
