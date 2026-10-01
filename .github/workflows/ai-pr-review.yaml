@@ -43,7 +43,7 @@ jobs:
       - name: Review PR
         if: github.event_name == 'pull_request'
         id: review
-        uses: misospace/pr-reviewer-action@2c1db8864069b1c747728ce935f469849d32c4c0 # v3.0.0
+        uses: misospace/pr-reviewer-action@22c7da6cbc914d2bc235ca2e928d32b6408fcfff # v3.0.1
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           ai-base-url: ${{ vars.LITELLM_URL }}
