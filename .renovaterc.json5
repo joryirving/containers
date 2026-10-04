@@ -73,6 +73,7 @@
     },
     {
       description: ["Auto-merge Digest Updates"],
+      commitMessageExtra: "to {{newDigestShort}}",
       matchFileNames: ["**/Dockerfile"],
       matchUpdateTypes: ["digest"],
       automerge: true,
