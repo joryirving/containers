@@ -11,7 +11,9 @@ ARG TARGETARCH
 USER root
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libatomic1 python3 python3-yaml ripgrep unzip xz-utils \
+      build-essential libatomic1 libffi-dev libjpeg-dev libsqlite3-dev libssl-dev \
+pkg-config python3 python3-dev python3-pip python3-venv python3-yaml \
+ripgrep unzip xz-utils zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN case "${TARGETARCH}" in \

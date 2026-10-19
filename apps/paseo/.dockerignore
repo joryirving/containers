@@ -1,0 +1,8 @@
+# Preserve shared app includes while allowing Paseo's local build inputs.
+/*
+!defaults/
+!scripts/
+!entrypoint.sh
+!Dockerfile
+!mise.toml
+!start.sh
