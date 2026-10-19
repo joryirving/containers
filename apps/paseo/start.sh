@@ -7,7 +7,9 @@ umask 077
 
 OPENCODE_CONFIG_DIR="${HOME}/.config/opencode"
 
-mkdir -p "${PASEO_HOME}" "${OPENCODE_CONFIG_DIR}" "${HOME}/.agents/skills"
+mkdir -p "${PASEO_HOME}" "${OPENCODE_CONFIG_DIR}" "${HOME}/.agents/skills" \
+  "${MISE_DATA_DIR}/shims" "${MISE_CACHE_DIR}" "${MISE_STATE_DIR}" \
+  "${HOME}/.config/mise"
 install -m 600 /etc/paseo/paseo.json "${PASEO_HOME}/config.json"
 install -m 600 /etc/paseo/opencode.json "${OPENCODE_CONFIG_DIR}/opencode.json"
 

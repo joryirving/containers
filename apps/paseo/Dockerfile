@@ -34,17 +34,19 @@ RUN case "${TARGETARCH}" in \
     && install /tmp/mise/bin/mise /usr/local/bin/mise \
     && rm -rf /tmp/mise /tmp/mise.tar.xz
 
-ENV MISE_DATA_DIR=/opt/mise \
-    MISE_GLOBAL_CONFIG_FILE=/opt/paseo/mise.toml \
+ENV MISE_DATA_DIR=/home/paseo/.local/share/mise \
+    MISE_CACHE_DIR=/home/paseo/.cache/mise \
+    MISE_STATE_DIR=/home/paseo/.local/state/mise \
     PASEO_HOME=/home/paseo/.paseo \
-    PATH=/opt/mise/shims:/usr/local/bin:/usr/bin:/bin
+    PATH=/home/paseo/.local/share/mise/shims:/opt/mise/shims:/usr/local/bin:/usr/bin:/bin
 
-COPY mise.toml /opt/paseo/mise.toml
+COPY mise.toml /etc/mise/config.toml
 
-RUN cd /opt/paseo \
-    && mise trust \
-    && mise install \
-    && mise reshim \
+RUN mkdir -p /opt/mise /tmp/mise-cache /tmp/mise-state \
+    && cd /etc/mise \
+    && MISE_DATA_DIR=/opt/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_STATE_DIR=/tmp/mise-state mise trust \
+    && MISE_DATA_DIR=/opt/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_STATE_DIR=/tmp/mise-state mise install \
+    && MISE_DATA_DIR=/opt/mise MISE_CACHE_DIR=/tmp/mise-cache MISE_STATE_DIR=/tmp/mise-state mise reshim \
     && opencode --version \
     && kubectl version --client \
     && flux version --client \

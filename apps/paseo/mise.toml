@@ -1,4 +1,8 @@
 # Toolset for paseo agents working on home-ops. Keep this build context self-contained.
+[settings]
+system_installs_dir = "/opt/mise/installs"
+system_shims_dir = "/opt/mise/shims"
+
 [tools]
 age = "1.3.2"
 flux2 = "2.9.6"
