@@ -16,7 +16,7 @@ variable "OPENCODE_VERSION" {
 
 variable "MISE_VERSION" {
   // renovate: datasource=github-releases depName=jdx/mise
-  default = "v2026.10.10"
+  default = "v2026.10.15"
 }
 
 variable "SOURCE" {
