@@ -80,6 +80,7 @@ jobs:
           pr-number: ${{ github.event.pull_request.number || github.event.issue.number }}
           ai-base-url: ${{ vars.LITELLM_URL }}
           ai-api-format: ${{ vars.PRIMARY_FORMAT }}
+          ai-specialist-anthropic-effort-support: 'true'
           ai-model: ${{ vars.PRIMARY_MODEL }}
           primary-model-context-tokens: ${{ vars.PRIMARY_CONTEXT_TOKENS }}
           ai-api-key: ${{ secrets.LITELLM_API_KEY }}
