@@ -11,7 +11,7 @@ variable "VERSION" {
 
 variable "OPENCODE_VERSION" {
   // renovate: datasource=npm depName=@opencode/cli
-  default = "2.1.3"
+  default = "2.1.4"
 }
 
 variable "MISE_VERSION" {
