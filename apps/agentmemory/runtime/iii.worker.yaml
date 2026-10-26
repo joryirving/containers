@@ -1,0 +1,10 @@
+# Vendored from rohitg00/agentmemory v0.9.31 deploy/runtime/agentmemory.worker.yaml
+# (https://github.com/rohitg00/agentmemory/blob/v0.9.31/deploy/runtime/agentmemory.worker.yaml)
+# Re-vendor on every agentmemory version bump; the iii compose runtime must match the package.
+iii: v1
+name: agentmemory
+language: javascript
+runtime:
+  kind: javascript
+scripts:
+  start: node dist/index.mjs
