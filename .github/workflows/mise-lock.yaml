@@ -1,20 +1,24 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 #
-# STOPGAP: Renovate bumps tool versions in .mise/config.toml but cannot
-# regenerate .mise/mise.lock for npm-backed tools (e.g. oxfmt = npm:oxfmt).
-# The renovate-operator container only has `mise` installed, not node, so
-# `mise lock` fails to resolve npm packages and the lock drifts from config.
-# That drift makes `mise install --locked` (Labeler) fail on every PR.
+# STOPGAP: Renovate bumps tool versions in mise configs but cannot regenerate
+# the accompanying lockfiles (spawn mise ENOENT in the operator runtime; the
+# npm-backed tools such as oxfmt = npm:oxfmt additionally need node to
+# resolve). That drift makes `mise install --locked` (Labeler) fail on every
+# PR and leaves image builds installing unlocked, checksum-unverified tools.
 #
-# This workflow regenerates the lockfile on a runner that has node available
-# and commits it back to the renovate branch. Remove once the lock is updated
-# at the source (node in the operator runtime, or oxfmt off the npm backend).
+# This workflow regenerates every lockfile in the repo — the root
+# .mise/mise.lock and each apps/<name>/mise.lock with its .mise/locks
+# dependency sidecars — on a runner that has node available, and commits them
+# back to the renovate branch. Remove once the lock is updated at the source
+# (mise + node in the operator runtime, or oxfmt off the npm backend).
 name: Mise Lock
 
 on:
   pull_request:
     paths:
       - .mise/config.toml
+      - .mise.toml
+      - "**/mise.toml"
 
 permissions:
   contents: read
@@ -51,24 +55,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
-      - name: Update Lockfile
+      - name: Update Lockfiles
         id: lock
+        env:
+          MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
         run: |
           mise lock
-          if git diff --quiet -- .mise/mise.lock; then
+          # mise discovers configs upwards from the cwd, so locking each app
+          # from its own directory scopes the lockfile (and dependency
+          # sidecars) to that app without touching the root lock.
+          for config in $(find apps -type f -name mise.toml | sort); do
+            (cd "$(dirname "${config}")" && mise lock)
+          done
+          if [ -z "$(git status --porcelain)" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit Lockfile
+      - name: Commit Lockfiles
         if: ${{ steps.lock.outputs.changed == 'true' }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           HEAD_REF: ${{ github.head_ref }}
         run: |
-          gh api --method PUT "repos/${GITHUB_REPOSITORY}/contents/.mise/mise.lock" \
-            -f message="fix(mise): update lockfile" \
-            -f branch="${HEAD_REF}" \
-            -f sha="$(git rev-parse HEAD:.mise/mise.lock)" \
-            -f content="$(base64 -w0 .mise/mise.lock)"
+          bot_login="$(gh api user --jq .login)"
+          bot_id="$(gh api user --jq .id)"
+          git config user.name "${bot_login}"
+          git config user.email "${bot_id}+${bot_login}@users.noreply.github.com"
+          git add -A
+          git commit -m "fix(mise): update lockfiles"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${HEAD_REF}"
