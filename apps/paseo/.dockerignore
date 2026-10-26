@@ -2,7 +2,8 @@
 /*
 !defaults/
 !scripts/
-!entrypoint.sh
 !Dockerfile
 !mise.toml
+!mise.lock
+!.mise/
 !start.sh
