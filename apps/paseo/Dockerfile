@@ -5,7 +5,7 @@ FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:fde5ff1192933bf4feebaa19ef072ff8b9
 
 ARG VERSION
 ARG OPENCODE_VERSION=2.0.32
-ARG MISE_VERSION=v2026.10.10
+ARG MISE_VERSION=v2026.10.18
 ARG TARGETARCH
 
 USER root
@@ -43,6 +43,9 @@ ENV MISE_DATA_DIR=/home/paseo/.local/share/mise \
     PATH=/home/paseo/.local/share/mise/shims:/opt/mise/shims:/usr/local/bin:/usr/bin:/bin
 
 COPY mise.toml /etc/mise/config.toml
+COPY mise.lock /etc/mise/mise.lock
+# npm-backed tools (oxfmt) lock via a dependency sidecar next to the lockfile.
+COPY .mise/locks /etc/mise/.mise/locks
 
 RUN mkdir -p /opt/mise /tmp/mise-cache /tmp/mise-state \
     && cd /etc/mise \
