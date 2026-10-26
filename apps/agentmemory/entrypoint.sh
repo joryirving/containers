@@ -28,6 +28,17 @@ set -eu
 
 if [ "${1:-}" != "mcp" ]; then
     DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
+    # Reject a misconfigured data dir before anything writes: a relative
+    # path would silently persist into the ephemeral overlay (cwd is
+    # /opt/agentmemory) and lose all memory on restart, and control
+    # characters would leak into rendered config paths below.
+    if [ "${DATA_DIR#/}" = "$DATA_DIR" ]; then
+        echo "AGENTMEMORY_DATA_DIR must be an absolute path (got: ${DATA_DIR})" >&2
+        exit 1
+    fi
+    case "$DATA_DIR" in
+        *[[:cntrl:]]*) echo "AGENTMEMORY_DATA_DIR must not contain control characters" >&2; exit 1 ;;
+    esac
     export AGENTMEMORY_DATA_DIR="$DATA_DIR"
     export HOME="${HOME:-$DATA_DIR/home}"
     export III_COMPOSE_STATE_DIR="${III_COMPOSE_STATE_DIR:-$DATA_DIR/compose-state}"
