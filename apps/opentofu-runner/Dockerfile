@@ -7,7 +7,7 @@ RUN apk add --no-cache curl \
     && curl -fsSL "https://github.com/opentofu/opentofu/releases/download/v${VERSION}/tofu_${VERSION}_linux_${TARGETARCH}.tar.gz" \
         | tar xzf - -C /tmp
 
-FROM ghcr.io/flux-iac/tf-runner:v0.16.5@sha256:7209171093907ec1d0559c682949fcee4b625205a6a058c16fe0ce0017af5f41
+FROM ghcr.io/flux-iac/tf-runner:v0.16.6@sha256:589aa3378863433921864a8a586025233f1b5edb1cc86a4095c248119c7f77e3
 USER root
 RUN apk add --no-cache libc6-compat gcompat
 COPY --from=builder --chown=65532:65532 --chmod=755 /tmp/tofu /usr/local/bin/terraform
