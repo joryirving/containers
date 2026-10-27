@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=rohitg00/agentmemory
-  default = "0.9.30"
+  default = "0.9.31"
 }
 
 variable "SOURCE" {
@@ -14,12 +14,12 @@ variable "SOURCE" {
 }
 
 variable "III_VERSION" {
-  // renovate: datasource=docker depName=docker.io/iiidev/iii
-  // Pinned: agentmemory 0.9.21 ships a docker-compose pinning iii 0.11.2.
-  // iii >=0.11.6 changes the worker model agentmemory hasn't adopted -> EPIPE
-  // reconnect loops and empty search after save. Renovate is constrained to
-  // <0.11.6 in .renovaterc.json5; bump only when agentmemory itself moves.
-  default = "0.11.2"
+  // Pinned manually, no renovate annotation: agentmemory 0.9.31 upgrades its
+  // runtime to iii 0.25.0 with Worker Compose, and the engine version must
+  // move together with the agentmemory package. Sync this pin (plus the
+  // FROM digest and the STATE_VERSION/HTTP_VERSION worker pins in the
+  // Dockerfile) from the agentmemory release notes on every agentmemory bump.
+  default = "0.25.0"
 }
 
 group "default" {

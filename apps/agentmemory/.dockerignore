@@ -1,0 +1,9 @@
+# Preserve shared app includes while allowing the build context files the
+# Dockerfile needs. include/.dockerignore is copied here by CI builds unless
+# this file already exists, which it does.
+/*
+!defaults/
+!scripts/
+!Dockerfile
+!entrypoint.sh
+!runtime/
