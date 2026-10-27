@@ -79,8 +79,11 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           HEAD_REF: ${{ github.head_ref }}
         run: |
-          bot_login="$(gh api user --jq .login)"
-          bot_id="$(gh api user --jq .id)"
+          # gh api user answers 403 "Resource not accessible by integration"
+          # for installation tokens, so take the identity from the action's
+          # app-slug output and resolve the bot id via the public users endpoint
+          bot_login="${{ steps.app-token.outputs.app-slug }}[bot]"
+          bot_id="$(gh api "/users/${bot_login}" --jq .id)"
           git config user.name "${bot_login}"
           git config user.email "${bot_id}+${bot_login}@users.noreply.github.com"
           git add -A
