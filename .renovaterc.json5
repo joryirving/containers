@@ -127,5 +127,18 @@
       matchPackageNames: ["/python/"],
       allowedVersions: "/3\\.14-slim/",
     },
+    {
+      description: ["Group OpenCode CLI updates across images"],
+      matchDatasources: ["npm"],
+      matchPackageNames: ["@opencode/cli"],
+      matchFileNames: [
+        "apps/opencode/docker-bake.hcl",
+        "apps/paseo/docker-bake.hcl",
+      ],
+      groupName: "OpenCode CLI",
+      groupSlug: "opencode-cli",
+      additionalBranchPrefix: "",
+      semanticCommitScope: "opencode-cli",
+    },
   ],
 }
