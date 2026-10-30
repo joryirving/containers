@@ -15,4 +15,5 @@ func Test(t *testing.T) {
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/mise/shims/kubectl", "version", "--client")
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/mise/shims/flux", "version", "--client")
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/mise/shims/sops", "--version")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test -f /opt/agent-skills/simple-english/SKILL.md && test -f /opt/agent-skills/simple-english/references/rule-catalog.md")
 }

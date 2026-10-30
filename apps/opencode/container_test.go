@@ -11,4 +11,5 @@ func Test(t *testing.T) {
 	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/local/bin/opencode", "--version")
 	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/bin/git", "--version")
 	testhelpers.TestCommandSucceeds(t, image, nil, "/usr/bin/gh", "--version")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test -f /opt/agent-skills/simple-english/SKILL.md && test -f /opt/agent-skills/simple-english/references/rule-catalog.md")
 }
