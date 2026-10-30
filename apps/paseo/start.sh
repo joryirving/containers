@@ -10,6 +10,10 @@ OPENCODE_CONFIG_DIR="${HOME}/.config/opencode"
 mkdir -p "${PASEO_HOME}" "${OPENCODE_CONFIG_DIR}" "${HOME}/.agents/skills" \
   "${MISE_DATA_DIR}/shims" "${MISE_CACHE_DIR}" "${MISE_STATE_DIR}" \
   "${HOME}/.config/mise"
+# Sync packaged agent skills into the persistent home on every start.
+mkdir -p "${HOME}/.agents/skills/simple-english"
+cp -R /opt/agent-skills/simple-english/. "${HOME}/.agents/skills/simple-english/"
+
 install -m 600 /etc/paseo/paseo.json "${PASEO_HOME}/config.json"
 install -m 600 /etc/paseo/opencode.json "${OPENCODE_CONFIG_DIR}/opencode.json"
 

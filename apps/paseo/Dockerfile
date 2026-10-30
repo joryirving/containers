@@ -59,6 +59,7 @@ RUN mkdir -p /opt/mise /tmp/mise-cache /tmp/mise-state \
     && kustomize version \
     && sops --version
 
+COPY --chown=1000:1000 agent-skills/simple-english /opt/agent-skills/simple-english
 COPY start.sh /usr/local/bin/paseo-start
 RUN chmod 0755 /usr/local/bin/paseo-start \
     && chown -R 1000:1000 /home/paseo

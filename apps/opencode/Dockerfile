@@ -37,6 +37,8 @@ RUN \
     && chown -R opencode:opencode "${HOME}" \
     && rm -rf /tmp/*
 
+COPY --chown=1000:1000 agent-skills/simple-english /opt/agent-skills/simple-english
+
 USER opencode
 WORKDIR /home/opencode
 RUN opencode --version
