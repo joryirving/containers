@@ -42,4 +42,11 @@ done
 '''
 
 [hooks]
-postinstall = ["mkdir -p {{config_root}}/.cache", "lefthook install"]
+# `lefthook install` is best-effort: it needs lefthook on PATH, which is not
+# guaranteed in non-interactive environments (e.g. Renovate artifact updates,
+# where the hook runs before shims are linked). Failing here would abort
+# `mise install` and mark every Renovate mise PR with an artifact error.
+postinstall = [
+  "mkdir -p {{config_root}}/.cache",
+  "command -v lefthook >/dev/null 2>&1 && lefthook install || true",
+]
