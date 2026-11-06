@@ -14,12 +14,14 @@ variable "SOURCE" {
 }
 
 variable "III_VERSION" {
-  // Pinned manually, no renovate annotation: agentmemory 0.9.31 upgrades its
-  // runtime to iii 0.25.0 with Worker Compose, and the engine version must
-  // move together with the agentmemory package. Sync this pin (plus the
-  // FROM digest and the STATE_VERSION/HTTP_VERSION worker pins in the
-  // Dockerfile) from the agentmemory release notes on every agentmemory bump.
-  default = "0.25.0"
+  // The engine version must move together with the FROM tag in the
+  // Dockerfile; the build fails the iii --version guard if they drift.
+  // The renovate annotation below uses the same depName as the docker
+  // manager resolves for that FROM line, so both are bumped in one PR.
+  // On agentmemory package bumps, also check the STATE_VERSION/HTTP_VERSION
+  // worker pins in the Dockerfile against the agentmemory release notes.
+  // renovate: datasource=docker depName=docker.io/iiidev/iii
+  default = "0.25.1"
 }
 
 group "default" {
