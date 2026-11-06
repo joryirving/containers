@@ -19,7 +19,9 @@ variable "III_VERSION" {
   // move together with the agentmemory package. Sync this pin (plus the
   // FROM digest and the STATE_VERSION/HTTP_VERSION worker pins in the
   // Dockerfile) from the agentmemory release notes on every agentmemory bump.
-  default = "0.25.0"
+  // iii patch bumps (e.g. 0.25.1) also require updating this pin to match
+  // the FROM tag, or the engine version guard in the Dockerfile fails.
+  default = "0.25.1"
 }
 
 group "default" {
