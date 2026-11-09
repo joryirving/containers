@@ -6,7 +6,7 @@ FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:57048c43a2c2988434273c7f8a4b25aa58
 ARG VERSION
 ARG OPENCODE_VERSION=2.0.32
 # renovate: datasource=github-releases depName=jdx/mise
-ARG MISE_VERSION=v2026.11.4
+ARG MISE_VERSION=v2026.11.5
 ARG TARGETARCH
 
 USER root
