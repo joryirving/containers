@@ -1,11 +1,10 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.13-alpine3.23
+FROM docker.io/library/python:3.14-alpine3.24
 ARG TARGETARCH
 ARG QBARCH=${TARGETARCH/arm64/aarch64}
 ARG QBARCH=${QBARCH/amd64/x86_64}
 ARG VERSION
-
 # renovate: datasource=github-releases depName=ludviglundgren/qbittorrent-cli
 ARG QBITORRENT_CLI_VERSION=v2.3.0
 
@@ -18,7 +17,7 @@ USER root
 WORKDIR /app
 
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         7zip \
         bash \
         ca-certificates \
@@ -30,7 +29,7 @@ RUN \
         tzdata \
     && \
     mkdir -p /app \
-    && LIBTORRENT=$(curl -sL "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json" | jq -r '.libtorrent_2_0') \
+    && LIBTORRENT=$(curl -sL "https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/dependency-version.json" | jq -r '.libtorrent_2_1') \
     && curl -fsSL -o /app/qbittorrent-nox "https://github.com/userdocs/qbittorrent-nox-static/releases/download/release-${VERSION}_v${LIBTORRENT}/${QBARCH}-qbittorrent-nox" \
     && chown -R root:root /app/qbittorrent-nox \
     && chmod -R 755 /app/qbittorrent-nox \

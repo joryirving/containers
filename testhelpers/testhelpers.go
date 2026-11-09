@@ -3,12 +3,14 @@ package testhelpers
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
+	tcexec "github.com/testcontainers/testcontainers-go/exec"
 	"github.com/testcontainers/testcontainers-go/log"
 	"github.com/testcontainers/testcontainers-go/wait"
 
@@ -84,8 +86,9 @@ type HTTPTestConfig struct {
 	Timeout    time.Duration // optional startup timeout for the HTTP wait strategy (0 = library default)
 }
 
-// TestHTTPEndpoint tests that an HTTP endpoint is accessible and returns the expected status code
-func TestHTTPEndpoint(t *testing.T, image string, httpConfig HTTPTestConfig, containerConfig *ContainerConfig) {
+// TestHTTPEndpoint tests that an HTTP endpoint is accessible and returns the expected status code.
+// It returns the running container so further checks can be run against it.
+func TestHTTPEndpoint(t *testing.T, image string, httpConfig HTTPTestConfig, containerConfig *ContainerConfig) testcontainers.Container {
 	t.Helper()
 
 	if httpConfig.Path == "" {
@@ -97,24 +100,36 @@ func TestHTTPEndpoint(t *testing.T, image string, httpConfig HTTPTestConfig, con
 
 	portStr := httpConfig.Port + "/tcp"
 
+	portWait := wait.ForListeningPort(portStr)
 	httpWait := wait.ForHTTP(httpConfig.Path).WithPort(portStr).WithStatusCodeMatcher(func(status int) bool {
 		return status == httpConfig.StatusCode
 	})
+	deadline := 60 * time.Second
 	if httpConfig.Timeout > 0 {
+		portWait = portWait.WithStartupTimeout(httpConfig.Timeout)
 		httpWait = httpWait.WithStartupTimeout(httpConfig.Timeout)
+		deadline = max(httpConfig.Timeout, deadline)
 	}
 
 	opts := []testcontainers.ContainerCustomizer{
 		testcontainers.WithExposedPorts(portStr),
-		testcontainers.WithWaitStrategy(
-			wait.ForListeningPort(portStr),
-			httpWait,
-		),
+		testcontainers.WithWaitStrategyAndDeadline(deadline, portWait, httpWait),
 	}
 
 	opts = append(opts, applyContainerConfig(containerConfig)...)
 
-	_ = runContainer(t, t.Context(), image, opts...)
+	return runContainer(t, t.Context(), image, opts...)
+}
+
+// TestExecSucceeds runs a command inside an already running container and asserts it exits 0
+func TestExecSucceeds(t *testing.T, c testcontainers.Container, cmd ...string) {
+	t.Helper()
+
+	code, reader, err := c.Exec(t.Context(), cmd, tcexec.Multiplexed())
+	require.NoError(t, err)
+	output, err := io.ReadAll(reader)
+	require.NoError(t, err)
+	require.Equal(t, 0, code, "command %v should succeed, output: %s", cmd, output)
 }
 
 // TestFileExists tests that a file exists in the image by inspecting its filesystem directly,

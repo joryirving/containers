@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23
+FROM docker.io/library/alpine:3.24
 ARG TARGETARCH
 ARG TARGETARCH=${TARGETARCH/amd64/x64}
 ARG VERSION
@@ -19,7 +19,7 @@ ENV \
 USER root
 
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         ca-certificates \
         catatonit \
         curl \

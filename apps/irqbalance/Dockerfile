@@ -1,10 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23
+FROM docker.io/library/alpine:3.24
 ARG VERSION
+# droast ignore=DF002
 USER root
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         bash \
         irqbalance=="${VERSION}" \
     && rm -rf /tmp/*

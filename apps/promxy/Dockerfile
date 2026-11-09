@@ -5,11 +5,11 @@ ARG VERSION
 ARG TARGETARCH
 ARG SOURCE
 
-RUN apk add --no-cache \
+RUN apk add --no-cache --upgrade \
         ca-certificates \
-    && wget "https://github.com/jacksontj/promxy/releases/download/${VERSION}/promxy-${VERSION}-linux-${TARGETARCH}" \
-        -O /tmp/promxy \
-    && echo "$(grep "promxy-${VERSION}-linux-${TARGETARCH}" <(wget -qO- "https://github.com/jacksontj/promxy/releases/download/${VERSION}/SHA256SUMS") | cut -d' ' -f1)  /tmp/promxy" | sha256sum -c - \
+    && curl -fsSL -o /tmp/promxy "https://github.com/jacksontj/promxy/releases/download/${VERSION}/promxy-${VERSION}-linux-${TARGETARCH}" \
+    && curl -fsSL -o /tmp/SHA256SUMS "https://github.com/jacksontj/promxy/releases/download/${VERSION}/SHA256SUMS" \
+    && echo "$(grep "promxy-${VERSION}-linux-${TARGETARCH}" /tmp/SHA256SUMS | cut -d' ' -f1)  /tmp/promxy" | sha256sum -c - \
     && chmod +x /tmp/promxy \
     && mv /tmp/promxy /bin/promxy \
     && mkdir -p /etc/promxy \
