@@ -1,18 +1,20 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23
+FROM docker.io/library/alpine:3.24
 ARG TARGETARCH
 ARG VENDOR
 ARG VERSION
 
+# krb5 on musl isn't thread-safe and Npgsql's default GSS probe segfaults on it (exit 139).
 ENV DOTNET_EnableDiagnostics=0 \
+    PGGSSENCMODE=disable \
     SONARR__UPDATE__BRANCH=develop
 
 USER root
 WORKDIR /app
 
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         bash \
         ca-certificates \
         catatonit \
@@ -20,9 +22,9 @@ RUN \
         curl \
         icu-libs \
         jq \
+        krb5-libs \
         libintl \
         nano \
-        sqlite-libs \
         tzdata \
     && mkdir -p /app/bin \
     && curl -fsSL "https://services.sonarr.tv/v1/update/${SONARR__UPDATE__BRANCH}/download?version=${VERSION}&os=linuxmusl&runtime=netcore&arch=${TARGETARCH/amd64/x64}" \

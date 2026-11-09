@@ -1,0 +1,5 @@
+# Keep the build context to only the files the Dockerfile copies.
+/*
+!defaults/
+!scripts/
+!entrypoint.sh

@@ -1,15 +1,16 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/alpine:3.23
+FROM docker.io/library/alpine:3.24
 ARG TARGETARCH
 ARG VERSION
 
 ENV CNI_BIN_DIR=/host/opt/cni/bin
 
+# droast ignore=DF002
 USER root
 
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         rsync \
     && \
     apk add --no-cache --virtual=.build-deps \

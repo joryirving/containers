@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.13-alpine3.23
+FROM docker.io/library/python:3.14-alpine3.24
 ARG VENDOR
 ARG VERSION
 
@@ -14,7 +14,7 @@ ENV \
     PYTHONUNBUFFERED=1 \
     UV_NO_CACHE=true \
     UV_SYSTEM_PYTHON=true \
-    UV_EXTRA_INDEX_URL="https://wheel-index.linuxserver.io/alpine-3.23/"
+    UV_EXTRA_INDEX_URL="https://wheel-index.linuxserver.io/alpine-3.24/"
 
 ENV \
     BAZARR__PORT=6767 \
@@ -26,7 +26,7 @@ USER root
 WORKDIR /app
 
 RUN \
-    apk add --no-cache \
+    apk add --no-cache --upgrade \
         bash \
         ca-certificates \
         catatonit \
