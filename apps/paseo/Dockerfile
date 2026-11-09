@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
-ARG VERSION=0.15.2
+ARG VERSION=0.15.3
 
-FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:e12414fe71f33aa7cedf1eaf027bf2acfccdf01d6b692ba779a220b2ec1c46e6
+FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:57048c43a2c2988434273c7f8a4b25aa585bca6c1720493ae52e2fa91497b99a
 
 ARG VERSION
 ARG OPENCODE_VERSION=2.0.32
 # renovate: datasource=github-releases depName=jdx/mise
-ARG MISE_VERSION=v2026.11.4
+ARG MISE_VERSION=v2026.11.5
 ARG TARGETARCH
 
 USER root
