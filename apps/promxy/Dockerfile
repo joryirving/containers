@@ -7,6 +7,7 @@ ARG SOURCE
 
 RUN apk add --no-cache --upgrade \
         ca-certificates \
+        curl \
     && curl -fsSL -o /tmp/promxy "https://github.com/jacksontj/promxy/releases/download/${VERSION}/promxy-${VERSION}-linux-${TARGETARCH}" \
     && curl -fsSL -o /tmp/SHA256SUMS "https://github.com/jacksontj/promxy/releases/download/${VERSION}/SHA256SUMS" \
     && echo "$(grep "promxy-${VERSION}-linux-${TARGETARCH}" /tmp/SHA256SUMS | cut -d' ' -f1)  /tmp/promxy" | sha256sum -c - \
