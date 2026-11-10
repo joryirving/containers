@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
-ARG VERSION=0.15.3
+ARG VERSION=0.15.4
 
-FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:57048c43a2c2988434273c7f8a4b25aa585bca6c1720493ae52e2fa91497b99a
+FROM ghcr.io/getpaseo/paseo:${VERSION}@sha256:d9c05730c66a6b64a708303e7cfa6a4009f31f89507bf986fb5b098af25a1c3f
 
 ARG VERSION
 ARG OPENCODE_VERSION=2.0.32
