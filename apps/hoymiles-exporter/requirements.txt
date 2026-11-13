@@ -1,4 +1,4 @@
 hoymiles_modbus==0.10.0
 # hoymiles_modbus 0.10.0 calls PDU.encode(), removed in pymodbus 3.16; pin until upstream bounds it
-pymodbus==3.11.4
+pymodbus==3.16.2
 prometheus_client==0.26.0
