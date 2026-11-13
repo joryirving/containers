@@ -18,7 +18,8 @@ RUN \
         ca-certificates \
         catatonit \
         tzdata \
-    && pip install "hoymiles-mqtt==${VERSION}"
+    # hoymiles_modbus 0.10.0 calls PDU.encode(), removed in pymodbus 3.16; pin until upstream bounds it
+    && pip install "hoymiles-mqtt==${VERSION}" "pymodbus==3.11.4"
 
 USER nobody:nogroup
 
