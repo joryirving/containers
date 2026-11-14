@@ -21,7 +21,7 @@ variable "III_VERSION" {
   // On agentmemory package bumps, also check the STATE_VERSION/HTTP_VERSION
   // worker pins in the Dockerfile against the agentmemory release notes.
   // renovate: datasource=docker depName=docker.io/iiidev/iii
-  default = "0.25.1"
+  default = "0.26.0"
 }
 
 group "default" {

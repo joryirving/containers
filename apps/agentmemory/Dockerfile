@@ -3,7 +3,7 @@
 ARG VERSION
 ARG III_VERSION
 
-FROM docker.io/iiidev/iii:0.25.1@sha256:5cdf5ea82b95bbc8d929f22315ba293ca6221428c4f57d5afd769c37a92eecb1 AS iii-engine
+FROM docker.io/iiidev/iii:0.26.0@sha256:f8b9792d9be7159548d63045180938ab5df93f82c3e885ad51504777acf0ea04 AS iii-engine
 
 FROM docker.io/library/node:26-slim
 
