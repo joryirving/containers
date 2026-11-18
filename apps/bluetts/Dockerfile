@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS build
+FROM docker.io/library/python:3.14-slim@sha256:9aaa474097d094040649f2162a627c0049b408f52138d980916788d80f04802f AS build
 
 ENV DEBIAN_FRONTEND=noninteractive \
     UV_LINK_MODE=copy
@@ -53,7 +53,7 @@ RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
     && sha256sum -c /tmp/bundle.sha256 \
     && rm /tmp/bundle.sha256
 
-FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+FROM docker.io/library/python:3.14-slim@sha256:9aaa474097d094040649f2162a627c0049b408f52138d980916788d80f04802f
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         espeak-ng ffmpeg libsndfile1 curl \
