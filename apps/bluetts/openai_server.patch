@@ -1,0 +1,24 @@
+--- a/examples/openai_server.py
++++ b/examples/openai_server.py
+@@ -170,8 +170,20 @@
+         return known + sorted(v for v in self._styles if v not in V3_VOICES)
+ 
+     def synthesize(self, text: str, voice: str, lang: str, speed: float) -> np.ndarray:
++        # Render params are env-tunable so the winning voice/step/cfg/pace combo
++        # ships as image env (BLUE_STEPS / BLUE_CFG / BLUE_PACE_BLEND / BLUE_PACE_REF)
++        # without touching this file per voice.
+         with self._lock:
+-            audio, _ = self._tts.synthesize(text, lang=lang, speed=speed, style=self._styles[voice])
++            audio, _ = self._tts.synthesize(
++                text,
++                lang=lang,
++                speed=speed,
++                style=self._styles[voice],
++                total_step=int(os.environ.get("BLUE_STEPS") or 8),
++                cfg_scale=float(os.environ.get("BLUE_CFG") or 4.0),
++                pace_blend=float(os.environ.get("BLUE_PACE_BLEND") or 0.0),
++                pace_dpt_ref=float(os.environ.get("BLUE_PACE_REF") or 0.0625),
++            )
+         return np.asarray(audio, dtype=np.float32)
+ 
+ 
