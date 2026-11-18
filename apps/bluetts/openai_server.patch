@@ -1,5 +1,14 @@
 --- a/examples/openai_server.py
 +++ b/examples/openai_server.py
+@@ -120,7 +120,7 @@
+         return root
+     raise FileNotFoundError(
+         f"no BlueTTS bundle at {bundle!r}: download it with\n"
+-        '  hf download notmax123/BlueV3-onnx --include "onnx/*" "voices/*" "frontend/*" --local-dir bluev3_onnx'
++        '  hf download notmax123/BlueV3-onnx --include "onnx/*" --include "voices/*" --include "frontend/*" --local-dir bluev3_onnx'
+     )
+ 
+ 
 @@ -170,8 +170,20 @@
          return known + sorted(v for v in self._styles if v not in V3_VOICES)
  

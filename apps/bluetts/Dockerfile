@@ -15,15 +15,12 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.6@sha256:b1e699368d24c57cda93c338a57a8c5a1
 WORKDIR /app
 
 ARG VERSION
-# Source pin: the tuning-tested commit (see SOURCE_SHA in docker-bake.hcl);
-# VERSION only drives the semver image tags.
-ARG SOURCE_SHA
 # BlueV3 ONNX bundle revision on huggingface.co/notmax123/BlueV3-onnx; voice JSONs in
 # voices-custom/ were exported against this bundle and only load with it.
 ARG BLUEV3_REVISION
 
-RUN test "${#SOURCE_SHA}" -eq 40 \
-    && curl -fsSL "https://github.com/maxmelichov/BlueTTS/archive/${SOURCE_SHA}.tar.gz" \
+RUN test -n "${VERSION}" \
+    && curl -fsSL "https://github.com/maxmelichov/BlueTTS/archive/refs/tags/V${VERSION}.tar.gz" \
         | tar xzf - -C /app --strip-components=1
 
 COPY openai_server.patch /tmp/openai_server.patch
