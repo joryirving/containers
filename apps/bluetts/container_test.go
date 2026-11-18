@@ -15,4 +15,13 @@ func Test(t *testing.T) {
 	}, nil)
 
 	testhelpers.TestExecSucceeds(t, c, "curl", "-sf", "http://127.0.0.1:8000/v1/audio/voices")
+
+	// /health passes before the G2P is touched; a real synthesis catches
+	// missing-frontend failures (e.g. an absent polyg2p wheel) that only
+	// surface on the first phonemization.
+	testhelpers.TestExecSucceeds(t, c, "curl", "-sf",
+		"http://127.0.0.1:8000/v1/audio/speech",
+		"-H", "Content-Type: application/json",
+		"-d", `{"model":"bluev3","input":"ok","voice":"mia","response_format":"wav"}`,
+		"-o", "/tmp/speech.wav")
 }

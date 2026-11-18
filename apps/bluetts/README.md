@@ -6,7 +6,9 @@ TTS (44.1 kHz, ONNX Runtime, CPU) serving an OpenAI-compatible speech API
 homelab (evaluated faster/natural by ear; see home-ops `llm/bluetts` HelmRelease).
 
 This image is English-only: the Hebrew and Yiddish G2P frontends are excluded.
-It ships a single zero-shot cloned voice (`mia`, in `voices-custom/mia.json`)
+Upstream's English G2P (`polyg2p`) publishes linux x86_64 and macOS wheels only —
+there is no linux/arm64 wheel, so arm64 images build but cannot synthesize
+English. It ships a single zero-shot cloned voice (`mia`, in `voices-custom/mia.json`)
 instead of the 15 stock BlueV3 voices, with render parameters tuned by ear and
 delivered as env:
 
