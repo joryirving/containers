@@ -1,19 +1,17 @@
 # syntax=docker/dockerfile:1
-# Project Maya GLM-5.3-Flash only. Source commit and llama.cpp pin are fixed below.
+# Project Maya GLM-5.3-Flash only. Source version comes from the upstream release tag; the llama.cpp pin comes from upstream setup.py.
 FROM nvidia/cuda:13.5.0-devel-ubuntu24.04@sha256:d3fa71793540a2b76ab227ee00016e754da2758b7a51b49bc8a72543af5a8bc2 AS build
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates ccache cmake curl git ninja-build python3 unzip \
     && rm -rf /var/lib/apt/lists/*
 ENV CCACHE_DIR=/root/.cache/ccache CCACHE_MAXSIZE=30G CCACHE_COMPILERCHECK=content
-ARG MAYA_COMMIT=81b68a6c1da6aebeecf83f6f9ca33878258ef968
 ARG CUDA_ARCHITECTURES=86
 ARG VERSION
-RUN test "${#MAYA_COMMIT}" -eq 40 \
-    && curl -fsSL "https://github.com/mw00/project-Maya/archive/${MAYA_COMMIT}.zip" -o /tmp/maya.zip \
-    && unzip -q /tmp/maya.zip -d /tmp \
-    && mv "/tmp/project-maya-${MAYA_COMMIT}" /src \
-    && rm /tmp/maya.zip \
+RUN test -n "${VERSION}" \
+    && mkdir -p /src \
+    && curl -fsSL "https://github.com/mw00/project-Maya/archive/refs/tags/v${VERSION}.tar.gz" \
+        | tar xzf - -C /src --strip-components=1 \
     && test "$(tr -d '[:space:]' < /src/VERSION)" = "$VERSION"
 RUN LLAMA_CPP_COMMIT="$(sed -n 's/^LLAMA_CPP_COMMIT *= *\"\([0-9a-f]*\)\"/\1/p' /src/setup.py | head -1)" \
     && test "${#LLAMA_CPP_COMMIT}" -eq 40 \
@@ -37,13 +35,11 @@ ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1 LANG=C.UTF-8 MAYA_UPDATE_C
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates python3 python3-venv \
     && rm -rf /var/lib/apt/lists/*
-ARG MAYA_COMMIT=81b68a6c1da6aebeecf83f6f9ca33878258ef968
 ARG CUDA_ARCHITECTURES=86
 ARG VERSION
 LABEL org.opencontainers.image.title="Project Maya GLM-5.3-Flash" \
       org.opencontainers.image.description="Project Maya ${VERSION}, CUDA 13, sm_86" \
       org.opencontainers.image.source="https://github.com/mw00/project-Maya" \
-      org.opencontainers.image.revision="${MAYA_COMMIT}" \
       com.joryirving.maya.cuda-architectures="${CUDA_ARCHITECTURES}" \
       org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.licenses="MIT"
