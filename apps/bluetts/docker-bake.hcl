@@ -5,9 +5,16 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // Pinned to the maxmelichov/BlueTTS commit this voice set was tuned against;
-  // upstream has a single v1.0.0 tag that predates the tuning-relevant changes.
-  // Update manually (and re-tune BLUE_* render envs + regenerate voices-custom/).
+  // renovate: datasource=github-releases depName=maxmelichov/BlueTTS
+  default = "3.0.1"
+}
+
+variable "SOURCE_SHA" {
+  // The maxmelichov/BlueTTS commit the voice set was tuned against: 15 commits
+  // past V3.0.1, adding the voice-export machinery the shipped voice JSONs were
+  // produced with. Re-pin to the release tag's commit when renovate bumps
+  // VERSION past it (and re-tune BLUE_* render envs / regenerate voices-custom/
+  // if the bundle moves too).
   default = "cbe51508f3f05207662bc714ad646da8191861d0"
 }
 
@@ -28,6 +35,7 @@ target "image" {
   inherits = ["docker-metadata-action"]
   args = {
     VERSION = "${VERSION}"
+    SOURCE_SHA = "${SOURCE_SHA}"
     BLUEV3_REVISION = "${BLUEV3_REVISION}"
   }
   labels = {
