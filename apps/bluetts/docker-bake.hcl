@@ -5,16 +5,17 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // renovate: datasource=github-releases depName=maxmelichov/BlueTTS
+  // Held at the upstream release the voice set was tuned against; bumped only
+  // for major upstream changes worth re-tuning against (renovate deliberately
+  // does not track this — every patch release would otherwise churn the pin).
   default = "3.0.1"
 }
 
 variable "SOURCE_SHA" {
   // The maxmelichov/BlueTTS commit the voice set was tuned against: 15 commits
   // past V3.0.1, adding the voice-export machinery the shipped voice JSONs were
-  // produced with. Re-pin to the release tag's commit when renovate bumps
-  // VERSION past it (and re-tune BLUE_* render envs / regenerate voices-custom/
-  // if the bundle moves too).
+  // produced with. Moves together with VERSION on a deliberate re-pin (and
+  // re-tune BLUE_* render envs / regenerate voices-custom/ if the bundle moves).
   default = "cbe51508f3f05207662bc714ad646da8191861d0"
 }
 
