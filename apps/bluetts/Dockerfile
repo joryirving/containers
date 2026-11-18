@@ -42,7 +42,7 @@ RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
     && echo "2f0e4af007f166afdc020331b863b1ea6b93c29258ae3b649f81234c1d7ad7c1  bluev3_onnx/onnx/vector_estimator.onnx" >> /tmp/bundle.sha256 \
     && echo "054a700e9ef17d43de203212dca335fa2cd000cd9ca7701df49fcc544b49ccbe  bluev3_onnx/onnx/vocoder.onnx" >> /tmp/bundle.sha256 \
     && while read -r _sha _path; do \
-        curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/${_path}" -o "${_path}"; \
+        curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/${_path#bluev3_onnx/}" -o "${_path}"; \
     done < /tmp/bundle.sha256 \
     && curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/onnx/export_check.json" -o bluev3_onnx/onnx/export_check.json \
     && curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/onnx/tts.json" -o bluev3_onnx/onnx/tts.json \
