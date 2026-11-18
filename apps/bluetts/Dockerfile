@@ -41,10 +41,10 @@ RUN case "${TARGETARCH}" in \
     esac \
     && if [ -n "${WHEEL}" ]; then \
         curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/frontend/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
-            -o /tmp/polyg2p.whl \
-        && echo "c32261120e83ed4d84cef433ae8bbb4cdab40e6e835eeea6483a0423c5193e37  /tmp/polyg2p.whl" | sha256sum -c - \
-        && uv pip install --python .venv/bin/python --no-index /tmp/polyg2p.whl \
-        && rm /tmp/polyg2p.whl; \
+            -o "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
+        && echo "c32261120e83ed4d84cef433ae8bbb4cdab40e6e835eeea6483a0423c5193e37  /tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" | sha256sum -c - \
+        && uv pip install --python .venv/bin/python --no-index "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
+        && rm "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl"; \
     fi
 
 # English-only ONNX bundle: model weights + the English G2P data (the Hebrew and
