@@ -5,10 +5,10 @@ variable "APP" {
 }
 
 variable "VERSION" {
-  // Pinned to the maxmelichov/BlueTTS commit this voice set was tuned against;
-  // upstream has a single v1.0.0 tag that predates the tuning-relevant changes.
-  // Update manually (and re-tune BLUE_* render envs + regenerate voices-custom/).
-  default = "cbe51508f3f05207662bc714ad646da8191861d0"
+  // Held at the upstream release the voice set was tuned against; bumped only
+  // for major upstream changes worth re-tuning against (renovate deliberately
+  // does not track this — every patch release would otherwise churn the pin).
+  default = "3.0.1"
 }
 
 variable "BLUEV3_REVISION" {

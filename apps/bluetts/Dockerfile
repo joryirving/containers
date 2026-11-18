@@ -20,7 +20,7 @@ ARG VERSION
 ARG BLUEV3_REVISION
 
 RUN test -n "${VERSION}" \
-    && curl -fsSL "https://github.com/maxmelichov/BlueTTS/archive/${VERSION}.tar.gz" \
+    && curl -fsSL "https://github.com/maxmelichov/BlueTTS/archive/refs/tags/V${VERSION}.tar.gz" \
         | tar xzf - -C /app --strip-components=1
 
 COPY openai_server.patch /tmp/openai_server.patch

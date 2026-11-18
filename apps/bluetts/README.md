@@ -20,7 +20,9 @@ delivered as env:
 The upstream `examples/openai_server.py` is patched (see `openai_server.patch`)
 to honor those env vars; upstream hardcodes the 8-step/CFG 4.0 defaults.
 
-`VERSION` pins the BlueTTS commit the voice JSON was exported against; the ONNX
+`VERSION` is held at the upstream release the voice was tuned against
+(manual bumps only — renovate deliberately does not track it); the ONNX
 bundle is fetched at `BLUEV3_REVISION` from huggingface.co/notmax123/BlueV3-onnx
 with per-file sha256 (LFS oid) verification. Voice JSONs only load against the
-bundle they were exported from, so both pins must move together.
+bundle they were exported from, so the bundle pin must move together with any
+voice regeneration.
