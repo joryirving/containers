@@ -70,4 +70,5 @@ RUN python3 -m venv /opt/maya/.venv \
 COPY --from=build /out/bin/maya /opt/maya/build/maya
 COPY --from=build /out/cpu-flags.txt /out/cuda-architectures.txt /opt/maya/image/
 WORKDIR /opt/maya
+USER 65534:65534
 CMD ["/opt/maya/.venv/bin/python", "/opt/maya/serve/server.py", "--help"]

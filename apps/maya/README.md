@@ -9,6 +9,10 @@ The standard containers release and pull-request workflows build this app for
 generated Maya-S24 pack and configuration at runtime; see Project Maya's
 `docs/DOCKER.md` and `docs/MODELS.md`.
 
+The image runs as UID and GID `65534`. Give that user write access to any
+runtime data mounts. Maya needs an unlimited memlock limit for pinned model
+memory; set the container's `memlock` ulimit instead of running it as root.
+
 The app is intentionally experiment-scoped. Do not change the source commit or
 CUDA base digest without rebuilding and validating the image on the target
 runtime.
