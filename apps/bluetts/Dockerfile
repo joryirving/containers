@@ -29,6 +29,24 @@ RUN patch examples/openai_server.py /tmp/openai_server.patch \
 
 RUN uv sync --frozen --no-dev --no-install-project --extra server
 
+# English G2P: the release bundle requires the polyg2p wheel installed into the
+# venv (not declared by the BlueTTS pyproject). Upstream publishes manylinux
+# x86_64 and macOS wheels only — no linux/arm64 wheel exists, so on arm64 the
+# image builds but English synthesis fails at runtime. sha256 = LFS oid.
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+        amd64) WHEEL=manylinux_2_34_x86_64 ;; \
+        arm64) WHEEL="" ;; \
+        *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
+    esac \
+    && if [ -n "${WHEEL}" ]; then \
+        curl -fsSL "https://huggingface.co/notmax123/BlueV3-onnx/resolve/${BLUEV3_REVISION}/frontend/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
+            -o "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
+        && echo "c32261120e83ed4d84cef433ae8bbb4cdab40e6e835eeea6483a0423c5193e37  /tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" | sha256sum -c - \
+        && uv pip install --python .venv/bin/python --no-index "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl" \
+        && rm "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl"; \
+    fi
+
 # English-only ONNX bundle: model weights + the English G2P data (the Hebrew and
 # Yiddish frontends are on-demand downloads upstream and are deliberately excluded).
 # sha256s are the LFS oids published for BLUEV3_REVISION on the hub.
