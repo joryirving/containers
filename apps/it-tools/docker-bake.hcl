@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=sharevb/it-tools
-  default = "v2026.10.25"
+  default = "v2026.11.22"
 }
 
 variable "SOURCE" {
