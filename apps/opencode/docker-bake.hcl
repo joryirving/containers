@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=npm depName=@opencode/cli
-  default = "2.3.2"
+  default = "2.4.0"
 }
 
 variable "SOURCE" {
