@@ -29,14 +29,14 @@ RUN LLAMA_CPP_COMMIT="$(sed -n 's/^LLAMA_CPP_COMMIT *= *\"\([0-9a-f]*\)\"/\1/p' 
 RUN cp -a /llama.cpp /llama-pruned && rm -rf /llama-pruned/docs /llama-pruned/models /llama-pruned/benches \
         /llama-pruned/pocs /llama-pruned/media /llama-pruned/contrib
 RUN cmake -S /src -B /build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-        -DSTRATA_ENABLE_CUDA=ON "-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}" \
-        -DSTRATA_NATIVE_EXPERTS=ON -DSTRATA_BUILD_TESTS=OFF -DSTRATA_PORTABLE=ON \
-        -DSTRATA_GGML_DIR=/llama.cpp \
+        -DMAYA_ENABLE_CUDA=ON "-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}" \
+        -DMAYA_NATIVE_EXPERTS=ON -DMAYA_BUILD_TESTS=OFF -DMAYA_PORTABLE=ON \
+        -DMAYA_GGML_DIR=/llama.cpp \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
 RUN --mount=type=cache,id=project-maya-ccache,target=/root/.cache/ccache \
     cmake --build /build --target maya -j "$(( ($(nproc) / 2) > 0 ? ($(nproc) / 2) : 1 ))"
 RUN mkdir -p /out/bin && cp /build/maya /out/bin/maya \
-    && grep -E '^(STRATA_PORTABLE|GGML_NATIVE|GGML_AVX[A-Z0-9_]*|GGML_FMA|GGML_F16C|GGML_BMI2|GGML_AMX_[A-Z0-9_]*):' /build/CMakeCache.txt > /out/cpu-flags.txt \
+    && grep -E '^(MAYA_PORTABLE|GGML_NATIVE|GGML_AVX[A-Z0-9_]*|GGML_FMA|GGML_F16C|GGML_BMI2|GGML_AMX_[A-Z0-9_]*):' /build/CMakeCache.txt > /out/cpu-flags.txt \
     && sed -n 's/^CMAKE_CUDA_ARCHITECTURES:[A-Z]*=//p' /build/CMakeCache.txt > /out/cuda-architectures.txt
 # The vision encoder, the way maya.py's compile_vision builds it: glm5next_patch.py adds GLM-5.3-Flash's vision
 # tower to the pinned llama.cpp's mtmd (idempotent, anchors fail the build on drift; its ggml-cuda edits are
@@ -44,13 +44,13 @@ RUN mkdir -p /out/bin && cp /build/maya /out/bin/maya \
 # tools/vision, which upstream's setup source_hash hashes.
 RUN python3 -B /src/tools/vision/glm5next_patch.py /llama.cpp
 RUN cmake -S /src/tools/vision -B /build-vision -G Ninja -DCMAKE_BUILD_TYPE=Release \
-        -DLLAMA_DIR=/llama.cpp -DSTRATA_VISION_CUDA=ON -DSTRATA_PORTABLE=ON \
+        -DLLAMA_DIR=/llama.cpp -DMAYA_VISION_CUDA=ON -DMAYA_PORTABLE=ON \
         "-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}" \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_CUDA_COMPILER_LAUNCHER=ccache
 RUN --mount=type=cache,id=project-maya-ccache,target=/root/.cache/ccache \
     cmake --build /build-vision --target maya-vision -j "$(( ($(nproc) / 2) > 0 ? ($(nproc) / 2) : 1 ))"
 RUN cp /build-vision/bin/maya-vision /out/bin/maya-vision \
-    && grep -E '^(STRATA_PORTABLE|GGML_NATIVE|GGML_AVX[A-Z0-9_]*|GGML_FMA|GGML_F16C|GGML_BMI2|GGML_AMX_[A-Z0-9_]*):' /build-vision/CMakeCache.txt > /out/vision-cpu-flags.txt \
+    && grep -E '^(MAYA_PORTABLE|MAYA_VISION_CUDA|GGML_NATIVE|GGML_AVX[A-Z0-9_]*|GGML_FMA|GGML_F16C|GGML_BMI2|GGML_AMX_[A-Z0-9_]*):' /build-vision/CMakeCache.txt > /out/vision-cpu-flags.txt \
     && sed -n 's/^CMAKE_CUDA_ARCHITECTURES:[A-Z]*=//p' /build-vision/CMakeCache.txt > /out/vision-cuda-architectures.txt
 
 FROM nvidia/cuda:13.5.0-runtime-ubuntu24.04@sha256:ba4d4e8475ced890fb26f9661daf8dae7cce9827613682eb8b8379c5ecd94eba
