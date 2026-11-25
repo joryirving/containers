@@ -3,4 +3,5 @@
 # this file already exists, which it does.
 /*
 !openai_server.patch
+!openvino.patch
 !voices-custom/
