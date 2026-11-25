@@ -86,16 +86,16 @@ RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
     && sha256sum -c /tmp/bundle.sha256 \
     && rm /tmp/bundle.sha256
 
-FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
-
 # Intel OpenCL compute runtime for the OpenVINO GPU plugin: copied from the
 # same pinned OVMS GPU image the other Intel lanes serve with (its packaged
 # runtime is the one proven against the target iGPU; Debian trixie ships no
 # usable intel-opencl-icd). amd64 stage only — arm64 gets an empty placeholder.
 FROM --platform=linux/amd64 openvino/model_server:2026.4.1-gpu@sha256:a928903fe429f1e3e27107cc45932d30d95febfd2d1159dc50869c3eac76fc58 AS intel-opencl-amd64
-COPY intel-opencl-arm64/ /
 FROM scratch AS intel-opencl-arm64
+COPY intel-opencl-arm64/ /
 FROM intel-opencl-${TARGETARCH} AS intel-opencl
+
+FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         espeak-ng ffmpeg libsndfile1 curl \
