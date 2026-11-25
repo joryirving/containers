@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 # ComfyUI for Intel Panther Lake iGPUs (Xe3, target ptl-h), built on Intel's
-# omni XPU stack. The stage layout and the onednn/kernel recipes are adapted
-# from intel/llm-scaler omni/docker/Dockerfile (Apache-2.0); llm-scaler is
-# fetched at a pinned commit instead of COPY'd from the build context, and the
-# image is trimmed to the nodes this deployment runs (no nunchaku, no
-# mono-decode, no Easy-Use/CacheDiT). AMD64 only: the oneAPI toolchain and the
-# omix base ship no arm64 variants.
+# omni XPU stack. The stage layout and the oneDNN/kernel/provider recipes are
+# adapted from intel/llm-scaler omni/docker/Dockerfile @ 2f032c556f5df4348bd1012e07270889cb65d9ae
+# (Apache-2.0); llm-scaler is fetched at that pinned commit instead of COPY'd
+# from the build context, and the image is trimmed to the nodes this deployment
+# runs (no nunchaku, no mono-decode, no Easy-Use/CacheDiT). AMD64 only: the
+# oneAPI toolchain and the omix base ship no arm64 variants.
 
 ARG BASE_IMAGE=intel/omix:0.4.1-devel-ubuntu24.04@sha256:6f8c8893cc89ff441e3604a3d785d78bdbe79726550e88d5cf8eab769444389a
 ARG PYTHON_VERSION=3.12
@@ -26,8 +26,11 @@ ARG IMAGE_TAG=${VERSION}
 ARG SYCL_TLA_REPOSITORY=https://github.com/intel/sycl-tla.git
 ARG SYCL_TLA_COMMIT=2fc09973bfdf15755090fcb0e3b6ad236408a992
 ARG LLM_SCALER_REPOSITORY=https://github.com/intel/llm-scaler.git
+# Intel's maintained recipe source; the omni/ tree (kernel, adapter node,
+# patches, configs, tools) and the ComfyUI/kitchen/aimdo pins below are read
+# from this revision. Bump only together with a rebuild on the target host.
 ARG LLM_SCALER_COMMIT=2f032c556f5df4348bd1012e07270889cb65d9ae
-ARG COMFYUI_REPOSITORY=https://github.com/comfyanonymous/ComfyUI.git
+ARG COMFYUI_REPOSITORY=https://github.com/Comfy-Org/ComfyUI.git
 ARG COMFYUI_VERSION=0.45.0
 ARG COMFYUI_FRONTEND_VERSION=1.58.5
 ARG COMFYUI_WORKFLOW_TEMPLATES_VERSION=0.11.105
@@ -42,6 +45,12 @@ ARG COMFY_AIMDO_VERSION=0.6.0
 ARG COMFY_AIMDO_PROVIDER_VERSION=0.6.0
 ARG COMFY_GGUF_REPOSITORY=https://github.com/xiangyuT/ComfyUI-GGUF-XPU.git
 ARG COMFY_GGUF_COMMIT=39671fe73117ba97de7011e7e06e32599dcda06d
+# Upstream nodes at their current main heads (Intel pins older revisions); the
+# controlnet_aux XPU patch was verified to apply to the revision below.
+ARG COMFY_VHS_COMMIT=775ae691ecbab6a6d09a2c186f95d130cf8a10d3
+ARG COMFY_KJNODES_COMMIT=187868f53a7d9df007dbfe85891dab41453f7933
+ARG COMFY_CONTROLNET_AUX_COMMIT=e8b689a513c3e6b63edc44066560ca5919c0576e
+ARG COMFY_ESSENTIALS_COMMIT=9d9f4bedfc9f0321c19faf71855e228c93bd0dc9
 
 # ======== Stable OS/toolchain base ========
 # Keep device, image-version, Kitchen, and local-source arguments out of this
@@ -71,7 +80,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # omni_xpu_kernel, the ComfyUI-OmniXPU adapter node, patches, configs, and
 # validation tools all live in llm-scaler. Clone once, pinned, and copy
 # per-need into later stages so a kernel edit never invalidates the ComfyUI
-# dependency tree.
+# dependency tree. Intel's Dockerfile COPY's these from its own checkout;
+# this repo builds standalone, so the checkout is fetched at a pinned commit.
 FROM os-base AS llm-scaler
 
 ARG LLM_SCALER_REPOSITORY
@@ -87,6 +97,8 @@ RUN set -euo pipefail && \
     test -d /llm-scaler/omni/ComfyUI-OmniXPU
 
 # ======== Stable Python/Torch base ========
+# This stage is shared by the ComfyUI dependency, Kitchen, and kernel branches.
+# It changes only when the base Python/Torch/oneDNN environment changes.
 FROM os-base AS python-base
 
 ARG PYTHON_VERSION
@@ -207,10 +219,17 @@ ARG COMFY_KITCHEN_VERSION
 ARG COMFY_AIMDO_VERSION
 ARG COMFY_GGUF_REPOSITORY
 ARG COMFY_GGUF_COMMIT
-ARG LLM_SCALER_COMMIT
+ARG COMFY_VHS_COMMIT
+ARG COMFY_KJNODES_COMMIT
+ARG COMFY_CONTROLNET_AUX_COMMIT
+ARG COMFY_ESSENTIALS_COMMIT
 
+# ComfyUI core and its Python dependencies are target-independent and stay
+# ahead of the native-source branches for Docker cache reuse.
 RUN --mount=type=cache,target=/root/.cache/pip \
     cd /llm && \
+    git clone --filter=blob:none --no-checkout \
+        "${COMFYUI_REPOSITORY}" ComfyUI && \
     git clone --filter=blob:none --branch "v${COMFYUI_VERSION}" --depth 1 \
         "${COMFYUI_REPOSITORY}" ComfyUI && \
     grep -q "\"${COMFYUI_VERSION}\"" /llm/ComfyUI/comfyui_version.py && \
@@ -238,13 +257,18 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # can be installed explicitly above. The XPU implementations are installed as
 # separately named providers and never overwrite these official packages.
 
+# Pin every default custom node to an exact revision. These stable remote-
+# source layers stay ahead of the frequently edited native sources, and the
+# patched controlnet_aux node goes last so editing its patch invalidates
+# nothing above it.
+
 RUN --mount=type=cache,target=/root/.cache/pip \
     cd /llm/ComfyUI/custom_nodes && \
     git clone --filter=blob:none --no-checkout \
         https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git \
         comfyui-videohelpersuite && \
     git -C comfyui-videohelpersuite fetch --depth 1 origin \
-        775ae691ecbab6a6d09a2c186f95d130cf8a10d3 && \
+        "${COMFY_VHS_COMMIT}" && \
     git -C comfyui-videohelpersuite checkout --detach FETCH_HEAD && \
     pip install -r comfyui-videohelpersuite/requirements.txt
 
@@ -253,7 +277,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     git clone --filter=blob:none --no-checkout \
         https://github.com/kijai/ComfyUI-KJNodes.git && \
     git -C ComfyUI-KJNodes fetch --depth 1 origin \
-        187868f53a7d9df007dbfe85891dab41453f7933 && \
+        "${COMFY_KJNODES_COMMIT}" && \
     git -C ComfyUI-KJNodes checkout --detach FETCH_HEAD && \
     pip install -r ComfyUI-KJNodes/requirements.txt
 
@@ -262,18 +286,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     git clone --filter=blob:none --no-checkout \
         https://github.com/cubiq/ComfyUI_essentials.git && \
     git -C ComfyUI_essentials fetch --depth 1 origin \
-        9d9f4bedfc9f0321c19faf71855e228c93bd0dc9 && \
+        "${COMFY_ESSENTIALS_COMMIT}" && \
     git -C ComfyUI_essentials checkout --detach FETCH_HEAD && \
     pip install -r ComfyUI_essentials/requirements.txt
-
-RUN --mount=type=cache,target=/root/.cache/pip \
-    cd /llm/ComfyUI/custom_nodes && \
-    git clone --filter=blob:none --no-checkout \
-        https://github.com/Fannovel16/comfyui_controlnet_aux.git && \
-    git -C comfyui_controlnet_aux fetch --depth 1 origin \
-        c2655d2970d810d8a3d71deed204cdf416b66132 && \
-    git -C comfyui_controlnet_aux checkout --detach FETCH_HEAD && \
-    pip install -r comfyui_controlnet_aux/requirements.txt
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     cd /llm/ComfyUI/custom_nodes && \
@@ -284,7 +299,27 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     git -C ComfyUI-GGUF-XPU checkout --detach FETCH_HEAD && \
     pip install -r ComfyUI-GGUF-XPU/requirements.txt
 
+# Intel's XPU patch: depth-anything-v2 hardcodes DEVICE='cuda' or 'cpu'; the
+# model would sit on the XPU device while dpt runs on CPU without it.
+COPY --from=llm-scaler /llm-scaler/omni/patches/comfyui_controlnet_aux_depth_anything_v2_xpu.patch \
+    /llm/patches/comfyui_controlnet_aux_depth_anything_v2_xpu.patch
+RUN --mount=type=cache,target=/root/.cache/pip \
+    cd /llm/ComfyUI/custom_nodes && \
+    git clone --filter=blob:none --no-checkout \
+        https://github.com/Fannovel16/comfyui_controlnet_aux.git && \
+    git -C comfyui_controlnet_aux fetch --depth 1 origin \
+        "${COMFY_CONTROLNET_AUX_COMMIT}" && \
+    git -C comfyui_controlnet_aux checkout --detach FETCH_HEAD && \
+    git -C comfyui_controlnet_aux apply --check \
+        /llm/patches/comfyui_controlnet_aux_depth_anything_v2_xpu.patch && \
+    git -C comfyui_controlnet_aux apply \
+        /llm/patches/comfyui_controlnet_aux_depth_anything_v2_xpu.patch && \
+    pip install -r comfyui_controlnet_aux/requirements.txt
+
 # ======== Kitchen wheel branch ========
+# Kitchen and the Omni kernel deliberately branch from separate cached parents.
+# Updating either source/commit builds only that wheel, then reruns the cheap
+# final installation/verification layer.
 FROM python-base AS kitchen-wheel
 
 ARG COMFY_KITCHEN_REPOSITORY
@@ -315,9 +350,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         --xpu-target "${XPU_TARGET}"
 
 # ======== AIMDO XPU wheel branch ========
-# The native-owner diagnostic stays off: it takes over the allocator and is a
-# diagnostic interface, not a runtime requirement. DynamicVRAM weight staging
-# and the public AIMDO APIs remain available without it.
+# The native-owner diagnostic stays off (Intel's AIMDO_XPU_BUILD_NATIVE_OWNER_
+# DIAGNOSTIC=0 path): it replaces the allocator and adds a diagnostic interface,
+# neither of which this deployment drives. DynamicVRAM weight staging and the
+# public AIMDO APIs remain available without it.
 FROM python-base AS aimdo-wheel
 
 ARG COMFY_AIMDO_REPOSITORY
@@ -356,10 +392,8 @@ RUN cd /llm && \
 # ======== Omni kernel wheel branch ========
 FROM sycl-tla AS kernel-wheel
 
-ARG IMAGE_TAG
 ARG XPU_TARGET
 ARG MAX_JOBS
-ARG LLM_SCALER_COMMIT
 
 ENV TORCH_XPU_ARCH_LIST=${XPU_TARGET} \
     OMNI_XPU_DEVICE=${XPU_TARGET} \
@@ -368,7 +402,7 @@ ENV TORCH_XPU_ARCH_LIST=${XPU_TARGET} \
     CUTLASS_SYCL_ROOT=/llm/sycl-tla \
     OMNI_XPU_REQUIRE_CUTE=1
 
-COPY --from=llm-scaler /llm-scaler/omni/omni_xpu_kernel /llm/omni_xpu_kernel
+COPY --link --from=llm-scaler /llm-scaler/omni/omni_xpu_kernel /llm/omni_xpu_kernel
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -eo pipefail && \
     source /opt/intel/oneapi/setvars.sh --force && \
@@ -377,18 +411,51 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-deps --force-reinstall \
         /wheels/omni_xpu_kernel-*.whl
 
-# ======== Final ComfyUI assembly ========
-FROM comfyui-deps AS builder-comfyui
+# ======== ComfyUI runtime assembly ========
+# The runtime is the completed assembly rather than a fresh os-base plus copies
+# of /opt/venv and /llm: both use the same OMIX devel base, and copying the
+# complete environment only creates very large replacement layers after each
+# kernel/Kitchen edit and slows image export.
+FROM comfyui-deps AS runtime
 
+ARG BASE_IMAGE
 ARG IMAGE_TAG
 ARG XPU_TARGET
-ARG COMFY_KITCHEN_PROVIDER_VERSION
-ARG COMFY_AIMDO_PROVIDER_VERSION
+ARG MAX_JOBS
 ARG TORCH_VERSION
+ARG TORCHVISION_VERSION
+ARG TORCHAUDIO_VERSION
+ARG ONEDNN_VERSION
+ARG ONEDNN_SOURCE_REPOSITORY
+ARG ONEDNN_SOURCE_COMMIT
+ARG ONEDNN_PATCH_SHA256
+ARG SYCL_TLA_COMMIT
+ARG COMFYUI_VERSION
+ARG COMFYUI_FRONTEND_VERSION
+ARG COMFYUI_WORKFLOW_TEMPLATES_VERSION
+ARG COMFYUI_MANAGER_VERSION
+ARG COMFY_KITCHEN_REPOSITORY
+ARG COMFY_KITCHEN_COMMIT
+ARG COMFY_KITCHEN_VERSION
+ARG COMFY_KITCHEN_PROVIDER_VERSION
+ARG COMFY_AIMDO_REPOSITORY
+ARG COMFY_AIMDO_COMMIT
+ARG COMFY_AIMDO_VERSION
+ARG COMFY_AIMDO_PROVIDER_VERSION
+ARG COMFY_GGUF_COMMIT
+ARG COMFY_VHS_COMMIT
+ARG COMFY_KJNODES_COMMIT
+ARG COMFY_CONTROLNET_AUX_COMMIT
+ARG COMFY_ESSENTIALS_COMMIT
+ARG LLM_SCALER_REPOSITORY
 ARG LLM_SCALER_COMMIT
 
 ENV TORCH_XPU_ARCH_LIST=${XPU_TARGET} \
-    OMNI_XPU_DEVICE=${XPU_TARGET}
+    OMNI_XPU_DEVICE=${XPU_TARGET} \
+    MAX_JOBS=${MAX_JOBS} \
+    CMAKE_BUILD_PARALLEL_LEVEL=${MAX_JOBS} \
+    CUTLASS_SYCL_ROOT=/llm/sycl-tla \
+    OMNI_XPU_REQUIRE_CUTE=1
 
 COPY --from=sycl-tla /llm/sycl-tla /llm/sycl-tla
 COPY --from=kernel-wheel /wheels/ /wheels/
@@ -431,68 +498,102 @@ RUN mkdir -p /llm/manifests && \
     test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6
 
 COPY --from=llm-scaler /llm-scaler/omni/patches /llm/patches
-# Upstream XPU patch: depth-anything-v2 forces DEVICE='cuda' or 'cpu'; on XPU
-# the model would sit on the XPU device while dpt runs on CPU.
-RUN cd /llm/ComfyUI/custom_nodes/comfyui_controlnet_aux && \
-    patch -p1 < /llm/patches/comfyui_controlnet_aux_depth_anything_v2_xpu.patch
 COPY --from=llm-scaler /llm-scaler/omni/tools /llm/tools
-COPY ./configs/comfyui_host_models.yaml /llm/configs/comfyui_host_models.yaml
-COPY --chmod=755 ./entrypoints/start_comfyui.sh /llm/entrypoints/start_comfyui.sh
-RUN mkdir -p /llm/ComfyUI/user /models/host /data/input /data/output /data/user
+COPY --from=llm-scaler /llm-scaler/omni/configs/comfyui_host_models.yaml /llm/configs/comfyui_host_models.yaml
 
-ARG BASE_IMAGE
-ARG SYCL_TLA_COMMIT
-ARG COMFYUI_VERSION
-ARG COMFYUI_FRONTEND_VERSION
-ARG COMFYUI_WORKFLOW_TEMPLATES_VERSION
-ARG COMFYUI_MANAGER_VERSION
-ARG COMFY_KITCHEN_REPOSITORY
-ARG COMFY_KITCHEN_COMMIT
-ARG COMFY_KITCHEN_VERSION
-ARG COMFY_AIMDO_REPOSITORY
-ARG COMFY_AIMDO_COMMIT
-ARG COMFY_AIMDO_VERSION
-ARG COMFY_GGUF_COMMIT
-ARG LLM_SCALER_REPOSITORY
-ARG ONEDNN_VERSION
-ARG ONEDNN_SOURCE_COMMIT
-ARG ONEDNN_PATCH_SHA256
+# The image runs as nobody (repo standard): the runtime writes only under the
+# mounted /data dirs and /llm/ComfyUI/user, and PYTHONDONTWRITEBYTECODE keeps
+# imports from writing __pycache__ into the root-owned ComfyUI tree.
+RUN mkdir -p /llm/ComfyUI/user /models/host /data/input /data/output /data/user && \
+    chown -R 65534:65534 /data /models /llm/ComfyUI/user
 
+# Intel's start_comfyui.sh additionally sets no_proxy defaults, a
+# --reserve-vram budget, and the DynamicVRAM flag logic wired to the AIMDO
+# native allocator preload (runtime_bootstrap.py --allocator-preload-path /
+# LD_PRELOAD native_hook): all dropped with the native-owner diagnostic, and
+# any of it can be passed per-deployment through CLI_ARGS instead.
+COPY --chmod=755 <<'ENTRYPOINT_EOF' /llm/entrypoints/start_comfyui.sh
+#!/usr/bin/env bash
+# Establish the same runtime environment intel/llm-scaler's
+# omix_torch_runtime.sh sets: source the OMIX oneAPI environment, then restore
+# the venv's Torch-matched SYCL/UR runtime ahead of the OMIX 2026.1 build
+# toolchain. Without this reorder the inherited OMIX environment mixes libsycl
+# from the Torch wheel with libur_loader from the compiler image.
+set -eo pipefail
+
+source /opt/intel/oneapi/setvars.sh --force
+
+shopt -s nullglob
+torch_library_directories=(
+    "${VIRTUAL_ENV}"/lib/python*/site-packages/torch/lib
+)
+shopt -u nullglob
+
+if [[ ${#torch_library_directories[@]} -ne 1 ]]; then
+    echo "expected one Torch library directory under ${VIRTUAL_ENV}" >&2
+    exit 1
+fi
+
+export LD_LIBRARY_PATH="${VIRTUAL_ENV}/lib:${torch_library_directories[0]}:${LD_LIBRARY_PATH:-}"
+
+cd /llm/ComfyUI
+exec python main.py \
+    --listen "${COMFYUI_LISTEN:-0.0.0.0}" \
+    --port "${PORT:-8188}" \
+    --extra-model-paths-config /llm/configs/comfyui_host_models.yaml \
+    --input-directory /data/input \
+    --output-directory /data/output \
+    --user-directory /data/user \
+    --enable-manager \
+    ${CLI_ARGS:-} "$@"
+ENTRYPOINT_EOF
+
+# com.intel.omni.* keys keep Intel's label names for the pinned revisions so
+# tools written against the upstream image (omni/tools/validate_comfyui_*.py)
+# can read them; com.joryirving.* covers what this fork adds or replaces.
 LABEL org.opencontainers.image.version="${IMAGE_TAG}" \
-      org.opencontainers.image.revision="${LLM_SCALER_COMMIT}" \
       org.opencontainers.image.base.name="${BASE_IMAGE}" \
-      org.opencontainers.image.licenses="Apache-2.0" \
-      com.joryirving.comfyui.version="${COMFYUI_VERSION}" \
-      com.joryirving.comfyui.frontend.version="${COMFYUI_FRONTEND_VERSION}" \
-      com.joryirving.comfyui.workflow-templates.version="${COMFYUI_WORKFLOW_TEMPLATES_VERSION}" \
-      com.joryirving.comfyui.manager.version="${COMFYUI_MANAGER_VERSION}" \
-      com.joryirving.comfy-kitchen.version="${COMFY_KITCHEN_VERSION}" \
-      com.joryirving.comfy-kitchen.revision="${COMFY_KITCHEN_COMMIT}" \
-      com.joryirving.comfy-kitchen.repository="${COMFY_KITCHEN_REPOSITORY}" \
-      com.joryirving.comfy-kitchen-xpu-runtime.version="${COMFY_KITCHEN_PROVIDER_VERSION}" \
-      com.joryirving.comfy-aimdo.version="${COMFY_AIMDO_VERSION}" \
-      com.joryirving.comfy-aimdo.revision="${COMFY_AIMDO_COMMIT}" \
-      com.joryirving.comfy-aimdo.repository="${COMFY_AIMDO_REPOSITORY}" \
-      com.joryirving.comfy-aimdo-xpu-runtime.version="${COMFY_AIMDO_PROVIDER_VERSION}" \
-      com.joryirving.comfy-gguf.revision="${COMFY_GGUF_COMMIT}" \
+      com.intel.omni.image-flavor="comfyui" \
+      com.intel.omni.base-image="${BASE_IMAGE}" \
+      com.intel.omni.torch.version="${TORCH_VERSION}" \
+      com.intel.omni.torchvision.version="${TORCHVISION_VERSION}" \
+      com.intel.omni.torchaudio.version="${TORCHAUDIO_VERSION}" \
+      com.intel.omni.onednn.package.version="${ONEDNN_VERSION}" \
+      com.intel.omni.onednn.source.repository="${ONEDNN_SOURCE_REPOSITORY}" \
+      com.intel.omni.onednn.source.revision="${ONEDNN_SOURCE_COMMIT}" \
+      com.intel.omni.onednn.patch.sha256="${ONEDNN_PATCH_SHA256}" \
+      com.intel.omni.xpu-target="${XPU_TARGET}" \
+      com.intel.omni.sycl-tla.revision="${SYCL_TLA_COMMIT}" \
+      com.intel.omni.comfyui.version="${COMFYUI_VERSION}" \
+      com.intel.omni.comfyui.frontend.version="${COMFYUI_FRONTEND_VERSION}" \
+      com.intel.omni.comfyui.workflow-templates.version="${COMFYUI_WORKFLOW_TEMPLATES_VERSION}" \
+      com.intel.omni.comfyui.manager.version="${COMFYUI_MANAGER_VERSION}" \
+      com.intel.omni.comfy-kitchen.version="${COMFY_KITCHEN_VERSION}" \
+      com.intel.omni.comfy-aimdo.version="${COMFY_AIMDO_VERSION}" \
+      com.intel.omni.comfy-kitchen-xpu-runtime.repository="${COMFY_KITCHEN_REPOSITORY}" \
+      com.intel.omni.comfy-kitchen-xpu-runtime.version="${COMFY_KITCHEN_PROVIDER_VERSION}" \
+      com.intel.omni.comfy-kitchen-xpu-runtime.revision="${COMFY_KITCHEN_COMMIT}" \
+      com.intel.omni.comfy-aimdo-xpu-runtime.repository="${COMFY_AIMDO_REPOSITORY}" \
+      com.intel.omni.comfy-aimdo-xpu-runtime.version="${COMFY_AIMDO_PROVIDER_VERSION}" \
+      com.intel.omni.comfy-aimdo-xpu-runtime.revision="${COMFY_AIMDO_COMMIT}" \
+      com.intel.omni.comfy-gguf.revision="${COMFY_GGUF_COMMIT}" \
       com.joryirving.llm-scaler.repository="${LLM_SCALER_REPOSITORY}" \
       com.joryirving.llm-scaler.revision="${LLM_SCALER_COMMIT}" \
-      com.joryirving.sycl-tla.revision="${SYCL_TLA_COMMIT}" \
-      com.joryirving.xpu-target="${XPU_TARGET}" \
-      com.joryirving.torch.version="${TORCH_VERSION}" \
-      com.joryirving.onednn.package.version="${ONEDNN_VERSION}" \
-      com.joryirving.onednn.source.revision="${ONEDNN_SOURCE_COMMIT}" \
-      com.joryirving.onednn.patch.sha256="${ONEDNN_PATCH_SHA256}"
+      com.joryirving.comfyui-videohelpersuite.revision="${COMFY_VHS_COMMIT}" \
+      com.joryirving.comfyui-kjnodes.revision="${COMFY_KJNODES_COMMIT}" \
+      com.joryirving.comfyui-controlnet-aux.revision="${COMFY_CONTROLNET_AUX_COMMIT}" \
+      com.joryirving.comfyui-essentials.revision="${COMFY_ESSENTIALS_COMMIT}"
 
 ENV OMNIXPU_INTERPOLATE_FIX=0 \
-    OMNIXPU_H3_TE_INT8_CR=0 \
+    OMNIXPU_H3_TE_INT8_CR=1 \
     UR_INCLUDE_DIR="/opt/venv/include/unified-runtime" \
-    PIP_CONSTRAINT="/llm/manifests/omni-runtime-constraints.txt"
+    PIP_CONSTRAINT="/llm/manifests/omni-runtime-constraints.txt" \
+    PYTHONDONTWRITEBYTECODE=1
 
 # Keep the OMIX oneAPI environment initialization, then restore the venv's
 # Torch-matched SYCL/UR runtime ahead of the OMIX 2026.1 build toolchain.
-# Without this reorder the inherited OMIX entrypoint mixes libsycl from the
-# Torch wheel with libur_loader from the compiler image.
 ENTRYPOINT ["/llm/entrypoints/start_comfyui.sh"]
+
+USER 65534:65534
 
 WORKDIR /llm/ComfyUI

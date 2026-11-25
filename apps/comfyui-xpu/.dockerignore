@@ -1,6 +1,0 @@
-# include/.dockerignore is copied here by CI builds unless this file already
-# exists, which it does. Keep the build context to only the files the
-# Dockerfile copies.
-/*
-!entrypoints/
-!configs/

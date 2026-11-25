@@ -10,7 +10,7 @@ variable "VERSION" {
 }
 
 variable "SOURCE" {
-  default = "https://github.com/comfyanonymous/ComfyUI"
+  default = "https://github.com/Comfy-Org/ComfyUI"
 }
 
 variable "XPU_TARGET" {
