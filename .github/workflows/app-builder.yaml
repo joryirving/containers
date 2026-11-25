@@ -38,19 +38,19 @@ jobs:
           persist-credentials: false
 
       - name: Check For Existing App
-        uses: ./.github/actions/app-exists
+        uses: $/.github/actions/app-exists
         id: app-exists
         with:
           app: ${{ inputs.app }}
 
       - name: Get App Options
-        uses: ./.github/actions/app-options
+        uses: $/.github/actions/app-options
         id: app-options
         with:
           app: ${{ inputs.app }}
 
       - name: Get App Versions
-        uses: ./.github/actions/app-versions
+        uses: $/.github/actions/app-versions
         id: app-versions
         with:
           upstream-version: ${{ steps.app-options.outputs.version }}
@@ -110,7 +110,7 @@ jobs:
             core.setOutput('arch', process.env.PLATFORM.split('/').pop());
 
       - name: Get App Options
-        uses: ./.github/actions/app-options
+        uses: $/.github/actions/app-options
         id: app-options
         with:
           app: ${{ inputs.app }}
@@ -145,7 +145,7 @@ jobs:
           set: |
             *.args.VENDOR=${{ github.repository_owner }}
             *.cache-from=${{ format('type=registry,ref=ghcr.io/{0}/build_cache:{1}-{2},mode=max', github.repository_owner, inputs.app, steps.target.outputs.arch) }}
-            *.cache-to=${{ inputs.release && format('type=registry,ref=ghcr.io/{0}/build_cache:{1}-{2},mode=max,compression=zstd,force-compression=true', github.repository_owner, inputs.app, steps.target.outputs.arch) || '' }}
+            *.cache-to=${{ (inputs.release || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)) && format('type=registry,ref=ghcr.io/{0}/build_cache:{1}-{2},mode=max,compression=zstd,force-compression=true', github.repository_owner, inputs.app, steps.target.outputs.arch) || '' }}
             *.labels.org.opencontainers.image.title=${{ inputs.app }}
             *.labels.org.opencontainers.image.url=https://ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}
             *.labels.org.opencontainers.image.version=${{ steps.app-options.outputs.version }}
@@ -296,14 +296,14 @@ jobs:
           permission-pull-requests: write
 
       - name: Run App Tests
-        uses: ./.github/actions/app-tests
+        uses: $/.github/actions/app-tests
         with:
           app: ${{ inputs.app }}
           image: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}@${{ needs.merge.outputs.digest }}
           token: ${{ github.token }}
 
       - name: Get App Size Diff
-        uses: ./.github/actions/app-size-diff
+        uses: $/.github/actions/app-size-diff
         id: app-size-diff
         with:
           from-app: ghcr.io/${{ github.repository_owner }}/${{ inputs.app }}:rolling
@@ -339,13 +339,13 @@ jobs:
           permission-contents: write
 
       - name: Get App Options
-        uses: ./.github/actions/app-options
+        uses: $/.github/actions/app-options
         id: app-options
         with:
           app: ${{ inputs.app }}
 
       - name: Get Release Tag
-        uses: ./.github/actions/release-tag
+        uses: $/.github/actions/release-tag
         id: release
         with:
           token: ${{ steps.app-token.outputs.token }}
@@ -387,7 +387,7 @@ jobs:
 
       - if: ${{ contains(needs.*.result, 'failure') }}
         name: Get App Options
-        uses: ./.github/actions/app-options
+        uses: $/.github/actions/app-options
         id: app-options
         with:
           app: ${{ inputs.app }}
