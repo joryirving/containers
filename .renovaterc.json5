@@ -128,6 +128,16 @@
       allowedVersions: "/3\\.14-slim/",
     },
     {
+      description: [
+        "Allowed iii engine version for the agentmemory image",
+        "The engine must match the pin upstream agentmemory builds its worker stack against. iii >= 0.26 (Observe v2) breaks worker registration: http 0.22.8 hangs at 'waiting for engine registration' and :3111 never comes up (verified on 0.26.0 in #1235 and 0.27.0 in #1313). agentmemory v0.9.33 and upstream main pin iii 0.25.1. Raise this only when an agentmemory release moves its deploy/Dockerfile III_VERSION, and re-vendor the runtime files then.",
+      ],
+      matchDatasources: ["docker"],
+      matchFileNames: ["apps/agentmemory/"],
+      matchPackageNames: ["docker.io/iiidev/iii"],
+      allowedVersions: "/0\\.25\\./",
+    },
+    {
       description: ["Group OpenCode CLI updates across images"],
       matchDatasources: ["npm"],
       matchPackageNames: ["@opencode/cli"],
