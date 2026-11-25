@@ -1,0 +1,16 @@
+--- a/src/blue_onnx/__init__.py
++++ b/src/blue_onnx/__init__.py
+@@ -1129,6 +1129,13 @@
+     opts.inter_op_num_threads = 1
+     if providers:
+         providers = list(providers)
++        # OpenVINO EP runs on CPU unless device_type says otherwise; BLUE_OV_DEVICE
++        # targets the iGPU by default and admits NPU/AUTO experiments without a rebuild.
++        ov_device = os.environ.get("BLUE_OV_DEVICE", "GPU")
++        providers = [
++            (p, {"device_type": ov_device}) if p == "OpenVINOExecutionProvider" else p
++            for p in providers
++        ]
+         print(f"Using ONNX Runtime providers {providers} (intra_op_threads={n_threads})")
+     elif use_gpu:
+         raise NotImplementedError("GPU mode is not fully tested")

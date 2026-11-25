@@ -24,16 +24,29 @@ RUN test -n "${VERSION}" \
         | tar xzf - -C /app --strip-components=1
 
 COPY openai_server.patch /tmp/openai_server.patch
+COPY openvino.patch /tmp/openvino.patch
 RUN patch examples/openai_server.py /tmp/openai_server.patch \
-    && grep -q BLUE_STEPS examples/openai_server.py
+    && grep -q BLUE_STEPS examples/openai_server.py \
+    && patch src/blue_onnx/__init__.py /tmp/openvino.patch \
+    && grep -q BLUE_OV_DEVICE src/blue_onnx/__init__.py
 
 RUN uv sync --frozen --no-dev --no-install-project --extra server
+
+# Intel OpenVINO EP for GPU/NPU inference: the onnxruntime-openvino wheel bundles
+# OpenVINO but ships x86_64 Linux wheels only; it replaces the stock onnxruntime
+# distribution, which is uninstalled first so only one package claims the module.
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+        amd64) uv pip uninstall --python .venv/bin/python onnxruntime \
+            && uv pip install --python .venv/bin/python onnxruntime-openvino==1.24.1 ;; \
+        arm64) : ;; \
+        *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
+    esac
 
 # English G2P: the release bundle requires the polyg2p wheel installed into the
 # venv (not declared by the BlueTTS pyproject). Upstream publishes manylinux
 # x86_64 and macOS wheels only — no linux/arm64 wheel exists, so on arm64 the
 # image builds but English synthesis fails at runtime. sha256 = LFS oid.
-ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
         amd64) WHEEL=manylinux_2_34_x86_64 ;; \
         arm64) WHEEL="" ;; \
