@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 
+ARG TARGETARCH
+
 FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b AS build
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -86,9 +88,23 @@ RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
 
 FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
 
+# Intel OpenCL compute runtime for the OpenVINO GPU plugin: copied from the
+# same pinned OVMS GPU image the other Intel lanes serve with (its packaged
+# runtime is the one proven against the target iGPU; Debian trixie ships no
+# usable intel-opencl-icd). amd64 stage only — arm64 gets an empty placeholder.
+FROM --platform=linux/amd64 openvino/model_server:2026.4.1-gpu@sha256:a928903fe429f1e3e27107cc45932d30d95febfd2d1159dc50869c3eac76fc58 AS intel-opencl-amd64
+COPY intel-opencl-arm64/ /
+FROM scratch AS intel-opencl-arm64
+FROM intel-opencl-${TARGETARCH} AS intel-opencl
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         espeak-ng ffmpeg libsndfile1 curl \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=intel-opencl /etc/OpenCL/vendors /etc/OpenCL/vendors
+COPY --from=intel-opencl /usr/lib/x86_64-linux-gnu/intel-opencl /usr/lib/x86_64-linux-gnu/intel-opencl
+COPY --from=intel-opencl /usr/lib/x86_64-linux-gnu/libigdgmm.so.12* /usr/lib/x86_64-linux-gnu/
+COPY --from=intel-opencl /usr/local/lib/ /usr/local/lib/
 
 COPY --from=build --chown=65534:65534 /app /app
 COPY --chown=65534:65534 voices-custom/ /app/voices-custom/

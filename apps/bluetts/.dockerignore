@@ -4,4 +4,5 @@
 /*
 !openai_server.patch
 !openvino.patch
+!intel-opencl-arm64/
 !voices-custom/

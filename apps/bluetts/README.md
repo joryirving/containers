@@ -29,7 +29,11 @@ without it, selecting `OpenVINOExecutionProvider` would silently stay on CPU.
 The amd64 image swaps the stock onnxruntime wheel for `onnxruntime-openvino`
 (OpenVINO bundled); the OpenVINO API is a match for upstream's own `[openvino]`
 extra, and the Yiddish-frontend behavioral difference that keeps BlueTTS
-pinned at onnxruntime ≥1.27 does not apply to this English-only image.
+pinned at onnxruntime ≥1.27 does not apply to this English-only image. The
+OpenVINO GPU plugin needs an Intel OpenCL compute runtime, which Debian
+trixie does not package — the amd64 image copies the runtime (ICD, NEO,
+IGC) out of the same pinned OVMS GPU image the other Intel lanes run, so
+container and serving stack always move together.
 
 `VERSION` is held at the upstream release the voice was tuned against
 (manual bumps only — renovate deliberately does not track it); the ONNX
