@@ -40,6 +40,13 @@ func Test(t *testing.T) {
 	// Every pinned distribution, read from metadata only (no torch import).
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "-c", "import importlib.metadata as m; v = m.version; assert v('torch') == '2.14.0+xpu'; assert v('torchvision') == '0.29.0+xpu'; assert v('torchaudio') == '2.11.0+xpu'; assert v('comfyui-frontend-package') == '1.58.5'; assert v('comfyui-workflow-templates') == '0.11.105'; assert v('comfyui-manager') == '4.2.2'; assert v('comfy-kitchen') == '0.2.41'; assert v('comfy-aimdo') == '0.6.0'; assert v('comfy-kitchen-xpu-runtime') == '0.2.41'; assert v('comfy-aimdo-xpu-runtime') == '0.6.0'; assert v('omni-xpu-kernel')")
 
+	// The ptl-h AOT lock must survive packaging: the kernel wheel version
+	// carries the target, and the kitchen provider wheel records the runtime
+	// target/torch pairing it was built against. A wrong XPU_TARGET build ARG
+	// would otherwise ship silently.
+	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "-c", "import importlib.metadata as m; v = m.version('omni-xpu-kernel'); assert 'ptl' in v, v")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "-c", "import importlib.metadata as m, json; d = m.distribution('comfy-kitchen-xpu-runtime'); j = json.load(open(d.locate_file('comfy_kitchen_xpu_runtime/provider.json'))); assert j['runtime']['xpu_targets'] == ['ptl-h'], j['runtime']; assert j['runtime']['torch_version'].startswith('2.14.0'), j['runtime']")
+
 	// The provider wheels must own no canonical comfy_kitchen/comfy_aimdo files
 	// (they are sidecar providers); a canonical overwrite would break upgrades.
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "-c", "import importlib.metadata as m; files = [str(f) for f in (m.files('comfy-kitchen-xpu-runtime') or [])]; assert files, 'no recorded files'; assert not [f for f in files if f.split('/')[0] in ('comfy_kitchen', 'comfy_aimdo')], [f for f in files if f.split('/')[0] in ('comfy_kitchen', 'comfy_aimdo')]")
@@ -56,13 +63,13 @@ func Test(t *testing.T) {
 	// not the PyPI distribution's DSO.
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test \"$(readlink -f /opt/venv/lib/libdnnl.so.3)\" = /opt/venv/lib/libdnnl.so.3.11 && grep -q '^patch_sha256=0a7afff4134f115b4bc53f46301ca3d62b1c11dc02e32c64635c469769fcdaeb$' /llm/manifests/onednn-runtime.env")
 
-	// Custom nodes shipped: the Omni adapter (with its provenance commit) and
-	// every pinned third-party node directory.
-	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test -d /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU && cd /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU && git rev-parse HEAD >/dev/null")
+	// Custom nodes shipped: the Omni adapter and every pinned third-party
+	// node directory.
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test -d /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU")
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "for d in ComfyUI-GGUF-XPU ComfyUI-KJNodes comfyui-videohelpersuite comfyui_controlnet_aux ComfyUI_essentials; do test -d \"/llm/ComfyUI/custom_nodes/$d\" || exit 1; done")
 
-	// Device-free smoke of the full import chain behind the server: torch's XPU
-	// wheel plus ComfyUI's arg parsing, using the baked LD_LIBRARY_PATH order.
-	// --help exits before any device or server initialization.
+	// Smoke: the server entrypoint runs under the image user. Note this only
+	// exercises arg parsing (argparse exits on --help before torch imports);
+	// device acceptance is a host-validation item.
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "/llm/ComfyUI/main.py", "--help")
 }

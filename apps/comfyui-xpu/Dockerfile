@@ -228,8 +228,6 @@ ARG COMFY_ESSENTIALS_COMMIT
 # ahead of the native-source branches for Docker cache reuse.
 RUN --mount=type=cache,target=/root/.cache/pip \
     cd /llm && \
-    git clone --filter=blob:none --no-checkout \
-        "${COMFYUI_REPOSITORY}" ComfyUI && \
     git clone --filter=blob:none --branch "v${COMFYUI_VERSION}" --depth 1 \
         "${COMFYUI_REPOSITORY}" ComfyUI && \
     grep -q "\"${COMFYUI_VERSION}\"" /llm/ComfyUI/comfyui_version.py && \
@@ -475,13 +473,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         /wheels/providers/comfy_aimdo_xpu_runtime-${COMFY_AIMDO_PROVIDER_VERSION}-*.whl && \
     pip check
 
-# The custom node is a thin adapter layer; commit it so ComfyUI-OmniXPU can
-# report its own revision in startup logs.
+# The custom node is a thin adapter layer copied at the pinned llm-scaler
+# commit; no git metadata is fabricated for it.
 COPY --from=llm-scaler /llm-scaler/omni/ComfyUI-OmniXPU /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU
-RUN cd /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU && \
-    git init && git add -A && \
-    git -c user.name="joryirving-containers" -c user.email="noreply@jory.dev" \
-        commit --allow-empty -m "ComfyUI-OmniXPU ${LLM_SCALER_COMMIT}"
 
 # Preserve the complete installed dependency snapshot used by image
 # validation. This records transitive ComfyUI and custom-node packages in
@@ -504,8 +498,9 @@ COPY --from=llm-scaler /llm-scaler/omni/configs/comfyui_host_models.yaml /llm/co
 # The image runs as nobody (repo standard): the runtime writes only under the
 # mounted /data dirs and /llm/ComfyUI/user, and PYTHONDONTWRITEBYTECODE keeps
 # imports from writing __pycache__ into the root-owned ComfyUI tree.
-RUN mkdir -p /llm/ComfyUI/user /models/host /data/input /data/output /data/user && \
-    chown -R 65534:65534 /data /models /llm/ComfyUI/user
+RUN mkdir -p /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /models/host /data/input /data/output /data/user && \
+    chown -R 65534:65534 /data /models /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output && \
+    chown -R 65534:65534 /opt/venv /llm/ComfyUI/custom_nodes
 
 # Intel's start_comfyui.sh additionally sets no_proxy defaults, a
 # --reserve-vram budget, and the DynamicVRAM flag logic wired to the AIMDO
@@ -595,5 +590,10 @@ ENV OMNIXPU_INTERPOLATE_FIX=0 \
 ENTRYPOINT ["/llm/entrypoints/start_comfyui.sh"]
 
 USER 65534:65534
+
+# nobody's passwd HOME is /nonexistent; give HF/torch/node caches a writable
+# home so runtime model downloads work.
+ENV HOME=/tmp \
+    TMPDIR=/tmp
 
 WORKDIR /llm/ComfyUI

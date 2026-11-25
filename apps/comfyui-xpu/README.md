@@ -62,9 +62,10 @@ Docker Hub tag manifest listing for `intel/omix:0.4.1-devel-ubuntu24.04`
 | ComfyUI_essentials                                         | `cubiq/ComfyUI_essentials`             | `9d9f4bedfc9f0321c19faf71855e228c93bd0dc9` (main HEAD)                                                        | yes                                                                   |
 
 Renovate tracks the image `VERSION` (ComfyUI release) through the annotation in
-`docker-bake.hcl`. Bumping it is not a one-line change: the `COMFYUI_COMMIT`
-pin, the manager-package grep gate in the Dockerfile, and a rebuild on the
-target host all have to move together.
+`docker-bake.hcl`. Bumping it is not a one-line change: the clone fetches the
+`v${COMFYUI_VERSION}` tag, so `COMFYUI_VERSION`, the manager/frontend/templates
+pins, a `grep` of the shipped version, and a rebuild on the target host all
+have to move together.
 
 ## Differences from Intel's image
 
@@ -97,14 +98,21 @@ target host all have to move together.
 - Every pin above was independently verified before being written into the
   Dockerfile (methods in the table intro). No unverified pins.
 - `gofmt` and `go vet` pass on `apps/comfyui-xpu`.
-- **Build validation pending CI**: the image is linux/amd64 with a oneAPI
-  toolchain and cannot be built on the macOS/arm64 dev host. The first PR CI
-  run is the first full build; expect it to be long (oneDNN + kernel compile).
-- The Go test suite runs only GPU-free packaging assertions (image user,
-  manifests, provider wheel isolation, pinned metadata, `main.py --help`
-  import-chain smoke). Kernel/XPU device acceptance cannot run in CI and must
-  be done on the Panther Lake host — use `/llm/tools/validate_comfyui_image.py`
-  from Intel for that.
+- **Build validation runs in CI**: the image is linux/amd64 with a oneAPI
+  toolchain and cannot be built on the macOS/arm64 dev host. Builds are long
+  (oneDNN + kernel compile). The Go test suite runs only GPU-free packaging
+  assertions (image user, manifests, provider wheel isolation, pinned
+  metadata, ptl-h AOT lock). Kernel/XPU device acceptance cannot run in CI
+  and must be done on the Panther Lake host — use
+  `/llm/tools/validate_comfyui_image.py` from Intel for that.
+- **GPU device access**: the image user (65534) reaches `/dev/dri` only
+  because the current deployment runs the pod privileged (root's implicit
+  `CAP_DAC_OVERRIDE`). A non-privileged deployment must add
+  `--group-add <host render gid>` (and `--device=/dev/dri`); the base image
+  ships no `render` group, so a numeric gid is required.
+- **Manager writes**: `/opt/venv` and `/llm/ComfyUI/custom_nodes` are chowned
+  to the runtime user so ComfyUI-Manager's install-missing-nodes flow works;
+  treat runtime pip installs as part of the image's supported behavior.
 
 ## Attribution
 
