@@ -57,7 +57,7 @@ func Test(t *testing.T) {
 
 	// Dependency snapshot and provider wheel digests (the latter is verifiable
 	// against the wheels the image keeps under /wheels/providers).
-	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q 'comfyui-frontend-package==1.58.5' /llm/manifests/comfyui-python-freeze.txt && (cd /wheels/providers && sha256sum -c /llm/manifests/xpu-runtime-providers.sha256)")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q 'comfyui_frontend_package==1.58.5' /llm/manifests/comfyui-python-freeze.txt && (cd /wheels/providers && sha256sum -c /llm/manifests/xpu-runtime-providers.sha256)")
 
 	// onednn identity: the venv's libdnnl is the patched 3.11.2 source build,
 	// not the PyPI distribution's DSO.

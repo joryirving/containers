@@ -110,6 +110,11 @@ have to move together.
   `CAP_DAC_OVERRIDE`). A non-privileged deployment must add
   `--group-add <host render gid>` (and `--device=/dev/dri`); the base image
   ships no `render` group, so a numeric gid is required.
+- **Listen address and Manager**: the server listens on `0.0.0.0` (required to
+  reach the pod IP in Kubernetes) and ComfyUI-Manager is enabled with no
+  built-in authentication — network gating is the deployment's contract. The
+  target cluster keeps the pod cluster-internal (no public ingress, network
+  policy applies); do not expose this image on an untrusted network.
 - **Manager writes**: `/opt/venv` and `/llm/ComfyUI/custom_nodes` are chowned
   to the runtime user so ComfyUI-Manager's install-missing-nodes flow works;
   treat runtime pip installs as part of the image's supported behavior.

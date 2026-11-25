@@ -347,6 +347,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         --torch-version "${TORCH_VERSION}" \
         --xpu-target "${XPU_TARGET}"
 
+# The wheel builder writes 0600; make the artifact world-readable so the
+# sha256 verification in the runtime image works under the unprivileged user.
+RUN chmod 0644 /wheels/kitchen-provider/*.whl
+
 # ======== AIMDO XPU wheel branch ========
 # The native-owner diagnostic stays off (Intel's AIMDO_XPU_BUILD_NATIVE_OWNER_
 # DIAGNOSTIC=0 path): it replaces the allocator and adds a diagnostic interface,
