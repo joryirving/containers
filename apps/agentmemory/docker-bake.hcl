@@ -20,6 +20,9 @@ variable "III_VERSION" {
   // manager resolves for that FROM line, so both are bumped in one PR.
   // On agentmemory package bumps, also check the STATE_VERSION/HTTP_VERSION
   // worker pins in the Dockerfile against the agentmemory release notes.
+  // Independent engine bumps are blocked by the allowedVersions rule in
+  // .renovaterc.json5: iii >= 0.26 breaks worker registration and only
+  // move this when an agentmemory release itself pins a newer engine.
   // renovate: datasource=docker depName=docker.io/iiidev/iii
   default = "0.25.1"
 }
