@@ -7,6 +7,11 @@
 # runs (no nunchaku, no mono-decode, no Easy-Use/CacheDiT). AMD64 only: the
 # oneAPI toolchain and the omix base ship no arm64 variants.
 
+# ComfyUI image for Intel Panther Lake iGPUs (Xe3, XPU_TARGET=ptl-h).
+# Adapted from intel/llm-scaler omni/docker/Dockerfile (Apache-2.0), which
+# builds on xiangyuT/comfy-kitchen-xpu and intel/sycl-tla (Apache-2.0).
+# Upstream: https://github.com/intel/llm-scaler
+
 ARG BASE_IMAGE=intel/omix:0.4.1-devel-ubuntu24.04@sha256:6f8c8893cc89ff441e3604a3d785d78bdbe79726550e88d5cf8eab769444389a
 ARG PYTHON_VERSION=3.12
 ARG TORCH_VERSION=2.14.0+xpu
