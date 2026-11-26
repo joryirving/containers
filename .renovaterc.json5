@@ -138,19 +138,13 @@
       allowedVersions: "/0\\.25\\./",
     },
     {
-      description: [
-        "Hold comfyui-xpu on its validated stack",
-        "ComfyUI 0.45 + omix 0.4.1 are the versions the llm-scaler ptl-h kernel/provider stack was built and validated against. omix 0.5.0 moves the oneAPI compiler layout (build fails: /opt/intel/oneapi/compiler/2026.1/bin/icx no longer exists) and ComfyUI minor bumps need omni-node revalidation. Raise these deliberately, not via renovate (#1322, #1323).",
-      ],
-      matchFileNames: ["apps/comfyui-xpu/"],
-      matchPackageNames: ["Comfy-Org/ComfyUI", "/intel/omix/"],
-      allowedVersions: "/^(0\\.45\\.|0\\.4\\.)/",
-    },
-    {
       description: ["Group OpenCode CLI updates across images"],
       matchDatasources: ["npm"],
       matchPackageNames: ["@opencode/cli"],
-      matchFileNames: ["apps/opencode/docker-bake.hcl", "apps/paseo/docker-bake.hcl"],
+      matchFileNames: [
+        "apps/opencode/docker-bake.hcl",
+        "apps/paseo/docker-bake.hcl",
+      ],
       groupName: "OpenCode CLI",
       groupSlug: "opencode-cli",
       additionalBranchPrefix: "",
