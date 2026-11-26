@@ -34,13 +34,13 @@ RUN patch examples/openai_server.py /tmp/openai_server.patch \
 
 RUN uv sync --frozen --no-dev --no-install-project --extra server
 
-# Intel OpenVINO EP for GPU/NPU inference: the onnxruntime-openvino wheel bundles
-# OpenVINO but ships x86_64 Linux wheels only; it replaces the stock onnxruntime
-# distribution, which is uninstalled first so only one package claims the module.
 ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
-        amd64) uv pip uninstall --python .venv/bin/python onnxruntime \
-            && uv pip install --python .venv/bin/python onnxruntime-openvino==1.24.1 ;; \
+        amd64) curl -fsSL "https://files.pythonhosted.org/packages/88/01/4e72a8a65b584f01d6e59eb453bae397b82b2e51df1b5c94efa05e17800b/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl" \
+                -o /tmp/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl \
+            && echo "3832643158c8c187fcab6db661cde2a8c06a2b3559d95d0f2411ac0e51c5e924  /tmp/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl" | sha256sum -c - \
+            && uv pip install --python .venv/bin/python --no-index /tmp/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl \
+            && rm /tmp/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl ;; \
         arm64) : ;; \
         *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
     esac
