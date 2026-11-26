@@ -498,7 +498,9 @@ RUN mkdir -p /llm/manifests && \
         '^(torch|torchvision|torchaudio|omni[-_]xpu[-_]kernel|comfy-kitchen-xpu-runtime|comfy-aimdo-xpu-runtime)==' \
         | LC_ALL=C sort \
         > /llm/manifests/omni-runtime-constraints.txt && \
-    test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6
+    test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6 && \
+    (cd /wheels/providers && sha256sum -c /llm/manifests/xpu-runtime-providers.sha256) && \
+    rm -rf /wheels
 
 COPY --from=llm-scaler /llm-scaler/omni/patches /llm/patches
 COPY --from=llm-scaler /llm-scaler/omni/tools /llm/tools
@@ -507,8 +509,8 @@ COPY --from=llm-scaler /llm-scaler/omni/configs/comfyui_host_models.yaml /llm/co
 # The image runs as nobody (repo standard): the runtime writes only under the
 # mounted /data dirs and /llm/ComfyUI/user, and PYTHONDONTWRITEBYTECODE keeps
 # imports from writing __pycache__ into the root-owned ComfyUI tree.
-RUN mkdir -p /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /models/host /data/input /data/output /data/user && \
-    chown -R 65534:65534 /data /models /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output && \
+RUN mkdir -p /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /llm/ComfyUI/temp /llm/ComfyUI/models /models/host /data/input /data/output /data/user && \
+    chown -R 65534:65534 /data /models /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /llm/ComfyUI/temp /llm/ComfyUI/models && \
     chown -R 65534:65534 /opt/venv /llm/ComfyUI/custom_nodes
 
 # Intel's start_comfyui.sh additionally sets no_proxy defaults, a
@@ -548,6 +550,7 @@ exec python main.py \
     --input-directory /data/input \
     --output-directory /data/output \
     --user-directory /data/user \
+    --temp-directory /data/temp \
     --enable-manager \
     ${CLI_ARGS:-} "$@"
 ENTRYPOINT_EOF
