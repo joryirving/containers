@@ -499,6 +499,7 @@ RUN mkdir -p /llm/manifests && \
         | LC_ALL=C sort \
         > /llm/manifests/omni-runtime-constraints.txt && \
     test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6 && \
+    (cd /wheels/providers && sha256sum -c /llm/manifests/xpu-runtime-providers.sha256) && \
     rm -rf /wheels
 
 COPY --from=llm-scaler /llm-scaler/omni/patches /llm/patches
