@@ -498,7 +498,8 @@ RUN mkdir -p /llm/manifests && \
         '^(torch|torchvision|torchaudio|omni[-_]xpu[-_]kernel|comfy-kitchen-xpu-runtime|comfy-aimdo-xpu-runtime)==' \
         | LC_ALL=C sort \
         > /llm/manifests/omni-runtime-constraints.txt && \
-    test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6
+    test "$(wc -l < /llm/manifests/omni-runtime-constraints.txt)" -eq 6 && \
+    rm -rf /wheels
 
 COPY --from=llm-scaler /llm-scaler/omni/patches /llm/patches
 COPY --from=llm-scaler /llm-scaler/omni/tools /llm/tools
