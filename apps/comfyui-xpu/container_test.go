@@ -33,7 +33,7 @@ func Test(t *testing.T) {
 
 	// The entrypoint wires the shipped model-path config, the /data
 	// directories, and the pinned manager into ComfyUI's CLI.
-	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q -- '--extra-model-paths-config /llm/configs/comfyui_host_models.yaml' /llm/entrypoints/start_comfyui.sh && grep -q -- '--input-directory /data/input' /llm/entrypoints/start_comfyui.sh && grep -q -- '--output-directory /data/output' /llm/entrypoints/start_comfyui.sh && grep -q -- '--user-directory /data/user' /llm/entrypoints/start_comfyui.sh && grep -q -- '--enable-manager' /llm/entrypoints/start_comfyui.sh")
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q -- '--extra-model-paths-config /llm/configs/comfyui_host_models.yaml' /llm/entrypoints/start_comfyui.sh && grep -q -- '--input-directory /data/input' /llm/entrypoints/start_comfyui.sh && grep -q -- '--output-directory /data/output' /llm/entrypoints/start_comfyui.sh && grep -q -- '--user-directory /data/user' /llm/entrypoints/start_comfyui.sh && grep -q -- '--enable-manager' /llm/entrypoints/start_comfyui.sh && grep -q -- '--disable-smart-memory' /llm/entrypoints/start_comfyui.sh && grep -q -- '--cache-none' /llm/entrypoints/start_comfyui.sh && grep -q 'COMFYUI_UNLOAD_WEIGHTS' /llm/entrypoints/start_comfyui.sh")
 
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q '__version__ = \"0.45.0\"' /llm/ComfyUI/comfyui_version.py")
 

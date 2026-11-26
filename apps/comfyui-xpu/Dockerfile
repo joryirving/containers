@@ -543,6 +543,15 @@ fi
 export LD_LIBRARY_PATH="${VIRTUAL_ENV}/lib:${torch_library_directories[0]}:${LD_LIBRARY_PATH:-}"
 
 cd /llm/ComfyUI
+
+# On UMA iGPUs ComfyUI's smart memory sees all of UMA as free VRAM and never
+# offloads; unload weights after each workflow and leave them to the kernel's
+# evictable page cache instead. COMFYUI_UNLOAD_WEIGHTS=0 opts out.
+unload_flags=()
+if [[ ${COMFYUI_UNLOAD_WEIGHTS:-1} == 1 ]]; then
+    unload_flags=(--disable-smart-memory --cache-none)
+fi
+
 exec python main.py \
     --listen "${COMFYUI_LISTEN:-0.0.0.0}" \
     --port "${PORT:-8188}" \
@@ -552,6 +561,7 @@ exec python main.py \
     --user-directory /data/user \
     --temp-directory /data/temp \
     --enable-manager \
+    "${unload_flags[@]}" \
     ${CLI_ARGS:-} "$@"
 ENTRYPOINT_EOF
 
