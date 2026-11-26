@@ -12,7 +12,7 @@
 # builds on xiangyuT/comfy-kitchen-xpu and intel/sycl-tla (Apache-2.0).
 # Upstream: https://github.com/intel/llm-scaler
 
-ARG BASE_IMAGE=intel/omix:0.4.1-devel-ubuntu24.04@sha256:6f8c8893cc89ff441e3604a3d785d78bdbe79726550e88d5cf8eab769444389a
+ARG BASE_IMAGE=intel/omix:0.5.0-devel-ubuntu24.04@sha256:e7a32d5c31b77a958e05d2ad1ffd4217c4a1fab9d4eb77acc995864201a03202
 ARG PYTHON_VERSION=3.12
 ARG TORCH_VERSION=2.14.0+xpu
 ARG TORCHVISION_VERSION=0.29.0+xpu
