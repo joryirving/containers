@@ -35,7 +35,9 @@ func Test(t *testing.T) {
 	// directories, and the pinned manager into ComfyUI's CLI.
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q -- '--extra-model-paths-config /llm/configs/comfyui_host_models.yaml' /llm/entrypoints/start_comfyui.sh && grep -q -- '--input-directory /data/input' /llm/entrypoints/start_comfyui.sh && grep -q -- '--output-directory /data/output' /llm/entrypoints/start_comfyui.sh && grep -q -- '--user-directory /data/user' /llm/entrypoints/start_comfyui.sh && grep -q -- '--enable-manager' /llm/entrypoints/start_comfyui.sh")
 
-	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q '__version__ = \"0.45.0\"' /llm/ComfyUI/comfyui_version.py")
+	// The shipped version must equal the baked COMFYUI_VERSION (wired from
+	// the renovate-managed VERSION via the clone tag) — version-agnostic.
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "test \"$(sed -n 's/^__version__ = \"\\(.*\\)\"/\\1/p' /llm/ComfyUI/comfyui_version.py)\" = \"$COMFYUI_VERSION\" && test -n \"$COMFYUI_VERSION\"")
 
 	// Every pinned distribution, read from metadata only (no torch import).
 	testhelpers.TestCommandSucceeds(t, image, nil, "/opt/venv/bin/python", "-c", "import importlib.metadata as m; v = m.version; assert v('torch') == '2.14.0+xpu'; assert v('torchvision') == '0.29.0+xpu'; assert v('torchaudio') == '2.11.0+xpu'; assert v('comfyui-frontend-package') == '1.58.5'; assert v('comfyui-workflow-templates') == '0.11.105'; assert v('comfyui-manager') == '4.2.2'; assert v('comfy-kitchen') == '0.2.41'; assert v('comfy-aimdo') == '0.6.0'; assert v('comfy-kitchen-xpu-runtime') == '0.2.41'; assert v('comfy-aimdo-xpu-runtime') == '0.6.0'; assert v('omni-xpu-kernel')")

@@ -593,6 +593,7 @@ LABEL org.opencontainers.image.version="${IMAGE_TAG}" \
 
 ENV OMNIXPU_INTERPOLATE_FIX=0 \
     OMNIXPU_H3_TE_INT8_CR=1 \
+    COMFYUI_VERSION=${COMFYUI_VERSION} \
     UR_INCLUDE_DIR="/opt/venv/include/unified-runtime" \
     PIP_CONSTRAINT="/llm/manifests/omni-runtime-constraints.txt" \
     PYTHONDONTWRITEBYTECODE=1

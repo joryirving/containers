@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=Comfy-Org/ComfyUI
-  default = "0.45.0"
+  default = "0.46.0"
 }
 
 variable "SOURCE" {
