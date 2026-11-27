@@ -31,6 +31,9 @@ func TestMemoryFlagSelection(t *testing.T) {
 		t.Fatal("memory flag block not found")
 	}
 	block := script[start : start+end]
+	if !strings.Contains(script[start+end:], `"${memory_flags[@]}"`) {
+		t.Fatal("entrypoint does not pass memory flags to ComfyUI")
+	}
 	cases := []struct {
 		name, settings, want string
 	}{

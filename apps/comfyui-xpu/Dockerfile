@@ -583,6 +583,7 @@ else
     fi
 fi
 
+# Each 0/1 control overrides the legacy COMFYUI_UNLOAD_WEIGHTS fallback.
 memory_flags=()
 if [[ ${COMFYUI_DISABLE_SMART_MEMORY:-${COMFYUI_UNLOAD_WEIGHTS:-1}} == 1 ]]; then
     memory_flags+=(--disable-smart-memory)
