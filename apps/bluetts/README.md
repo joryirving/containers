@@ -20,7 +20,7 @@ delivered as env:
 | `BLUE_PACE_REF`       | `0.0625` | Seconds-per-token pace reference                                                                                                                                                                          |
 | `BLUE_PROVIDERS`      | unset    | Comma-separated ONNX Runtime providers. `WebGpuExecutionProvider` is for WebGPU diagnostics, `OpenVINOExecutionProvider` for Intel GPU/NPU inference. Both provider plugins ship in the amd64 image only. |
 | `BLUE_OV_DEVICE`      | `GPU`    | OpenVINO device when selected: `CPU`, `GPU`, `NPU`, `AUTO`.                                                                                                                                               |
-| `BLUE_WEBGPU_ADAPTER` | `0`      | Zero-based Dawn Vulkan adapter index. The patch always passes it, so `0` is an explicit first-adapter choice, not Dawn's automatic selection.                                                             |
+| `BLUE_WEBGPU_ADAPTER` | `0`      | Dawn Vulkan adapter index. Only `0` is accepted for the Intel B390.                                                                                                                                       |
 
 The upstream `examples/openai_server.py` is patched (see `openai_server.patch`)
 to honor those env vars; upstream hardcodes the 8-step/CFG 4.0 defaults. The
@@ -33,13 +33,12 @@ OpenVINO plugin includes its runtime and matches upstream's
 `[openvino]` extra. The English-only image does not use the Yiddish frontend
 that requires ONNX Runtime 1.27 or later. WebGPU 0.6.0 requires ONNX Runtime
 1.24.4 or later and a Vulkan loader. The pinned llama.cpp base image supplies
-the loader and Intel ANV userspace. The WebGPU EP accepts exactly one device,
-so the patch attaches the first enumerated device and always passes
-`BLUE_WEBGPU_ADAPTER` as its adapter index; the default `0` is a deliberate
-first-adapter choice over Dawn's automatic selection. WebGPU mode disables
-ONNX Runtime's CPU graph fallback and session-run recovery fallback. A model
-graph that WebGPU cannot run will fail to load. A runtime error will stop
-synthesis. Set `BLUE_PROVIDERS=WebGpuExecutionProvider` for diagnostics only.
+the loader and Intel ANV userspace. WebGPU mode requires one Intel B390
+adapter and rejects software adapters. ONNX Runtime can assign
+individual operations to CPU. WebGPU mode disables session-run recovery fallback.
+Check operator placement before deployment to exclude CPU-only graphs and
+substantial neural computation on CPU. Set `BLUE_PROVIDERS=WebGpuExecutionProvider`
+for diagnostics only.
 Check the physical device on the target host before you treat a run as
 hardware-backed.
 

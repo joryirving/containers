@@ -31,8 +31,12 @@ RUN test -n "${VERSION}" \
 
 COPY openai_server.patch /tmp/openai_server.patch
 COPY openvino.patch /tmp/openvino.patch
+COPY reference-audio.patch /tmp/reference-audio.patch
+COPY webgpu_device.py /app/src/blue_onnx/webgpu_device.py
 RUN patch examples/openai_server.py /tmp/openai_server.patch \
     && grep -q BLUE_STEPS examples/openai_server.py \
+    && patch src/blue_onnx/style.py /tmp/reference-audio.patch \
+    && grep -q _bluev3_reference src/blue_onnx/style.py \
     && patch src/blue_onnx/__init__.py /tmp/openvino.patch \
     && grep -q BLUE_OV_DEVICE src/blue_onnx/__init__.py \
     && grep -q BLUE_WEBGPU_ADAPTER src/blue_onnx/__init__.py

@@ -1,6 +1,6 @@
 --- a/src/blue_onnx/__init__.py
 +++ b/src/blue_onnx/__init__.py
-@@ -1011,7 +1011,62 @@ def get_latent_mask(
+@@ -1011,7 +1011,68 @@ def get_latent_mask(
  def load_onnx(
      onnx_path: str, opts: ort.SessionOptions, providers: list[str]
  ) -> ort.InferenceSession:
@@ -16,6 +16,11 @@
 +        plugin_names.append("OpenVINOExecutionProvider")
 +    if "WebGpuExecutionProvider" in requested:
 +        import onnxruntime_ep_webgpu as webgpu_ep
++        from .webgpu_device import require_b390
++
++        require_b390()
++        if os.environ.get("BLUE_WEBGPU_ADAPTER", "0") != "0":
++            raise RuntimeError("WebGPU requires B390 adapter 0")
 +
 +        if webgpu_ep.get_ep_name() not in _PLUGIN_EP_STATE["registered"]:
 +            ort.register_execution_provider_library("webgpu", webgpu_ep.get_library_path())
@@ -34,15 +39,16 @@
 +            devices = [d for d in devices if d.ep_metadata.get("ov_device") == ov_device]
 +        else:
 +            # The WebGPU EP accepts one device; attach the first with an explicit adapterIndex default.
-+            devices = devices[:1]
++            devices = [d for d in devices if d.device.vendor_id == 0x8086
++                       and d.device.device_id == 0xB080]
++            if len(devices) != 1:
++                raise RuntimeError("WebGPU did not identify the Intel B390")
 +            options = {"adapterIndex": os.environ.get("BLUE_WEBGPU_ADAPTER", "0")}
 +        if not devices:
 +            raise RuntimeError(
 +                f"no {provider_name} device found; available devices: "
 +                f"{[d.ep_name for d in ort.get_ep_devices()]}"
 +            )
-+        if provider_name == "WebGpuExecutionProvider":
-+            opts.add_session_config_entry("session.disable_cpu_ep_fallback", "1")
 +        opts.add_provider_for_devices(devices, options)
 +        _PLUGIN_EP_STATE["configured"].add(session_key)
 +        print(f"{provider_name} plugin: attached {len(devices)} device(s) to session {id(opts):x}")
