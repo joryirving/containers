@@ -1,41 +1,72 @@
 --- a/src/blue_onnx/__init__.py
 +++ b/src/blue_onnx/__init__.py
-@@ -1011,7 +1011,37 @@ def get_latent_mask(
+@@ -1011,7 +1011,68 @@ def get_latent_mask(
  def load_onnx(
      onnx_path: str, opts: ort.SessionOptions, providers: list[str]
  ) -> ort.InferenceSession:
 -    return ort.InferenceSession(onnx_path, sess_options=opts, providers=providers)
-+    if "OpenVINOExecutionProvider" not in providers:
-+        return ort.InferenceSession(onnx_path, sess_options=opts, providers=providers)
-+    if not _OV_EP_STATE["registered"]:
++    requested = set(providers)
++    plugin_names = []
++    if "OpenVINOExecutionProvider" in requested:
 +        import onnxruntime_ep_openvino as ov_ep
 +
-+        ort.register_execution_provider_library("openvino_ep", ov_ep.get_library_path())
-+        _OV_EP_STATE["registered"] = True
-+    ov_device = os.environ.get("BLUE_OV_DEVICE", "GPU")
-+    session_key = (id(opts), ov_device)
-+    if session_key not in _OV_EP_STATE["configured"]:
-+        devices = [
-+            d
-+            for d in ort.get_ep_devices()
-+            if d.ep_name == "OpenVINOExecutionProvider"
-+            and d.ep_metadata.get("ov_device") == ov_device
-+        ]
++        if "OpenVINOExecutionProvider" not in _PLUGIN_EP_STATE["registered"]:
++            ort.register_execution_provider_library("openvino_ep", ov_ep.get_library_path())
++            _PLUGIN_EP_STATE["registered"].add("OpenVINOExecutionProvider")
++        plugin_names.append("OpenVINOExecutionProvider")
++    if "WebGpuExecutionProvider" in requested:
++        import onnxruntime_ep_webgpu as webgpu_ep
++        from .webgpu_device import require_b390
++
++        require_b390()
++        if os.environ.get("BLUE_WEBGPU_ADAPTER", "0") != "0":
++            raise RuntimeError("WebGPU requires B390 adapter 0")
++
++        if webgpu_ep.get_ep_name() not in _PLUGIN_EP_STATE["registered"]:
++            ort.register_execution_provider_library("webgpu", webgpu_ep.get_library_path())
++            _PLUGIN_EP_STATE["registered"].add(webgpu_ep.get_ep_name())
++        plugin_names.append(webgpu_ep.get_ep_name())
++    if not plugin_names:
++        return ort.InferenceSession(onnx_path, sess_options=opts, providers=providers)
++    for provider_name in plugin_names:
++        session_key = (id(opts), provider_name)
++        if session_key in _PLUGIN_EP_STATE["configured"]:
++            continue
++        devices = [d for d in ort.get_ep_devices() if d.ep_name == provider_name]
++        options = {}
++        if provider_name == "OpenVINOExecutionProvider":
++            ov_device = os.environ.get("BLUE_OV_DEVICE", "GPU")
++            devices = [d for d in devices if d.ep_metadata.get("ov_device") == ov_device]
++        else:
++            # The WebGPU EP accepts one device; attach the first with an explicit adapterIndex default.
++            devices = [d for d in devices if d.device.vendor_id == 0x8086
++                       and d.device.device_id == 0xB080]
++            if len(devices) != 1:
++                raise RuntimeError("WebGPU did not identify the Intel B390")
++            options = {"adapterIndex": os.environ.get("BLUE_WEBGPU_ADAPTER", "0")}
 +        if not devices:
 +            raise RuntimeError(
-+                f"no OpenVINO {ov_device} device found; available devices: "
-+                f"{[d.ep_metadata.get('ov_device') for d in ort.get_ep_devices()]}"
++                f"no {provider_name} device found; available devices: "
++                f"{[d.ep_name for d in ort.get_ep_devices()]}"
 +            )
-+        opts.add_provider_for_devices(devices, {})
-+        _OV_EP_STATE["configured"].add(session_key)
-+        print(
-+            f"OpenVINO EP plugin: attached {len(devices)} {ov_device} device(s) "
-+            f"to session {id(opts):x}"
-+        )
-+    return ort.InferenceSession(onnx_path, sess_options=opts)
++        opts.add_provider_for_devices(devices, options)
++        _PLUGIN_EP_STATE["configured"].add(session_key)
++        print(f"{provider_name} plugin: attached {len(devices)} device(s) to session {id(opts):x}")
++    session = ort.InferenceSession(
++        onnx_path,
++        sess_options=opts,
++        enable_fallback="WebGpuExecutionProvider" not in plugin_names,
++    )
++    if "WebGpuExecutionProvider" in plugin_names:
++        session.disable_fallback()
++    active = set(session.get_providers())
++    missing = set(plugin_names) - active
++    if missing:
++        raise RuntimeError(f"requested execution providers are inactive: {sorted(missing)}")
++    return session
 +
 +
-+_OV_EP_STATE = {"registered": False, "configured": set()}
++_PLUGIN_EP_STATE = {"configured": set(), "registered": set()}
  
  
  def load_onnx_all(

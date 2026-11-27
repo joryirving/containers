@@ -4,5 +4,7 @@
 /*
 !openai_server.patch
 !openvino.patch
+!reference-audio.patch
+!webgpu_device.py
 !intel-opencl-arm64/
 !voices-custom/

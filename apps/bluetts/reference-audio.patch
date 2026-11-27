@@ -1,0 +1,112 @@
+--- a/src/blue_onnx/style.py
++++ b/src/blue_onnx/style.py
+@@ -11,6 +11,43 @@
+ import soundfile as sf
+ 
+ from . import Style, parse_speed_scale
++
++
++def _bluev3_resample(wav: np.ndarray, orig_sr: int, target_sr: int) -> np.ndarray:
++    """NumPy form of torchaudio's training sinc_interp_kaiser resampler."""
++    if orig_sr == target_sr:
++        return np.asarray(wav, dtype=np.float32)
++    gcd = int(np.gcd(orig_sr, target_sr))
++    orig, new = orig_sr // gcd, target_sr // gcd
++    rolloff, width, beta = 0.9475937167399596, 64, 14.769656459379492
++    base = min(orig, new) * rolloff
++    filt_width = int(np.ceil(width * orig / base))
++    idx = np.arange(-filt_width, filt_width + orig, dtype=np.float32)[None, None, :] / np.float32(orig)
++    phase = np.arange(0, -new, -1, dtype=np.float32)[:, None, None] / np.float32(new)
++    t = np.clip((phase + idx) * np.float32(base), -width, width)
++    beta32 = np.float32(beta)
++    window = np.i0(beta32 * np.sqrt(np.maximum(0.0, 1.0 - (t / width) ** 2))) / np.i0(beta32)
++    t *= np.float32(np.pi)
++    kernel = np.sinc(t / np.float32(np.pi)) * window * np.float32(base / orig)
++
++    x = np.asarray(wav, dtype=np.float32)
++    padded = np.pad(x, (filt_width, filt_width + orig))
++    out_len = (new * len(x) + orig - 1) // orig
++    out = np.empty(out_len, dtype=np.float32)
++    # Keep temporary index arrays bounded for long reference recordings.
++    taps = np.arange(kernel.shape[2])
++    for start in range(0, out_len, 2048):
++        stop = min(start + 2048, out_len)
++        positions = np.arange(start, stop)
++        offsets = (positions // new)[:, None] * orig + taps[None, :]
++        out[start:stop] = np.sum(padded[offsets] * kernel[positions % new, 0, :], axis=1, dtype=np.float32)
++    return out
++
++
++def _read_wav_bluev3(path: str, sample_rate: int) -> np.ndarray:
++    wav, sr = sf.read(path, always_2d=True, dtype="float32")
++    wav = wav.mean(axis=1)
++    return _bluev3_resample(wav, int(sr), int(sample_rate))
+ 
+ 
+ def _stats(a: np.ndarray) -> dict[str, float]:
+@@ -127,12 +164,23 @@
+     ):
+         self.onnx_dir = onnx_dir
+         self.cfg = _load_config(config)
+-        self.codec_encoder = _session(codec_encoder or os.path.join(onnx_dir, "codec_encoder.onnx"), providers)
+-        self.style_encoder = _session(style_encoder or os.path.join(onnx_dir, "style_encoder.onnx"), providers)
+-        self.duration_style_encoder = _session(
+-            duration_style_encoder or os.path.join(onnx_dir, "duration_style_encoder.onnx"),
+-            providers,
+-        )
++        release = self.cfg["full_config"].get("blue_release")
++        self._bluev3_reference = bool(release and release.get("graphs", {}).get("reference_encoder"))
++        if self._bluev3_reference:
++            graph = os.path.join(onnx_dir, release["graphs"]["reference_encoder"])
++            if providers and "WebGpuExecutionProvider" in providers:
++                from . import load_onnx
++                self.reference_encoder = load_onnx(graph, ort.SessionOptions(), providers)
++            else:
++                self.reference_encoder = _session(graph, providers)
++            self.sample_rate = int(release.get("reference", {}).get("sample_rate", self.cfg["sample_rate"]))
++        else:
++            self.codec_encoder = _session(codec_encoder or os.path.join(onnx_dir, "codec_encoder.onnx"), providers)
++            self.style_encoder = _session(style_encoder or os.path.join(onnx_dir, "style_encoder.onnx"), providers)
++            self.duration_style_encoder = _session(
++                duration_style_encoder or os.path.join(onnx_dir, "duration_style_encoder.onnx"),
++                providers,
++            )
+ 
+     def _z_ref(self, ref_wav: str) -> np.ndarray:
+         wav = _read_wav_mono(ref_wav, self.cfg["sample_rate"])
+@@ -153,6 +201,35 @@
+         return z_ref
+ 
+     def payload_from_wav(self, ref_wav: str) -> dict[str, Any]:
++        if self._bluev3_reference:
++            wav = _read_wav_bluev3(ref_wav, self.sample_rate)
++            if len(wav) < self.sample_rate:
++                raise ValueError("reference audio must be at least one second")
++            wav = np.pad(wav, (0, -len(wav) % 3072))
++            inp = self.reference_encoder.get_inputs()[0]
++            feed = wav[None, :] if len(inp.shape) == 2 else wav[None, None, :]
++            outputs = self.reference_encoder.run(None, {inp.name: feed.astype(np.float32)})
++            if len(outputs) != 2:
++                raise RuntimeError(
++                    "BlueV3 reference_encoder.onnx must return style_ttl and style_dp; "
++                    f"found {len(outputs)} outputs"
++                )
++            style_ttl, style_dp = (np.asarray(v, dtype=np.float32) for v in outputs)
++            if style_ttl.shape != (1, 50, 256) or style_dp.shape != (1, 8, 16):
++                raise RuntimeError("unexpected BlueV3 reference style shapes")
++            if not np.isfinite(style_ttl).all() or not np.isfinite(style_dp).all():
++                raise RuntimeError("non-finite BlueV3 reference style")
++            return {
++                "style_ttl": {"data": style_ttl.tolist(), "dims": list(style_ttl.shape)},
++                "style_dp": {"data": style_dp.tolist(), "dims": list(style_dp.shape)},
++                "metadata": {
++                    "sr": self.sample_rate,
++                    "ref_wav": os.path.basename(ref_wav),
++                    "style_ttl_stats": _stats(style_ttl),
++                    "style_dp_stats": _stats(style_dp),
++                },
++                "model": self.cfg["full_config"]["blue_release"].get("model"),
++            }
+         z_ref = _trim_reference_latents(self._z_ref(ref_wav))
+         ref_mask = np.ones((z_ref.shape[0], 1, z_ref.shape[2]), dtype=np.float32)
+         style_ttl = self.style_encoder.run(None, {"z_ref": z_ref, "ref_mask": ref_mask})[0].astype(np.float32)
