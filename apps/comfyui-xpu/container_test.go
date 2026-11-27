@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"os/exec"
+	"strings"
 	"testing"
 
 	"github.com/joryirving/containers/testhelpers"
@@ -14,6 +16,42 @@ import (
 // entrypoint wiring. Importing torch without a device is safe and proven by
 // intel/llm-scaler's own build (it runs `python -c "import torch"` in a
 // device-less build stage).
+func TestMemoryFlagSelection(t *testing.T) {
+	dockerfile, err := os.ReadFile("Dockerfile")
+	if err != nil {
+		t.Fatal(err)
+	}
+	script := string(dockerfile)
+	start := strings.Index(script, "memory_flags=()")
+	if start < 0 {
+		t.Fatal("memory flag block not found")
+	}
+	end := strings.Index(script[start:], "\n\nexec python main.py")
+	if end < 0 {
+		t.Fatal("memory flag block not found")
+	}
+	block := script[start : start+end]
+	cases := []struct {
+		name, settings, want string
+	}{
+		{"default", "", "--disable-smart-memory\n--cache-none\n"},
+		{"legacy off", "COMFYUI_UNLOAD_WEIGHTS=0", ""},
+		{"legacy on", "COMFYUI_UNLOAD_WEIGHTS=1", "--disable-smart-memory\n--cache-none\n"},
+		{"smart on", "COMFYUI_DISABLE_SMART_MEMORY=0", "--cache-none\n"},
+		{"cache on", "COMFYUI_DISABLE_EXECUTION_CACHE=0", "--disable-smart-memory\n"},
+		{"overrides legacy", "COMFYUI_UNLOAD_WEIGHTS=0 COMFYUI_DISABLE_SMART_MEMORY=1", "--disable-smart-memory\n"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := exec.Command("bash", "-c", "unset COMFYUI_UNLOAD_WEIGHTS COMFYUI_DISABLE_SMART_MEMORY COMFYUI_DISABLE_EXECUTION_CACHE; "+tc.settings+"\n"+block+"\nif ((${#memory_flags[@]})); then printf '%s\\n' \"${memory_flags[@]}\"; fi")
+			out, err := cmd.CombinedOutput()
+			if err != nil || string(out) != tc.want {
+				t.Fatalf("got %q, error %v; want %q", out, err, tc.want)
+			}
+		})
+	}
+}
+
 func Test(t *testing.T) {
 	if os.Getenv("TEST_IMAGE") == "" {
 		t.Skip("TEST_IMAGE is set by the CI image test workflow")

@@ -583,9 +583,12 @@ else
     fi
 fi
 
-unload_flags=()
-if [[ ${COMFYUI_UNLOAD_WEIGHTS:-1} == 1 ]]; then
-    unload_flags=(--disable-smart-memory --cache-none)
+memory_flags=()
+if [[ ${COMFYUI_DISABLE_SMART_MEMORY:-${COMFYUI_UNLOAD_WEIGHTS:-1}} == 1 ]]; then
+    memory_flags+=(--disable-smart-memory)
+fi
+if [[ ${COMFYUI_DISABLE_EXECUTION_CACHE:-${COMFYUI_UNLOAD_WEIGHTS:-1}} == 1 ]]; then
+    memory_flags+=(--cache-none)
 fi
 
 exec python main.py \
@@ -599,7 +602,7 @@ exec python main.py \
     --enable-manager \
     --reserve-vram "$reserve_vram_gb" \
     "${dynamic_vram_arguments[@]}" \
-    "${unload_flags[@]}" \
+    "${memory_flags[@]}" \
     "${cli_args[@]}" "$@"
 ENTRYPOINT_EOF
 
