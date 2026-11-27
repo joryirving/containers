@@ -25,3 +25,18 @@ func Test(t *testing.T) {
 		"-d", `{"model":"bluev3","input":"ok","voice":"mia","response_format":"wav"}`,
 		"-o", "/tmp/speech.wav")
 }
+
+func TestNoGPULoaderPaths(t *testing.T) {
+	testhelpers.TestCommandSucceeds(t, testhelpers.GetTestImage("ghcr.io/joryirving/bluetts:rolling"), nil, "/app/.venv/bin/python", "-c", `
+import sys
+sys.path.insert(0, "/app/src")
+import onnxruntime as ort
+from blue_onnx import load_onnx
+try:
+    load_onnx("/app/bluev3_onnx/onnx/duration_predictor_style.onnx", ort.SessionOptions(), ["WebGpuExecutionProvider"])
+except (RuntimeError, ModuleNotFoundError) as err:
+    assert "webgpu" in str(err).lower(), err
+else:
+    raise SystemExit("WebGPU unexpectedly succeeded without a GPU")
+`)
+}

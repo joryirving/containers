@@ -7,12 +7,16 @@ FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d
 ENV DEBIAN_FRONTEND=noninteractive \
     UV_LINK_MODE=copy
 
+USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl patch \
     && rm -rf /var/lib/apt/lists/*
 
 # Pin uv for reproducible builds (bump manually; renovate does not track this pin)
 COPY --from=ghcr.io/astral-sh/uv:0.13.10@sha256:a3ea1357342c1a4bf9a0c53a3deb1b55379aefa037338d8113d5771efa01774f /uv /usr/local/bin/uv
+
+# Keep downloaded source and dependencies separate from the Vulkan runtime.
+FROM build AS app-build
 
 WORKDIR /app
 
@@ -30,11 +34,25 @@ COPY openvino.patch /tmp/openvino.patch
 RUN patch examples/openai_server.py /tmp/openai_server.patch \
     && grep -q BLUE_STEPS examples/openai_server.py \
     && patch src/blue_onnx/__init__.py /tmp/openvino.patch \
-    && grep -q BLUE_OV_DEVICE src/blue_onnx/__init__.py
+    && grep -q BLUE_OV_DEVICE src/blue_onnx/__init__.py \
+    && grep -q BLUE_WEBGPU_ADAPTER src/blue_onnx/__init__.py
 
 RUN uv sync --frozen --no-dev --no-install-project --extra server
 
+FROM app-build AS runtime-build
+
+USER root
 ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+        amd64) curl -fsSL "https://files.pythonhosted.org/packages/98/57/656e7b4071d754674fc9f749bcd9dc0229efc685b084ca71932a34d7cad4/onnxruntime_ep_webgpu-0.6.0-py3-none-manylinux_2_28_x86_64.whl" \
+                -o /tmp/onnxruntime_ep_webgpu-0.6.0-py3-none-manylinux_2_28_x86_64.whl \
+            && echo "791d991f2779ae23cdd273d4689413e798080cfa4b736012ec53da8cd14a7c79  /tmp/onnxruntime_ep_webgpu-0.6.0-py3-none-manylinux_2_28_x86_64.whl" | sha256sum -c - \
+            && uv pip install --python .venv/bin/python --no-index /tmp/onnxruntime_ep_webgpu-0.6.0-py3-none-manylinux_2_28_x86_64.whl \
+            && rm /tmp/onnxruntime_ep_webgpu-0.6.0-py3-none-manylinux_2_28_x86_64.whl ;; \
+        arm64) : ;; \
+        *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
+    esac
+
 RUN case "${TARGETARCH}" in \
         amd64) curl -fsSL "https://files.pythonhosted.org/packages/88/01/4e72a8a65b584f01d6e59eb453bae397b82b2e51df1b5c94efa05e17800b/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl" \
                 -o /tmp/onnxruntime_ep_openvino-1.8.1-py3-none-manylinux_2_28_x86_64.whl \
@@ -45,10 +63,8 @@ RUN case "${TARGETARCH}" in \
         *) echo "unsupported arch ${TARGETARCH}" && exit 1 ;; \
     esac
 
-# English G2P: the release bundle requires the polyg2p wheel installed into the
-# venv (not declared by the BlueTTS pyproject). Upstream publishes manylinux
-# x86_64 and macOS wheels only — no linux/arm64 wheel exists, so on arm64 the
-# image builds but English synthesis fails at runtime. sha256 = LFS oid.
+# The English bundle needs polyg2p. Upstream has no linux/arm64 wheel, so
+# arm64 images build but cannot synthesize English.
 RUN case "${TARGETARCH}" in \
         amd64) WHEEL=manylinux_2_34_x86_64 ;; \
         arm64) WHEEL="" ;; \
@@ -62,9 +78,8 @@ RUN case "${TARGETARCH}" in \
         && rm "/tmp/polyg2p-0.1.0-cp39-abi3-${WHEEL}.whl"; \
     fi
 
-# English-only ONNX bundle: model weights + the English G2P data (the Hebrew and
-# Yiddish frontends are on-demand downloads upstream and are deliberately excluded).
-# sha256s are the LFS oids published for BLUEV3_REVISION on the hub.
+# The image includes the English model and G2P files, but not Hebrew or Yiddish data.
+# These hashes are the LFS object IDs for BLUEV3_REVISION.
 RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
     && : > /tmp/bundle.sha256 \
     && echo "46197a2c10f06e151adc6dd109082889e6aaf903c46ce25d798eebaa7b07e313  bluev3_onnx/onnx/duration_predictor_style.onnx" >> /tmp/bundle.sha256 \
@@ -86,19 +101,19 @@ RUN mkdir -p bluev3_onnx/onnx bluev3_onnx/frontend/polyg2p_data \
     && sha256sum -c /tmp/bundle.sha256 \
     && rm /tmp/bundle.sha256
 
-# Intel OpenCL compute runtime for the OpenVINO GPU plugin: copied from the
-# same pinned OVMS GPU image the other Intel lanes serve with (its packaged
-# runtime is the one proven against the target iGPU; Debian trixie ships no
-# usable intel-opencl-icd). amd64 stage only — arm64 gets an empty placeholder.
+# OpenVINO GPU needs the Intel OpenCL runtime from the pinned OVMS GPU image.
 FROM --platform=linux/amd64 openvino/model_server:2026.4.1-gpu@sha256:a928903fe429f1e3e27107cc45932d30d95febfd2d1159dc50869c3eac76fc58 AS intel-opencl-amd64
 FROM scratch AS intel-opencl-arm64
 COPY intel-opencl-arm64/ /
 FROM intel-opencl-${TARGETARCH} AS intel-opencl
 
-FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
+FROM ghcr.io/ggml-org/llama.cpp:server-vulkan@sha256:3d21475ecd4383a9649ea21737d07044399d0995490b5ce5c6d89326dc7c7771 AS runtime-base
 
+COPY --from=runtime-build /usr/local/bin/python3.12 /usr/local/bin/python3.12
+COPY --from=runtime-build /usr/local/lib/libpython3.12.so* /usr/local/lib/
+COPY --from=runtime-build /usr/local/lib/python3.12 /usr/local/lib/python3.12
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        espeak-ng ffmpeg libsndfile1 curl \
+        espeak-ng ffmpeg libsndfile1 curl libvulkan1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=intel-opencl /etc/OpenCL/vendors /etc/OpenCL/vendors
@@ -106,7 +121,7 @@ COPY --from=intel-opencl /usr/lib/x86_64-linux-gnu/intel-opencl /usr/lib/x86_64-
 COPY --from=intel-opencl /usr/lib/x86_64-linux-gnu/libigdgmm.so.12* /usr/lib/x86_64-linux-gnu/
 COPY --from=intel-opencl /usr/local/lib/ /usr/local/lib/
 
-COPY --from=build --chown=65534:65534 /app /app
+COPY --from=runtime-build --chown=65534:65534 /app /app
 COPY --chown=65534:65534 voices-custom/ /app/voices-custom/
 
 ENV PYTHONUNBUFFERED=1 \
