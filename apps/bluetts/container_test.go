@@ -32,6 +32,7 @@ import sys
 sys.path.insert(0, "/app/src")
 import onnxruntime as ort
 from blue_onnx import load_onnx
+ort.get_ep_devices = lambda: []
 try:
     load_onnx("/app/bluev3_onnx/onnx/duration_predictor_style.onnx", ort.SessionOptions(), ["WebGpuExecutionProvider"])
 except (RuntimeError, ModuleNotFoundError) as err:
