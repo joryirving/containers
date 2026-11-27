@@ -35,6 +35,11 @@ func Test(t *testing.T) {
 	// directories, and the pinned manager into ComfyUI's CLI.
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q -- '--extra-model-paths-config /llm/configs/comfyui_host_models.yaml' /llm/entrypoints/start_comfyui.sh && grep -q -- '--input-directory /data/input' /llm/entrypoints/start_comfyui.sh && grep -q -- '--output-directory /data/output' /llm/entrypoints/start_comfyui.sh && grep -q -- '--user-directory /data/user' /llm/entrypoints/start_comfyui.sh && grep -q -- '--enable-manager' /llm/entrypoints/start_comfyui.sh && grep -q -- '--disable-smart-memory' /llm/entrypoints/start_comfyui.sh && grep -q -- '--cache-none' /llm/entrypoints/start_comfyui.sh && grep -q 'COMFYUI_UNLOAD_WEIGHTS' /llm/entrypoints/start_comfyui.sh")
 
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", `grep -q 'OMNI_COMFYUI_RESERVE_VRAM_GB:-4' /llm/entrypoints/start_comfyui.sh && grep -q -- '--enable-dynamic-vram' /llm/entrypoints/start_comfyui.sh && grep -q -- '--allocator-preload-path' /llm/entrypoints/start_comfyui.sh && grep -q 'LD_PRELOAD=' /llm/entrypoints/start_comfyui.sh`)
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/bash", "-c", `set -eo pipefail; export OMNI_COMFYUI_RESERVE_VRAM_GB=bad; if /llm/entrypoints/start_comfyui.sh > /tmp/reserve-test.log 2>&1; then exit 1; fi; grep -q 'must be a nonnegative number' /tmp/reserve-test.log`)
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/bash", "-c", `set -eo pipefail; export CLI_ARGS='--enable-dynamic-vram --disable-dynamic-vram'; if /llm/entrypoints/start_comfyui.sh > /tmp/dynamic-test.log 2>&1; then exit 1; fi; grep -q 'choose only one DynamicVRAM' /tmp/dynamic-test.log`)
+	// Resolve and inspect the native hook without initializing an XPU device.
+	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/bash", "-c", `set -eo pipefail; hook=$(python /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU/runtime_bootstrap.py --allocator-preload-path); test -r "$hook"; for symbol in xpu_ur_hook_is_interposed xpu_ur_hook_enable xpu_ur_hook_disable xpu_ur_hook_get_stats; do nm -D "$hook" | grep -q " $symbol$"; done`)
 	testhelpers.TestCommandSucceeds(t, image, nil, "/bin/sh", "-c", "grep -q '__version__ = \"0.45.0\"' /llm/ComfyUI/comfyui_version.py")
 
 	// Every pinned distribution, read from metadata only (no torch import).

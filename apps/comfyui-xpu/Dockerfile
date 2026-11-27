@@ -513,11 +513,7 @@ RUN mkdir -p /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /llm/Comfy
     chown -R 65534:65534 /data /models /llm/ComfyUI/user /llm/ComfyUI/input /llm/ComfyUI/output /llm/ComfyUI/temp /llm/ComfyUI/models && \
     chown -R 65534:65534 /opt/venv /llm/ComfyUI/custom_nodes
 
-# Intel's start_comfyui.sh additionally sets no_proxy defaults, a
-# --reserve-vram budget, and the DynamicVRAM flag logic wired to the AIMDO
-# native allocator preload (runtime_bootstrap.py --allocator-preload-path /
-# LD_PRELOAD native_hook): all dropped with the native-owner diagnostic, and
-# any of it can be passed per-deployment through CLI_ARGS instead.
+# Restore Intel's DynamicVRAM launcher without enabling its optional diagnostic.
 COPY --chmod=755 <<'ENTRYPOINT_EOF' /llm/entrypoints/start_comfyui.sh
 #!/usr/bin/env bash
 # Establish the same runtime environment intel/llm-scaler's
@@ -544,9 +540,49 @@ export LD_LIBRARY_PATH="${VIRTUAL_ENV}/lib:${torch_library_directories[0]}:${LD_
 
 cd /llm/ComfyUI
 
-# On UMA iGPUs ComfyUI's smart memory sees all of UMA as free VRAM and never
-# offloads; unload weights after each workflow and leave them to the kernel's
-# evictable page cache instead. COMFYUI_UNLOAD_WEIGHTS=0 opts out.
+export no_proxy="${no_proxy:-localhost,127.0.0.1}"
+reserve_vram_gb="${OMNI_COMFYUI_RESERVE_VRAM_GB:-4}"
+if [[ ! "$reserve_vram_gb" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+    echo "OMNI_COMFYUI_RESERVE_VRAM_GB must be a nonnegative number" >&2
+    exit 2
+fi
+
+# CLI_ARGS and positional arguments both override Intel's DynamicVRAM default.
+read -r -a cli_args <<< "${CLI_ARGS:-}"
+dynamic_vram_arguments=(--enable-dynamic-vram)
+explicit_dynamic_vram_argument=""
+for argument in "${cli_args[@]}" "$@"; do
+    case "$argument" in
+        --enable-dynamic-vram|--disable-dynamic-vram)
+            if [[ -n "$explicit_dynamic_vram_argument" && \
+                  "$explicit_dynamic_vram_argument" != "$argument" ]]; then
+                echo "choose only one DynamicVRAM enable/disable argument" >&2
+                exit 2
+            fi
+            explicit_dynamic_vram_argument="$argument"
+            dynamic_vram_arguments=()
+            ;;
+    esac
+done
+
+if [[ "$explicit_dynamic_vram_argument" == "--disable-dynamic-vram" ]]; then
+    if [[ "${AIMDO_XPU_ALLOCATOR_MODE:-}" == "native_hook" ]]; then
+        echo "native_hook requires DynamicVRAM" >&2
+        exit 2
+    fi
+else
+    native_preload_path=$(python \
+        /llm/ComfyUI/custom_nodes/ComfyUI-OmniXPU/runtime_bootstrap.py \
+        --allocator-preload-path)
+    if [[ -n "$native_preload_path" ]]; then
+        export AIMDO_XPU_ALLOCATOR_MODE=native_hook
+        export LD_PRELOAD="${native_preload_path}${LD_PRELOAD:+:$LD_PRELOAD}"
+    elif [[ "${AIMDO_XPU_ALLOCATOR_MODE:-}" == "native_hook" ]]; then
+        echo "native_hook provider returned an empty preload path" >&2
+        exit 2
+    fi
+fi
+
 unload_flags=()
 if [[ ${COMFYUI_UNLOAD_WEIGHTS:-1} == 1 ]]; then
     unload_flags=(--disable-smart-memory --cache-none)
@@ -561,8 +597,10 @@ exec python main.py \
     --user-directory /data/user \
     --temp-directory /data/temp \
     --enable-manager \
+    --reserve-vram "$reserve_vram_gb" \
+    "${dynamic_vram_arguments[@]}" \
     "${unload_flags[@]}" \
-    ${CLI_ARGS:-} "$@"
+    "${cli_args[@]}" "$@"
 ENTRYPOINT_EOF
 
 # com.intel.omni.* keys keep Intel's label names for the pinned revisions so
