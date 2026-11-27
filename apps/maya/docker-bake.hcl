@@ -6,7 +6,7 @@ variable "APP" {
 
 variable "VERSION" {
   // renovate: datasource=github-releases depName=mw00/project-Maya
-  default = "1.1.82"
+  default = "1.1.83"
 }
 
 variable "SOURCE" {
