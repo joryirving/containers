@@ -111,7 +111,7 @@ FROM scratch AS intel-opencl-arm64
 COPY intel-opencl-arm64/ /
 FROM intel-opencl-${TARGETARCH} AS intel-opencl
 
-FROM ghcr.io/ggml-org/llama.cpp:server-vulkan@sha256:1ba441f2843f86e99ec64a218c427bd2d391393a73b39b9ec2c2e69a0ae9be4e AS runtime-base
+FROM ghcr.io/ggml-org/llama.cpp:server-vulkan@sha256:a4911a324843555ff09cd403f21ba314a78a1aa5f515a145774465161f168a7a AS runtime-base
 
 COPY --from=runtime-build /usr/local/bin/python3.12 /usr/local/bin/python3.12
 COPY --from=runtime-build /usr/local/lib/libpython3.12.so* /usr/local/lib/
